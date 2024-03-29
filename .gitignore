@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+**/build
+**/resources
+**/.PVS-Studio
+**/.idea
+**/cmake-build-debug
