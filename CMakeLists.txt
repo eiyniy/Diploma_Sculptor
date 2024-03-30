@@ -11,15 +11,11 @@ set(LOCAL_PROJECT_VERSION "0.0.1")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SFML_STATIC_LIBRARIES TRUE)
-
 set(CIMG_NEED_X11 1)
 set(CIMG_NEED_PNG 1)
 set(CIMG_NEED_JPG 1)
 
 set(CIMG_H_PATH "${PROJECT_SOURCE_DIR}/Libraries/CImg")
-
-set(GRAPH_H_PATH "${PROJECT_SOURCE_DIR}/Libraries/Graph")
 
 
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
@@ -44,6 +40,7 @@ message(STATUS "[INFO] Found ${header_dir_list_count} header directories.")
 
 add_executable(${LOCAL_PROJECT_NAME} ${SOURCES})
 target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${header_dir_list})
+
 
 # ---OpenMP---
 find_package(OpenMP)
@@ -81,7 +78,19 @@ if(CIMG_NEED_PNG)
 endif()
 
 
-# ---Graph---
-add_library(Graph_Lib INTERFACE)
-target_include_directories(Graph_Lib INTERFACE ${GRAPH_H_PATH})
-target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE Graph_Lib)
+# ---GLFW---
+find_package(glfw3 REQUIRED)
+target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${GLFW_INCLUDE_DIRS})
+target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE glfw3)
+
+
+# ---GLEW---
+find_package(GLEW REQUIRED)
+target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${GLEW_INCLUDE_DIRS})
+target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE glew32)
+
+
+# ---OpenGL---
+find_package(OpenGL REQUIRED)
+target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIRS})
+target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE openGL32)
