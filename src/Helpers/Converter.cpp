@@ -1,5 +1,7 @@
 #include <Converter.hpp>
 
+// TODO
+/*
 Vector<4> Converter::colorToMatrix(const sf::Color &value)
 {
     return {value.r, value.g, value.b};
@@ -12,3 +14,4 @@ sf::Color Converter::matrixToColor(const Vector<4> &value)
         std::min(value.cGetY(), 255.0),
         std::min(value.cGetZ(), 255.0)};
 }
+*/

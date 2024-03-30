@@ -3,7 +3,8 @@
 #include <Point.hpp>
 #include <Matrix.hpp>
 
-class Camera {
+class Camera
+{
 private:
     Vector<4> up;
     Vector<4> position;
@@ -14,18 +15,18 @@ private:
 
 public:
     Camera(
-            const Vector<4> &_up,
-            const Vector<4> &_position,
-            const Vector<4> &_target,
-            Point &_resolution,
-            int _fov);
+        const Vector<4> &_up,
+        const Vector<4> &_position,
+        const Vector<4> &_target,
+        Point &_resolution,
+        int _fov);
 
     void move(const Vector<4> &transition);
 
     void rotateAround(
-            AxisName axisName,
-            Direction direction,
-            double step);
+        AxisName axisName,
+        Direction direction,
+        double step);
 
     void setResolution(const Point &newResolution);
 
@@ -44,26 +45,32 @@ public:
     double cGetAspect() const;
 };
 
-inline const Vector<4> &Camera::cGetUp() const {
+inline const Vector<4> &Camera::cGetUp() const
+{
     return up;
 }
 
-inline const Vector<4> &Camera::cGetPosition() const {
+inline const Vector<4> &Camera::cGetPosition() const
+{
     return position;
 }
 
-inline const Vector<4> &Camera::cGetTarget() const {
+inline const Vector<4> &Camera::cGetTarget() const
+{
     return target;
 }
 
-inline const Point &Camera::cGetResolution() const {
+inline const Point &Camera::cGetResolution() const
+{
     return resolution;
 }
 
-inline int Camera::cGetFOV() const {
+inline int Camera::cGetFOV() const
+{
     return fov;
 }
 
-inline double Camera::cGetAspect() const {
-    return ((double) resolution.cGetX()) / resolution.cGetY();
+inline double Camera::cGetAspect() const
+{
+    return ((double)resolution.cGetX()) / resolution.cGetY();
 }

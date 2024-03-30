@@ -3,7 +3,6 @@
 #include <vector>
 #include <memory>
 #include <map>
-#include <SFML/Graphics.hpp>
 #include <Triangle.hpp>
 #include <Camera.hpp>
 #include <Matrix.hpp>

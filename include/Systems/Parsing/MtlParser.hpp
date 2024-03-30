@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <map>
 #include <Material.hpp>
 #include <Matrix.hpp>
 #include <BaseTextParser.hpp>

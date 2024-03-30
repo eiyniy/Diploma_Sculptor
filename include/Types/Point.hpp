@@ -1,6 +1,7 @@
 #pragma once
 
-class Point {
+class Point
+{
 public:
     Point();
 
@@ -22,18 +23,22 @@ private:
     int x, y;
 };
 
-inline int Point::cGetX() const {
+inline int Point::cGetX() const
+{
     return x;
 }
 
-inline int Point::cGetY() const {
+inline int Point::cGetY() const
+{
     return y;
 }
 
-inline int &Point::getX() {
+inline int &Point::getX()
+{
     return x;
 }
 
-inline int &Point::getY() {
+inline int &Point::getY()
+{
     return y;
 }

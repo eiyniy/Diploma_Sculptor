@@ -7,20 +7,22 @@
 #include <Math.hpp>
 
 Scene::Scene(
-        Camera &_camera,
-        BaseLightSource *_lightSource,
-        const double _moveSpeed,
-        const double _rotationSpeed)
-        : camera(_camera),
-          lightSource(_lightSource),
-          defaultFrameTime(1000.f / 60),
-          moveSpeed(_moveSpeed),
-          rotationSpeed(_rotationSpeed) {
+    Camera &_camera,
+    BaseLightSource *_lightSource,
+    const double _moveSpeed,
+    const double _rotationSpeed)
+    : camera(_camera),
+      lightSource(_lightSource),
+      defaultFrameTime(1000.f / 60),
+      moveSpeed(_moveSpeed),
+      rotationSpeed(_rotationSpeed)
+{
     // generateFloor(25, 20, Point(0, 0));
 }
 
-Scene::~Scene() {
-    for (const auto &pair: objects)
+Scene::~Scene()
+{
+    for (const auto &pair : objects)
         delete pair.second;
 }
 
@@ -88,7 +90,8 @@ void Scene::generateFloor(const int size, const int step, const Point &center) {
 }
 */
 
-void Scene::addObject(const std::string &key, Object *object) {
+void Scene::addObject(const std::string &key, Object *object)
+{
     if (key == floorObjectName)
         throw std::invalid_argument("This object name is reserved!");
 
@@ -99,19 +102,22 @@ void Scene::addObject(const std::string &key, Object *object) {
     // generateFloor();
 }
 
-std::vector<std::string> Scene::cGetAllObjectNames() const {
+std::vector<std::string> Scene::cGetAllObjectNames() const
+{
     auto res = std::vector<std::string>();
 
-    for (const auto &pair: objects)
+    for (const auto &pair : objects)
         res.emplace_back(pair.first);
 
     return res;
 }
 
-const std::string &Scene::cGetSelectedObjectName() const {
+const std::string &Scene::cGetSelectedObjectName() const
+{
     return selectedObjectName;
 }
 
-const BaseLightSource *Scene::cGetLightSource() const {
+const BaseLightSource *Scene::cGetLightSource() const
+{
     return lightSource;
 }

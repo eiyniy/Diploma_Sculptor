@@ -4,10 +4,8 @@
 #include <Camera.hpp>
 #include <Matrix.hpp>
 #include <Types.hpp>
-#include <SFML/Graphics.hpp>
-#include <optional>
 #include <BaseLightSource.hpp>
-#include <BaseLightingModel.hpp>
+#include <optional>
 
 class Scene
 {

@@ -1,5 +1,4 @@
 #include <Sculptor.hpp>
-#include <BarycentricRasterizer.hpp>
 #include <Matrix.hpp>
 #include <iostream>
 
@@ -9,11 +8,6 @@ Sculptor::Sculptor(const int _radius)
 void Sculptor::createGraph(Object *object)
 {
     graph = Graph(object->cGetDrawable(), object->cGetPolygons());
-
-    circle.setOutlineThickness(1);
-    circle.setFillColor(sf::Color::Transparent);
-    circle.setRadius(radius);
-    circle.setOutlineColor(sf::Color::Red);
 }
 
 void Sculptor::pull(

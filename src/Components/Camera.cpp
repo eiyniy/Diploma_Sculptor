@@ -3,26 +3,28 @@
 #include <cmath>
 
 Camera::Camera(
-        const Vector<4> &_up,
-        const Vector<4> &_position,
-        const Vector<4> &_target,
-        Point &_resolution,
-        const int _fov)
-        : up(_up),
-          position(_position),
-          target(_target),
-          resolution(_resolution),
-          fov((int) (_fov * M_PI / 180)) {}
+    const Vector<4> &_up,
+    const Vector<4> &_position,
+    const Vector<4> &_target,
+    Point &_resolution,
+    const int _fov)
+    : up(_up),
+      position(_position),
+      target(_target),
+      resolution(_resolution),
+      fov((int)(_fov * M_PI / 180)) {}
 
-void Camera::move(const Vector<4> &transition) {
+void Camera::move(const Vector<4> &transition)
+{
     target += transition;
     position += transition;
 }
 
 void Camera::rotateAround(
-        const AxisName axisName,
-        const Direction direction,
-        const double step) {
+    const AxisName axisName,
+    const Direction direction,
+    const double step)
+{
     auto cameraRelative = position - target;
     auto spherical = Math::decartToSpherical(cameraRelative);
 
@@ -36,10 +38,12 @@ void Camera::rotateAround(
     position = cameraRelative + target;
 }
 
-void Camera::setResolution(const Point &newResolution) {
+void Camera::setResolution(const Point &newResolution)
+{
     resolution = newResolution;
 }
 
-void Camera::setTarget(const Vector<4> &newTarget) {
+void Camera::setTarget(const Vector<4> &newTarget)
+{
     target = newTarget;
 }

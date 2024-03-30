@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <Matrix.hpp>
-#include <SFML/Graphics.hpp>
 
 class Texture
 {

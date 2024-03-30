@@ -3,13 +3,14 @@
 #include <MoveCommand.hpp>
 #include <Object.hpp>
 
-class MoveObjectCommand : public MoveCommand {
+class MoveObjectCommand : public MoveCommand
+{
 public:
     MoveObjectCommand(
-            Object &_object,
-            AxisName _axisName,
-            Direction _direction,
-            double _step);
+        Object &_object,
+        AxisName _axisName,
+        Direction _direction,
+        double _step);
 
     ~MoveObjectCommand() override = default;
 

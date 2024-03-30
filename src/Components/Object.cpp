@@ -13,9 +13,9 @@ Vector<4> convertVertex(
 
 std::shared_ptr<const Material> Object::defaultMaterial = std::make_shared<const Material>(
     "__DEFAULT_MATERIAL",
-    Converter::colorToMatrix(sf::Color::Black),
-    Converter::colorToMatrix(sf::Color::White),
-    Converter::colorToMatrix(sf::Color::Black),
+    Vector<4>{0, 0, 0, 0},
+    Vector<4>{1, 1, 1, 0},
+    Vector<4>{0, 0, 0, 0},
     1,
     nullptr,
     nullptr,

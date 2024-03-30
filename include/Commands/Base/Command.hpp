@@ -1,6 +1,7 @@
 #pragma once
 
-class Command {
+class Command
+{
 public:
     virtual ~Command() = default;
 

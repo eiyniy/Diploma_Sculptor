@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <VertexIds.hpp>
 #include <Types.hpp>
 #include <string>
@@ -13,8 +12,6 @@
 class Triangle
 {
 public:
-    sf::Color color;
-
     Triangle(
         const std::vector<VertexIds> &indexes,
         const std::optional<std::string> &_materialName);
@@ -25,7 +22,7 @@ public:
         const std::optional<std::string> &materialName);
 
     const Vector<4> &getFlatNormal(const std::vector<Vector<4>> &vertices);
-    const Vector<4>  getPhongNormal(
+    const Vector<4> getPhongNormal(
         const std::vector<Vector<4>> &nVertices,
         const double b0, const double b1, const double b2);
 

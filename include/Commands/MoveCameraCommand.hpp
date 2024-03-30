@@ -3,13 +3,14 @@
 #include <MoveCommand.hpp>
 #include <Camera.hpp>
 
-class MoveCameraCommand : public MoveCommand {
+class MoveCameraCommand : public MoveCommand
+{
 public:
     MoveCameraCommand(
-            Camera &_camera,
-            AxisName _axisName,
-            Direction _direction,
-            double _step);
+        Camera &_camera,
+        AxisName _axisName,
+        Direction _direction,
+        double _step);
 
     ~MoveCameraCommand() override = default;
 

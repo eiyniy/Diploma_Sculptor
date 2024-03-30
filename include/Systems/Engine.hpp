@@ -24,16 +24,18 @@ private:
     AxisName moveAxis;
     Direction moveDirection;
 
-    sf::Clock clock;
+    // sf::Clock clock;
     int dt;
 
     std::queue<std::unique_ptr<Command>> commandsQueue;
 
     void handleEvents();
 
-    void updateInput(const sf::Event &event);
+    // TODO
+    // void updateInput(const sf::Event &event);
 
-    void sendInputCommand(const sf::Event &event);
+    // TODO
+    // void sendInputCommand(const sf::Event &event);
 
     void update();
 

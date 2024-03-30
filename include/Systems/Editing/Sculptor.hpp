@@ -12,13 +12,13 @@ private:
     int radius;
     Graph graph;
 
-    sf::CircleShape circle;
+    // sf::CircleShape circle;
 
 public:
     Sculptor(const int _radius);
 
     inline int cGetRadius() const;
-    inline sf::CircleShape &getCircle();
+    // inline sf::CircleShape &getCircle();
 
     void createGraph(Object *object);
 
@@ -38,7 +38,9 @@ inline int Sculptor::cGetRadius() const
     return radius;
 }
 
+/*
 inline sf::CircleShape &Sculptor::getCircle()
 {
     return circle;
 }
+*/

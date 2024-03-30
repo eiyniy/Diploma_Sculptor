@@ -5,12 +5,13 @@
 #include <Scene.hpp>
 #include <MainWindow.hpp>
 
-class SwitchVideoModeCommand : public Command {
+class SwitchVideoModeCommand : public Command
+{
 public:
     SwitchVideoModeCommand(
-            Camera &_camera,
-            MainWindow &_mainWindow,
-            bool _isEscape);
+        Camera &_camera,
+        MainWindow &_mainWindow,
+        bool _isEscape);
 
     ~SwitchVideoModeCommand() override = default;
 

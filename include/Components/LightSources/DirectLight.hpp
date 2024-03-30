@@ -2,7 +2,8 @@
 
 #include <BaseLightSource.hpp>
 
-class DirectLight : public BaseLightSource {
+class DirectLight : public BaseLightSource
+{
 public:
     explicit DirectLight(Vector<4> &direction);
 

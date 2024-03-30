@@ -15,8 +15,6 @@ Triangle::Triangle(
     values[0] = indexes[0];
     values[1] = indexes[1];
     values[2] = indexes[2];
-
-    color = sf::Color(rand() % 255, rand() % 255, rand() % 255);
 }
 
 int Triangle::cGetVertexIdsCount() const

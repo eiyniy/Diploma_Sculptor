@@ -5,7 +5,6 @@
 #include <Texture.hpp>
 #include <Types.hpp>
 #include <CImg.h>
-#include <SFML/Graphics.hpp>
 
 namespace cimg = cimg_library;
 

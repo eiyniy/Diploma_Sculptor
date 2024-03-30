@@ -2,18 +2,19 @@
 
 #include <Types.hpp>
 
-class SphericalCoordinate {
+class SphericalCoordinate
+{
 public:
-    SphericalCoordinate(
+        SphericalCoordinate(
             double _r,
             double _a,
             double _b);
 
-    void move(
+        void move(
             AxisName axisName,
             Direction direction,
             double step,
             bool &isCameraReversed);
 
-    double r, a, b;
+        double r, a, b;
 };

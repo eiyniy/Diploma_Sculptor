@@ -8,7 +8,6 @@
 #include <ResizeCommand.hpp>
 #include <ThreadPool.hpp>
 #include <Timer.hpp>
-#include <LambertModel.hpp>
 #include <SculptorPullCommand.hpp>
 
 Engine::Engine(Scene &_scene, MainWindow &_mainWindow, Sculptor &_sculptor)
@@ -18,8 +17,6 @@ Engine::Engine(Scene &_scene, MainWindow &_mainWindow, Sculptor &_sculptor)
       moveAxis(AxisName::X),
       moveDirection(Direction::Forward)
 {
-    mainWindow.getWindow().setFramerateLimit(defaultFps);
-
     draw();
 }
 
@@ -31,7 +28,8 @@ void Engine::start()
     // auto ts = std::chrono::high_resolution_clock::now();
     // auto te = std::chrono::high_resolution_clock::now();
 
-    while (mainWindow.getWindow().isOpen())
+    // TODO
+    while (true)
     {
         // ts = std::chrono::high_resolution_clock::now();
         handleEvents();
@@ -63,8 +61,11 @@ void Engine::start()
 
 void Engine::handleEvents()
 {
-    static sf::Event event;
-    const auto isPooled = mainWindow.getWindow().pollEvent(event);
+    // TODO
+    /*
+    // static sf::Event event;
+    // const auto isPooled = mainWindow.getWindow().pollEvent(event);
+    const auto isPooled = false;
 
     if (!isPooled)
         return;
@@ -89,7 +90,9 @@ void Engine::handleEvents()
     {
         // std::cout << "Sculptor pull" << std::endl;
 
-        const auto mousePosSF = sf::Mouse::getPosition(mainWindow.getWindow());
+        // TODO
+        // const auto mousePosSF = sf::Mouse::getPosition(mainWindow.getWindow());
+        const sf::Vector2i mousePosSF{};
         const Point mousePos{mousePosSF.x, mousePosSF.y};
 
         std::cout << "Mouse pos: " << mousePos.cGetX() << ' ' << mousePos.cGetY() << std::endl;
@@ -106,8 +109,11 @@ void Engine::handleEvents()
             direction));
     }
     }
+    */
 }
 
+// TODO
+/*
 void Engine::updateInput(const sf::Event &event)
 {
     switch (event.key.code)
@@ -131,7 +137,10 @@ void Engine::updateInput(const sf::Event &event)
         break;
     }
 }
+*/
 
+// TODO
+/*
 void Engine::sendInputCommand(const sf::Event &event)
 {
     switch (event.key.code)
@@ -193,6 +202,7 @@ void Engine::sendInputCommand(const sf::Event &event)
         break;
     }
 }
+*/
 
 void Engine::update()
 {
@@ -216,6 +226,8 @@ void Engine::draw()
 
     const auto &cameraPosition = scene.cGetCamera().cGetPosition();
 
+    // TODO
+    /*
     for (const auto &key : scene.cGetAllObjectNames())
     {
         auto object = scene.getObject(key);
@@ -228,6 +240,7 @@ void Engine::draw()
     mainWindow.drawPixels();
     mainWindow.drawSculptor(sculptor, mousePos);
     mainWindow.getWindow().display();
+    */
 
-    dt = clock.restart().asMilliseconds();
+    // dt = clock.restart().asMilliseconds();
 }

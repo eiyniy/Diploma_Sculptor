@@ -3,14 +3,15 @@
 #include <optional>
 #include <string>
 
-class VertexIds {
+class VertexIds
+{
 public:
     VertexIds();
 
     explicit VertexIds(
-            int _vertexId,
-            const std::optional<int> &_tVertexId = std::nullopt,
-            const std::optional<int> &_nVertexId = std::nullopt);
+        int _vertexId,
+        const std::optional<int> &_tVertexId = std::nullopt,
+        const std::optional<int> &_nVertexId = std::nullopt);
 
     static VertexIds parse(const std::string &str);
 
@@ -26,14 +27,17 @@ private:
     std::optional<int> nVertexId;
 };
 
-inline int VertexIds::cGetVertexId() const {
+inline int VertexIds::cGetVertexId() const
+{
     return vertexId;
 }
 
-inline std::optional<int> VertexIds::cGetNormalVertexId() const {
+inline std::optional<int> VertexIds::cGetNormalVertexId() const
+{
     return nVertexId;
 }
 
-inline std::optional<int> VertexIds::cGetTextureVertexId() const {
+inline std::optional<int> VertexIds::cGetTextureVertexId() const
+{
     return tVertexId;
 }
