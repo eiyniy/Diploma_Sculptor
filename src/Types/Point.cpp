@@ -1,6 +1,7 @@
 #include <Point.hpp>
 
-Point::Point() : x(0), y(0) {}
+Point::Point()
+    : x(0), y(0) {}
 
 Point::Point(const int _x, const int _y)
     : x(_x), y(_y) {}

@@ -1,5 +1,7 @@
 #include <SphericalCoordinate.hpp>
 
+#include <Enums.hpp>
+
 SphericalCoordinate::SphericalCoordinate(
     const double _r,
     const double _a,

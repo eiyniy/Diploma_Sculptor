@@ -3,6 +3,9 @@
 #include <Point.hpp>
 #include <Matrix.hpp>
 
+enum class AxisName;
+enum class Direction;
+
 class Camera
 {
 private:

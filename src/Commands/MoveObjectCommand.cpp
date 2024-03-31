@@ -1,5 +1,10 @@
 #include <MoveObjectCommand.hpp>
-#include <Engine.hpp>
+
+#include <Object.hpp>
+#include <MoveCommand.hpp>
+
+enum class AxisName;
+enum class Direction;
 
 MoveObjectCommand::MoveObjectCommand(
     Object &_object,

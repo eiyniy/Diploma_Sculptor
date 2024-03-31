@@ -1,10 +1,19 @@
 #include <Graph.hpp>
+
+#include <Matrix.hpp>
+#include <Triangle.hpp>
+#include <Point.hpp>
+#include <VertexIds.hpp>
+
+#include <array>
+#include <utility>
+#include <memory>
 #include <cmath>
 #include <queue>
-#include <Converter.hpp>
 #include <iostream>
+#include <vector>
 
-Graph::Graph() {}
+Graph::Graph() = default;
 
 Graph::Graph(
     const std::vector<Vector<4>> &drawableVertices,
@@ -45,7 +54,9 @@ int Graph::findNearestVertexId(const Point &pos) const
 
     for (int i = 0; i < nodes.size(); ++i)
     {
-        const Point nodePos{nodes[i]->cGetX(), nodes[i]->cGetY()};
+        const Point nodePos{
+            (int)nodes[i]->cGetX(),
+            (int)nodes[i]->cGetY()};
         const auto newDistance = findDistance(pos, nodePos);
 
         if (newDistance < distance)
@@ -73,7 +84,9 @@ std::unique_ptr<std::vector<int>> Graph::getAffectedVerticesIds(
     idsQueue.push(nearestVertexId);
     used[nearestVertexId] = true;
 
-    const Point nearestVertexPos{nodes[nearestVertexId]->cGetX(), nodes[nearestVertexId]->cGetY()};
+    const Point nearestVertexPos{
+        (int)nodes[nearestVertexId]->cGetX(),
+        (int)nodes[nearestVertexId]->cGetY()};
     std::cout << "Nearest vertex pos: " << nearestVertexPos.cGetX() << ' ' << nearestVertexPos.cGetY() << std::endl;
 
     while (!idsQueue.empty())
@@ -81,7 +94,9 @@ std::unique_ptr<std::vector<int>> Graph::getAffectedVerticesIds(
         int id = idsQueue.front();
         idsQueue.pop();
 
-        const Point nodePos{nodes[id]->cGetX(), nodes[id]->cGetY()};
+        const Point nodePos{
+            (int)nodes[id]->cGetX(),
+            (int)nodes[id]->cGetY()};
         const auto distance = findDistance(mousePos, nodePos);
 
         if (distance > radius)

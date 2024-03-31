@@ -1,5 +1,8 @@
 #include <MoveCommand.hpp>
 
+#include <Enums.hpp>
+#include <Matrix.hpp>
+
 MoveCommand::MoveCommand(
     const AxisName _axisName,
     const Direction _direction,

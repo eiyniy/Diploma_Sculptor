@@ -1,10 +1,16 @@
-#include <cmath>
-#include <memory>
 #include <Object.hpp>
-#include <Converter.hpp>
-#include <ThreadPool.hpp>
-#include <Timer.hpp>
+
+#include <Camera.hpp>
+#include <Point.hpp>
 #include <Globals.hpp>
+#include <Triangle.hpp>
+#include <Material.hpp>
+#include <Matrix.hpp>
+
+#include <utility>
+#include <memory>
+#include <iostream>
+#include <vector>
 
 Vector<4> convertVertex(
     const Vector<4> &,

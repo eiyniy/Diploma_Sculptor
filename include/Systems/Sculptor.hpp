@@ -1,10 +1,12 @@
 #pragma once
 
-#include <memory>
-#include <Object.hpp>
-#include <Point.hpp>
 #include <Graph.hpp>
-// #include <graph.hpp>
+#include <Matrix.hpp>
+
+#include <vector>
+
+class Point;
+class Object;
 
 class Sculptor
 {

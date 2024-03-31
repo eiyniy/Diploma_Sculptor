@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 enum class ObjEntryType
 {
     MtlPath,
@@ -66,7 +64,3 @@ enum class TextureType
     Emissive,
     MRAO
 };
-
-using uint = unsigned int;
-using ushort = unsigned short;
-using ubyte = unsigned char;

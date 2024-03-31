@@ -1,7 +1,11 @@
+#include <Matrix.hpp>
+
+#include <Enums.hpp>
+
 #include <iostream>
 #include <cmath>
+#include <string>
 #include <format>
-#include <Matrix.hpp>
 
 #pragma region CONSTRUCTION
 
@@ -313,7 +317,9 @@ Matrix<4, 4> Matrix<Rows, Cols>::getScaleConvert(const Vector<4> &scale)
 }
 
 template <int Rows, int Cols>
-Matrix<4, 4> Matrix<Rows, Cols>::getRotateConvert(const AxisName axis, const double angle)
+Matrix<4, 4> Matrix<Rows, Cols>::getRotateConvert(
+    const AxisName axis, 
+    const double angle)
 {
     const auto radAngle = angle * M_PI / 180;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <BaseLightSource.hpp>
+#include <Matrix.hpp>
 
 class DirectLight : public BaseLightSource
 {

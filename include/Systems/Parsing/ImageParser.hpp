@@ -1,10 +1,13 @@
 #pragma once
 
+#include <Texture.hpp>
+
+#include <CImg.h>
+
 #include <string>
 #include <memory>
-#include <Texture.hpp>
-#include <Types.hpp>
-#include <CImg.h>
+
+enum class TextureType;
 
 namespace cimg = cimg_library;
 

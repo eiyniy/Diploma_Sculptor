@@ -1,5 +1,14 @@
 #include <Sculptor.hpp>
+
 #include <Matrix.hpp>
+#include <Graph.hpp>
+#include <Point.hpp>
+#include <Object.hpp>
+#include <Triangle.hpp>
+#include <VertexIds.hpp>
+
+#include <memory>
+#include <vector>
 #include <iostream>
 
 Sculptor::Sculptor(const int _radius)

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <MainWindow.hpp>
 #include <Command.hpp>
+
+class MainWindow;
 
 class CloseCommand : public Command
 {

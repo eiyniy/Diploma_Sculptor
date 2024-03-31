@@ -1,11 +1,16 @@
 #pragma once
 
-#include <Sculptor.hpp>
-#include <Scene.hpp>
-#include <MainWindow.hpp>
 #include <Command.hpp>
-#include <memory>
+
 #include <queue>
+#include <memory>
+
+class MainWindow;
+class Scene;
+class Sculptor;
+
+enum class AxisName;
+enum class Direction;
 
 class Engine
 {

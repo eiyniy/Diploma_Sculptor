@@ -1,7 +1,15 @@
 #include <Triangle.hpp>
+
 #include <ObjParser.hpp>
-#include <Math.hpp>
 #include <EarClipper.hpp>
+#include <VertexIds.hpp>
+#include <Matrix.hpp>
+#include <Enums.hpp>
+
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include <optional>
 
 Triangle::Triangle(
     const std::vector<VertexIds> &indexes,

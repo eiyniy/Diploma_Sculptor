@@ -1,6 +1,7 @@
 #pragma once
 
 #include <BaseLightSource.hpp>
+#include <Matrix.hpp>
 
 class SpotLight : public BaseLightSource
 {

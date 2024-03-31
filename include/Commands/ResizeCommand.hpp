@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Command.hpp>
-#include <Scene.hpp>
-#include <MainWindow.hpp>
+
+class Camera;
+class MainWindow;
 
 class ResizeCommand : public Command
 {

@@ -1,5 +1,7 @@
 #include <RotateCameraAroundCommand.hpp>
 
+#include <Camera.hpp>
+
 RotateCameraAroundCommand::RotateCameraAroundCommand(
     Camera &_camera,
     const AxisName _axisName,

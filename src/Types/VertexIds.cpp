@@ -1,7 +1,12 @@
 #include <VertexIds.hpp>
+
 #include <ObjParser.hpp>
 #include <Math.hpp>
+
+#include <stdexcept>
 #include <array>
+#include <optional>
+#include <string>
 
 VertexIds::VertexIds() = default;
 

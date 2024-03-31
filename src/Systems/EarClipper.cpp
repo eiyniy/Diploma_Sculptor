@@ -1,5 +1,13 @@
 #include <EarClipper.hpp>
-#include <cmath>
+
+#include <Triangle.hpp>
+#include <Matrix.hpp>
+#include <VertexIds.hpp>
+
+#include <string>
+#include <optional>
+#include <stdexcept>
+#include <vector>
 
 std::vector<Triangle> EarClipper::triangulate(
     const std::vector<VertexIds> &indexes,
@@ -49,6 +57,7 @@ Triangle EarClipper::clipEar(
 {
     int i = 0;
     const int size = (int)polygonVertices.size();
+
     for (auto it = polygonVertices.cbegin(); it != polygonVertices.cend(); ++it, ++i)
     {
         auto itPrev = it;
@@ -84,6 +93,8 @@ Triangle EarClipper::clipEar(
 
         return result;
     }
+
+    throw std::runtime_error("Can't clip ear.");
 }
 
 bool EarClipper::isPointsInside(

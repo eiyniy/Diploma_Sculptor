@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Command.hpp>
-#include <Point.hpp>
-#include <Scene.hpp>
-#include <MainWindow.hpp>
+
+class Camera;
+class MainWindow;
 
 class SwitchVideoModeCommand : public Command
 {
@@ -18,6 +18,7 @@ public:
     void execute() override;
 
 private:
+    // TODO Do NOT store links (&) in all commands!
     Camera &camera;
     MainWindow &mainWindow;
 

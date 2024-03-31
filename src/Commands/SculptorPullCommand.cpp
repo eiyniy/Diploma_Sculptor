@@ -1,5 +1,11 @@
 #include <SculptorPullCommand.hpp>
-#include <iostream>
+
+#include <Sculptor.hpp>
+#include <Object.hpp>
+#include <Matrix.hpp>
+
+class MainWindow;
+class Point;
 
 SculptorPullCommand::SculptorPullCommand(
     Sculptor &_sculptor,

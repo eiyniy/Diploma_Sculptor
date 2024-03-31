@@ -1,5 +1,8 @@
 #include <ResizeCommand.hpp>
 
+class Camera;
+class MainWindow;
+
 ResizeCommand::ResizeCommand(
     Camera &_camera,
     MainWindow &_mainWindow,

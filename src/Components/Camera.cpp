@@ -1,6 +1,14 @@
 #include <Camera.hpp>
+
+#include <SphericalCoordinate.hpp>
 #include <Math.hpp>
+#include <Matrix.hpp>
+#include <Point.hpp>
+
 #include <cmath>
+
+enum class AxisName;
+enum class Direction;
 
 Camera::Camera(
     const Vector<4> &_up,

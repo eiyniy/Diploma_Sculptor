@@ -1,13 +1,12 @@
 #pragma once
 
+#include <Matrix.hpp>
 #include <VertexIds.hpp>
-#include <Types.hpp>
+
 #include <string>
 #include <vector>
 #include <optional>
 #include <array>
-#include <Matrix.hpp>
-#include <Material.hpp>
 
 class Triangle
 {

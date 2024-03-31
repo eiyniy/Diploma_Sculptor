@@ -1,5 +1,13 @@
 #include <Material.hpp>
 
+#include <Matrix.hpp>
+
+#include <memory>
+#include <optional>
+#include <string>
+
+class Texture;
+
 Material::Material(
     const std::string &_name,
     const std::optional<Vector<4>> &_ambient,

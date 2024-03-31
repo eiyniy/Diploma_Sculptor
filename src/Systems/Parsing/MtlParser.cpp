@@ -1,5 +1,19 @@
 #include <MtlParser.hpp>
+
 #include <ImageParser.hpp>
+#include <Material.hpp>
+#include <Enums.hpp>
+#include <BaseTextParser.hpp>
+#include <Matrix.hpp>
+#include <Texture.hpp>
+
+#include <stdexcept>
+#include <utility>
+#include <vector>
+#include <array>
+#include <string>
+#include <memory>
+#include <map>
 
 MtlParser::MtlParser(const std::string &_pathToMtl)
     : BaseTextParser(_pathToMtl)
@@ -146,7 +160,7 @@ std::optional<MtlEntryType> MtlParser::getEntryType(const std::string &line)
 
 void MtlParser::resetMaterial()
 {
-    name = std::string();
+    name.clear();
     ambient = std::nullopt;
     diffuse = std::nullopt;
     specular = std::nullopt;
@@ -228,6 +242,8 @@ std::unique_ptr<const Texture> MtlParser::parseTexture(
     case MtlEntryType::MRAOMap:
         textureType = TextureType::MRAO;
         break;
+    default:
+        throw std::logic_error("Can't parse material texture. Invalid entry type");
     }
 
     const auto texturePath = pathToFile.substr(0, pathToFile.rfind('/') + 1) + *optTexturePath;

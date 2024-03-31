@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Object.hpp>
-#include <Camera.hpp>
 #include <Command.hpp>
+
+class Camera;
+class Object;
 
 class CentralizeCameraCommand : public Command
 {

@@ -1,7 +1,11 @@
 #pragma once
 
 #include <MoveCommand.hpp>
-#include <Object.hpp>
+
+class Object;
+
+enum class AxisName;
+enum class Direction;
 
 class MoveObjectCommand : public MoveCommand
 {

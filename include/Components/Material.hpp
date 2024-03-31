@@ -2,7 +2,10 @@
 
 #include <Texture.hpp>
 #include <Matrix.hpp>
+
 #include <memory>
+#include <string>
+#include <optional>
 
 class Material
 {

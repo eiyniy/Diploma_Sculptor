@@ -1,15 +1,20 @@
 #pragma once
 
-#include <Object.hpp>
-#include <Types.hpp>
+#include <BaseTextParser.hpp>
+#include <Triangle.hpp>
+#include <Enums.hpp>
+#include <Matrix.hpp>
+
+#include <utility>
+#include <array>
 #include <string>
+#include <map>
 #include <optional>
-#include <fstream>
 #include <vector>
 #include <memory>
-#include <Matrix.hpp>
-#include <Texture.hpp>
-#include <BaseTextParser.hpp>
+
+class Object;
+class Material;
 
 class ObjParser : public BaseTextParser
 {

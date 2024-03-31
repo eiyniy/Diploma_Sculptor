@@ -1,11 +1,14 @@
 #pragma once
 
+#include <string>
+#include <vector>
+#include <map>
+
 #include <Object.hpp>
-#include <Camera.hpp>
-#include <Matrix.hpp>
-#include <Types.hpp>
-#include <BaseLightSource.hpp>
-#include <optional>
+// class Object;
+
+class Camera;
+class BaseLightSource;
 
 class Scene
 {

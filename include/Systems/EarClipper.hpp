@@ -1,9 +1,15 @@
 #pragma once
 
 #include <Triangle.hpp>
+#include <Matrix.hpp>
+
+#include <optional>
+#include <string>
+#include <utility>
 #include <vector>
-#include <list>
-#include <Converter.hpp>
+#include <cmath>
+
+class VertexIds;
 
 class EarClipper
 {

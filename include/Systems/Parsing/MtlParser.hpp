@@ -1,12 +1,15 @@
 #pragma once
 
-#include <string>
-#include <memory>
-#include <map>
 #include <Material.hpp>
 #include <Matrix.hpp>
 #include <BaseTextParser.hpp>
-#include <Types.hpp>
+#include <Enums.hpp>
+#include <Texture.hpp>
+
+#include <string>
+#include <memory>
+#include <optional>
+#include <map>
 
 class MtlParser : public BaseTextParser
 {

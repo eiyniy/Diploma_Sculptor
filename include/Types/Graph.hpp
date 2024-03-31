@@ -1,10 +1,13 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-#include <Triangle.hpp>
 #include <Matrix.hpp>
 #include <Point.hpp>
+
+#include <cmath>
+#include <memory>
+#include <vector>
+
+class Triangle;
 
 class Graph
 {

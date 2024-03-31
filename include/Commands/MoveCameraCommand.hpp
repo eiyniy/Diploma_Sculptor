@@ -1,7 +1,11 @@
 #pragma once
 
 #include <MoveCommand.hpp>
-#include <Camera.hpp>
+
+class Camera;
+
+enum class AxisName;
+enum class Direction;
 
 class MoveCameraCommand : public MoveCommand
 {

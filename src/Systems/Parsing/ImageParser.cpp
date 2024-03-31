@@ -1,25 +1,36 @@
 #include <ImageParser.hpp>
-#include <Globals.hpp>
 
-ImageParser::ImageParser(const std::string &_path, const TextureType _type)
-    : path(_path), type(_type) {}
+#include <Globals.hpp>
+#include <Enums.hpp>
+#include <Texture.hpp>
+#include <Matrix.hpp>
+
+#include <CImg.h>
+
+#include <vector>
+#include <memory>
+#include <string>
+
+ImageParser::ImageParser(
+    const std::string &_path,
+    const TextureType _type)
+    : path(_path),
+      type(_type) {}
 
 std::unique_ptr<const Texture> ImageParser::parse() const
 {
-    std::vector<Vector<4>> data;
+    const cimg::CImg<char> image = cimg::CImg<>(path.c_str());
 
-    const cimg::CImg<ubyte> image = cimg::CImg<>(path.c_str());
+    int width = image.width();
+    int height = image.height();
+
+    std::vector<Vector<4>> data{(unsigned long long)width * height};
     // image.display();
 
-    uint width = image.width();
-    uint height = image.height();
-
-    data = std::vector<Vector<4>>{width * height};
-
 #pragma omp parallel for if (!_DEBUG)
-    for (uint i = 0; i < height; ++i)
+    for (int i = 0; i < height; ++i)
     {
-        for (uint j = 0; j < width; ++j)
+        for (int j = 0; j < width; ++j)
         {
             const auto r = image(j, i, 0);
             const auto g = image(j, i, 1);

@@ -1,15 +1,19 @@
-#include <optional>
-#include <filesystem>
-#include <iostream>
-#include <sstream>
-#include <mutex>
 #include <ObjParser.hpp>
-#include <Types.hpp>
-#include <Timer.hpp>
-#include <ThreadPool.hpp>
-#include <ImageParser.hpp>
-#include <Globals.hpp>
+
 #include <MtlParser.hpp>
+#include <Enums.hpp>
+#include <Globals.hpp>
+#include <Object.hpp>
+#include <BaseTextParser.hpp>
+#include <Matrix.hpp>
+#include <Triangle.hpp>
+
+#include <bits/chrono.h>
+
+#include <stdexcept>
+#include <string>
+#include <optional>
+#include <iostream>
 
 ObjParser::ObjParser(const std::string &_pathToObj)
     : BaseTextParser(_pathToObj) {}

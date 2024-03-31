@@ -1,5 +1,4 @@
-#include <Matrix.hpp>
-#include <Point.hpp>
+#pragma once
 
 class Converter
 {

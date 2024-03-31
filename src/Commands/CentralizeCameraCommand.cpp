@@ -1,5 +1,7 @@
 #include <CentralizeCameraCommand.hpp>
-#include <Converter.hpp>
+
+#include <Camera.hpp>
+#include <Object.hpp>
 
 CentralizeCameraCommand::CentralizeCameraCommand(
     Camera &_camera,

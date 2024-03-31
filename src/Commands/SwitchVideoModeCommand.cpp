@@ -1,5 +1,8 @@
 #include <SwitchVideoModeCommand.hpp>
 
+class Camera;
+class MainWindow;
+
 SwitchVideoModeCommand::SwitchVideoModeCommand(
     Camera &_camera,
     MainWindow &_mainWindow,

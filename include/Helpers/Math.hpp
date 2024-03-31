@@ -1,9 +1,10 @@
 #pragma once
 
-#include <optional>
-#include <string>
 #include <SphericalCoordinate.hpp>
 #include <Matrix.hpp>
+
+#include <optional>
+#include <string>
 
 class Math
 {

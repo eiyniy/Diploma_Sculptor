@@ -1,10 +1,14 @@
-#include <future>
-#include <thread>
-#include <memory>
 #include <Scene.hpp>
-#include <Converter.hpp>
-#include <Timer.hpp>
-#include <Math.hpp>
+
+#include <Object.hpp>
+
+#include <utility>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+class BaseLightSource;
+class Camera;
 
 Scene::Scene(
     Camera &_camera,

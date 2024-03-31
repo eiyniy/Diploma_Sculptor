@@ -1,32 +1,33 @@
 #pragma once
 
-#include <vector>
 #include <Matrix.hpp>
+
+#include <vector>
 
 class Texture
 {
 private:
-    uint width;
-    uint height;
+    int width;
+    int height;
     std::vector<Vector<4>> data;
 
 public:
     Texture(
-        const uint _width,
-        const uint _height,
+        const int _width,
+        const int _height,
         const std::vector<Vector<4>> &_data);
 
-    uint cGetWidth() const;
-    uint cGetHeight() const;
+    int cGetWidth() const;
+    int cGetHeight() const;
     const std::vector<Vector<4>> &cGetData() const;
 };
 
-inline uint Texture::cGetWidth() const
+inline int Texture::cGetWidth() const
 {
     return width;
 }
 
-inline uint Texture::cGetHeight() const
+inline int Texture::cGetHeight() const
 {
     return height;
 }

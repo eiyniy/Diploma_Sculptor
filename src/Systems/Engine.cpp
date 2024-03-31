@@ -1,14 +1,16 @@
 #include <Engine.hpp>
-#include <MoveCameraCommand.hpp>
-#include <MoveObjectCommand.hpp>
-#include <RotateCameraAroundCommand.hpp>
-#include <CentralizeCameraCommand.hpp>
-#include <SwitchVideoModeCommand.hpp>
-#include <CloseCommand.hpp>
-#include <ResizeCommand.hpp>
-#include <ThreadPool.hpp>
-#include <Timer.hpp>
-#include <SculptorPullCommand.hpp>
+
+#include <Scene.hpp>
+#include <MainWindow.hpp>
+#include <Enums.hpp>
+#include <Camera.hpp>
+#include <Command.hpp>
+#include <Object.hpp>
+
+#include <utility>
+#include <vector>
+
+class Sculptor;
 
 Engine::Engine(Scene &_scene, MainWindow &_mainWindow, Sculptor &_sculptor)
     : scene(_scene),

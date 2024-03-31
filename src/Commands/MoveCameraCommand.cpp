@@ -1,5 +1,10 @@
 #include <MoveCameraCommand.hpp>
-#include <Engine.hpp>
+
+#include <Camera.hpp>
+#include <MoveCommand.hpp>
+
+enum class AxisName;
+enum class Direction;
 
 MoveCameraCommand::MoveCameraCommand(
     Camera &_camera,

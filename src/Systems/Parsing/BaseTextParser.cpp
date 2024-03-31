@@ -1,4 +1,14 @@
 #include <BaseTextParser.hpp>
+
+#include <ctype.h>
+
+#include <memory>
+#include <compare>
+#include <sstream>
+#include <stdexcept>
+#include <optional>
+#include <vector>
+#include <string>
 #include <filesystem>
 
 BaseTextParser::BaseTextParser(const std::string &_pathToFile)

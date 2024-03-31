@@ -1,73 +1,39 @@
-#include <iostream>
-#include <future>
-#include <ObjParser.hpp>
-#include <Timer.hpp>
-#include <MainWindow.hpp>
-#include <Scene.hpp>
-#include <Camera.hpp>
-#include <Engine.hpp>
-#include <DirectLight.hpp>
-#include <SpotLight.hpp>
-#include <ImageParser.hpp>
-#include <Texture.hpp>
-#include <Globals.hpp>
-
-// GLEW
+#ifndef GLEW_STATIC
 #define GLEW_STATIC
-#include <GL/glew.h>
+#endif
 
-// GLFW
+#include <MainWindow.hpp>
+
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <stddef.h>
+
+#include <iostream>
 
 // Function prototypes
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 
-// Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 600;
-
 // Shaders
-const GLchar *vertexShaderSource = "#version 330 core\n"
-                                   "layout (location = 0) in vec3 position;\n"
-                                   "void main()\n"
-                                   "{\n"
-                                   "gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
-                                   "}\0";
-const GLchar *fragmentShaderSource = "#version 330 core\n"
-                                     "out vec4 color;\n"
-                                     "void main()\n"
-                                     "{\n"
-                                     "color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-                                     "}\n\0";
+const GLchar *vertexShaderSource =
+    "#version 330 core\n"
+    "layout (location = 0) in vec3 position;\n"
+    "void main()\n"
+    "{\n"
+    "gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
+    "}\0";
+
+const GLchar *fragmentShaderSource =
+    "#version 330 core\n"
+    "out vec4 color;\n"
+    "void main()\n"
+    "{\n"
+    "color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\n\0";
 
 int main(int argc, char **argv)
 {
     std::cout << "Hello world!" << std::endl;
-
-    std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
-    // Init GLFW
-    glfwInit();
-    // Set all the required options for GLFW
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Sculptor", nullptr, nullptr);
-    glfwMakeContextCurrent(window);
-
-    // Set the required callback functions
-    glfwSetKeyCallback(window, key_callback);
-
-    // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
-    glewExperimental = GL_TRUE;
-    // Initialize GLEW to setup the OpenGL Function pointers
-    glewInit();
-
-    // Define the viewport dimensions
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
 
     // Build and compile our shader program
     // Vertex shader
@@ -152,7 +118,8 @@ int main(int argc, char **argv)
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Game loop
-    while (!glfwWindowShouldClose(window))
+    // while (!glfwWindowShouldClose(window))
+    while (true)
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
@@ -169,7 +136,7 @@ int main(int argc, char **argv)
         glBindVertexArray(0);
 
         // Swap the screen buffers
-        glfwSwapBuffers(window);
+        // glfwSwapBuffers(window);
     }
 
     // Properly de-allocate all resources once they've outlived their purpose

@@ -1,11 +1,9 @@
 #pragma once
 
-#include <Types.hpp>
-#include <vector>
-#include <stdexcept>
 #include <optional>
 #include <array>
-#include <cmath>
+
+enum class AxisName;
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // MATRIX [I] [J]: I->ROW; J->COL
@@ -23,7 +21,7 @@ public:
         double w = 1.f)
         requires(Rows == 4 && Cols == 1);
 
-    Matrix(std::initializer_list<double> initList);
+    // Matrix(std::initializer_list<double> initList);
 
     Matrix(const Matrix &m);
 
@@ -140,13 +138,13 @@ private:
     mutable std::optional<double> length;
 };
 
-template <int Rows, int Cols>
-inline Matrix<Rows, Cols>::Matrix(std::initializer_list<double> initList)
-{
-    int i = 0;
-    for (auto iter = initList.begin(); iter < initList.end(); ++i, ++iter)
-        values[i] = *iter;
-}
+// template <int Rows, int Cols>
+// inline Matrix<Rows, Cols>::Matrix(std::initializer_list<double> initList)
+// {
+//     int i = 0;
+//     for (auto iter = initList.begin(); iter < initList.end(); ++i, ++iter)
+//         values[i] = *iter;
+// }
 
 template <int Rows, int Cols>
 inline double &Matrix<Rows, Cols>::getValue(const int i, const int j)

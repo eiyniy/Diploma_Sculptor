@@ -1,5 +1,7 @@
 #include <SpotLight.hpp>
 
+#include <Matrix.hpp>
+
 SpotLight::SpotLight(Vector<4> &_position)
     : position(_position) {}
 

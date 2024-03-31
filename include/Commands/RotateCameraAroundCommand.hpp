@@ -1,8 +1,10 @@
 #pragma once
 
 #include <Command.hpp>
-#include <Types.hpp>
-#include <Camera.hpp>
+
+class Camera;
+enum class AxisName;
+enum class Direction;
 
 class RotateCameraAroundCommand : public Command
 {

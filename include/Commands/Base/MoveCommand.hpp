@@ -1,8 +1,10 @@
 #pragma once
 
 #include <Command.hpp>
-#include <Types.hpp>
-#include <Scene.hpp>
+#include <Matrix.hpp>
+
+enum class AxisName;
+enum class Direction;
 
 class MoveCommand : public Command
 {

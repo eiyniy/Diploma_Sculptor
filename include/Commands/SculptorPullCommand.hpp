@@ -1,10 +1,12 @@
 #pragma once
 
 #include <Command.hpp>
-#include <Object.hpp>
 #include <Point.hpp>
 #include <MainWindow.hpp>
-#include <Sculptor.hpp>
+#include <Matrix.hpp>
+
+class Object;
+class Sculptor;
 
 class SculptorPullCommand : public Command
 {

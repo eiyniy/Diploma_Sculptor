@@ -1,26 +1,35 @@
 #include <Math.hpp>
 
-std::optional<int> Math::optStoi(const std::string &str) {
+#include <SphericalCoordinate.hpp>
+#include <Matrix.hpp>
+
+#include <cmath>
+#include <string>
+#include <optional>
+
+std::optional<int> Math::optStoi(const std::string &str)
+{
     if (str.empty())
         return std::nullopt;
     else
         return stoi(str);
 }
 
-SphericalCoordinate Math::decartToSpherical(const Vector<4> &cv) {
+SphericalCoordinate Math::decartToSpherical(const Vector<4> &cv)
+{
     const auto x = cv.cGetX();
     const auto y = cv.cGetZ();
     const auto z = cv.cGetY();
 
     static const auto toDegree = 180 / M_PI;
 
-    const auto r = sqrt(
-            pow(x, 2) +
-            pow(y, 2) +
-            pow(z, 2));
+    const auto r = std::sqrt(
+        std::pow(x, 2) +
+        std::pow(y, 2) +
+        std::pow(z, 2));
 
-    double a = acos(z / r) * toDegree;
-    double b = atan(y / x) * toDegree;
+    double a = std::acos(z / r) * toDegree;
+    double b = std::atan(y / x) * toDegree;
 
     if (x <= 0)
         b += 180;
@@ -36,17 +45,18 @@ SphericalCoordinate Math::decartToSpherical(const Vector<4> &cv) {
     return {r, a, b};
 }
 
-Vector<4> Math::sphericalToDecart(const SphericalCoordinate &sc) {
+Vector<4> Math::sphericalToDecart(const SphericalCoordinate &sc)
+{
     static const auto toRad = M_PI / 180;
 
     const auto radA = sc.a * toRad;
     const auto radB = sc.b * toRad;
 
-    const auto sinA = sin(radA);
+    const auto sinA = std::sin(radA);
 
-    const auto x = sc.r * sinA * cos(radB);
-    const auto z = sc.r * sinA * sin(radB);
-    const auto y = sc.r * cos(radA);
+    const auto x = sc.r * sinA * std::cos(radB);
+    const auto z = sc.r * sinA * std::sin(radB);
+    const auto y = sc.r * std::cos(radA);
 
     return {x, y, z};
 }

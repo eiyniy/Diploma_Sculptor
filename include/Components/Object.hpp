@@ -1,13 +1,17 @@
 #pragma once
 
+#include <Triangle.hpp>
+#include <Matrix.hpp>
+#include <Material.hpp>
+
+#include <optional>
+#include <stdexcept>
+#include <string>
 #include <vector>
 #include <memory>
 #include <map>
-#include <Triangle.hpp>
-#include <Camera.hpp>
-#include <Matrix.hpp>
-#include <Texture.hpp>
-#include <Material.hpp>
+
+class Camera;
 
 class Object
 {

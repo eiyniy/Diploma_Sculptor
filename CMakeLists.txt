@@ -5,13 +5,15 @@ project(${LOCAL_PROJECT_NAME}
         LANGUAGES CXX)
 
 
-set(LOCAL_PROJECT_NAME "L1")
+set(LOCAL_PROJECT_NAME "Sculptor")
 set(LOCAL_PROJECT_VERSION "0.0.1")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CIMG_NEED_X11 1)
+# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CIMG_NEED_X11 0)
 set(CIMG_NEED_PNG 1)
 set(CIMG_NEED_JPG 1)
 
@@ -43,7 +45,7 @@ target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${header_dir_list})
 
 
 # ---OpenMP---
-find_package(OpenMP)
+find_package(OpenMP REQUIRED)
 target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
 
 
@@ -62,7 +64,7 @@ else()
 endif()
 
 if(CIMG_NEED_JPG)
-    message(STATUS "Looking for libjpg...")
+    message(STATUS "Looking for libjpeg...")
     find_package(JPEG REQUIRED)
     target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${JPEG_INCLUDE_DIR})
     target_link_libraries (${LOCAL_PROJECT_NAME} PRIVATE ${JPEG_LIBRARY})
@@ -94,3 +96,11 @@ target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE glew32)
 find_package(OpenGL REQUIRED)
 target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIRS})
 target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE openGL32)
+
+
+# ---IWYU---
+if (CMAKE_BUILD_TYPE STREQUAL  "Debug")
+    find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
+    set(iwyu_path_and_options ${iwyu_path})
+    set_property(TARGET ${LOCAL_PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options}) 
+endif ()
