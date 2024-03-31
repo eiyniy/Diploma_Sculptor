@@ -3,7 +3,6 @@
 #include <Matrix.hpp>
 #include <Triangle.hpp>
 #include <Point.hpp>
-#include <VertexIds.hpp>
 
 #include <array>
 #include <utility>

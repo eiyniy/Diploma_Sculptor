@@ -5,7 +5,6 @@
 #include <Point.hpp>
 #include <Object.hpp>
 #include <Triangle.hpp>
-#include <VertexIds.hpp>
 
 #include <memory>
 #include <vector>

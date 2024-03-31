@@ -5,9 +5,11 @@
 @REM "./build/GCC 13.2.0 x86_64-w64-mingw32 (mingw64)/Release/L1.exe" "./resources/models/woman1.obj"
 @REM "./build/GCC 13.2.0 x86_64-w64-mingw32 (mingw64)/Release/L1.exe" "./resources/models/woman2.obj"
 @REM "./build/GCC 13.2.0 x86_64-w64-mingw32 (mingw64)/Release/L1.exe" "./resources/models/Z3_OBJ.obj"
-"./build/GCC 13.2.0 x86_64-w64-mingw32 (mingw64)/Release/L1.exe" "./resources/models/sphere/sphere.obj"
+@REM "./build/GCC 13.2.0 x86_64-w64-mingw32 (mingw64)/Release/Sculptor.exe" "./resources/models/sphere/sphere.obj"
 @REM "./build/GCC 13.2.0 x86_64-w64-mingw32 (mingw64)/Release/L1.exe" "./resources/models/angel2.obj"
 
 @REM iwyu include auto fix script
 @REM make -k CXX=/path/to/llvm/Debug+Asserts/bin/include-what-you-use > /tmp/iwyu.out
 @REM python fix_includes.py -b --nocomments < /tmp/iwyu.out
+
+@REM C:\msys64\mingw64\bin\cmake.EXE --build "c:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/build/Clang 18.1.2 x86_64-w64-windows-gnu (mingw64)/Release" --config Release --target Sculptor -j 14 --

@@ -44,7 +44,7 @@ MainWindow::MainWindow(Point &_resolution)
     activeResolution = {width, height};
 }
 
-void MainWindow::setKeyCallback(GLFWwindow *window, GLFWkeyfun callback)
+void MainWindow::setKeyCallback(GLFWkeyfun callback)
 {
     // Set the required callback functions
     glfwSetKeyCallback(window, callback);

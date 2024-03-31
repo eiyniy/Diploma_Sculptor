@@ -24,6 +24,8 @@ void SculptorPullCommand::execute()
     // std::cout << "SculptorPullCommand log:" << std::endl;
     // direction.log();
 
+    // TODO: Get pointed ID by Ray Casting from camera to mouse and to 3d object
+
     sculptor.createGraph(object);
     sculptor.pull(
         object->getVertices(),

@@ -2,7 +2,6 @@
 
 #include <Triangle.hpp>
 #include <Matrix.hpp>
-#include <VertexIds.hpp>
 
 #include <string>
 #include <optional>

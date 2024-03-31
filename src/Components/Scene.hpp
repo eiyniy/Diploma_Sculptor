@@ -4,9 +4,7 @@
 #include <vector>
 #include <map>
 
-#include <Object.hpp>
-// class Object;
-
+class Object;
 class Camera;
 class BaseLightSource;
 
@@ -20,10 +18,6 @@ private:
     Camera &camera;
 
     BaseLightSource *lightSource;
-
-    // void generateFloor();
-
-    // void generateFloor(int size, int step, const Point &center);
 
 public:
     const std::string floorObjectName = "_FLOOR";

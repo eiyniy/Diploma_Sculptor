@@ -9,8 +9,6 @@
 #include <vector>
 #include <cmath>
 
-class VertexIds;
-
 class EarClipper
 {
 private:

@@ -14,7 +14,7 @@ class MainWindow
 public:
     MainWindow(Point &_resolution);
 
-    void setKeyCallback(GLFWwindow *window, GLFWkeyfun callback);
+    void setKeyCallback(GLFWkeyfun callback);
 
     Point getActiveResolution() const;
 
