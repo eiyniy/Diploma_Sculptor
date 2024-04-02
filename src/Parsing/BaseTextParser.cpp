@@ -13,9 +13,12 @@
 
 BaseTextParser::BaseTextParser(const std::string &_pathToFile)
 {
+    // const auto realPath = std::filesystem::canonical(_pathToFile);
+
     if (!std::filesystem::exists(_pathToFile))
         throw std::logic_error("Could not open file");
 
+    // pathToFile = realPath.string();
     pathToFile = _pathToFile;
 }
 
@@ -64,7 +67,7 @@ std::optional<std::string> BaseTextParser::getNextPart(
     return result;
 }
 
-std::unique_ptr<std::string> BaseTextParser::readFile(const std::string &pathToFile)
+std::unique_ptr<std::string> BaseTextParser::readFile()
 {
     readStream.open(pathToFile);
     if (!readStream.is_open())

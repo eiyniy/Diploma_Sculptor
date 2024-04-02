@@ -11,7 +11,7 @@
 
 #include <iostream>
 
-MainWindow::MainWindow(Point &_resolution)
+MainWindow::MainWindow(const Point &_resolution)
     : resolution(_resolution)
 {
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
@@ -46,10 +46,16 @@ MainWindow::MainWindow(Point &_resolution)
 
 void MainWindow::setKeyCallback(GLFWkeyfun callback)
 {
-    // Set the required callback functions
     glfwSetKeyCallback(window, callback);
 }
 
 void MainWindow::clear()
 {
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void MainWindow::swapBuffers()
+{
+    glfwSwapBuffers(window);
 }

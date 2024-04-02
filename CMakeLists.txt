@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(${LOCAL_PROJECT_NAME}
         VERSION ${LOCAL_PROJECT_VERSION}
-        LANGUAGES CXX)
+        LANGUAGES C CXX)
 
 
 set(LOCAL_PROJECT_NAME "Sculptor")
@@ -18,6 +18,7 @@ set(CIMG_NEED_PNG 1)
 set(CIMG_NEED_JPG 1)
 
 set(CIMG_H_PATH "${PROJECT_SOURCE_DIR}/Libraries/CImg")
+set(SOIL_H_PATH "${PROJECT_SOURCE_DIR}/Libraries/SOIL/includes/SOIL")
 
 
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
@@ -105,3 +106,10 @@ if (CMAKE_BUILD_TYPE STREQUAL  "Debug")
     set(iwyu_path_and_options ${iwyu_path})
     set_property(TARGET ${LOCAL_PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options}) 
 endif ()
+
+
+# ---SOIL---
+# add_library(SOIL INTERFACE)
+add_subdirectory("libraries/SOIL")
+target_link_libraries(${LOCAL_PROJECT_NAME} PUBLIC soil)
+target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${SOIL_H_PATH})

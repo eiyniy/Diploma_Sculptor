@@ -48,7 +48,7 @@ Object *ObjParser::parse()
 {
     const auto timeStart = std::chrono::high_resolution_clock::now();
 
-    const auto fileContent = readFile(pathToFile);
+    const auto fileContent = readFile();
     const auto lines = splitByLines(*fileContent);
 
     for (const auto &line : lines)

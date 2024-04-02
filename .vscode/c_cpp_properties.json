@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/src/**",
                 "${workspaceFolder}/Libraries/**"
             ],
             "defines": [
@@ -16,7 +16,6 @@
             "cppStandard": "c++23",
             "intelliSenseMode": "windows-gcc-x64",
             "configurationProvider": "ms-vscode.cmake-tools",
-            // "configurationProvider": "ms-vscode.cpptools",
             "mergeConfigurations": true,
             "browse": {
                 "limitSymbolsToIncludedHeaders": true

@@ -35,8 +35,6 @@ void Scene::addObject(const std::string &key, Object *object)
     selectedObjectName = key;
 
     objects[key] = object;
-
-    // generateFloor();
 }
 
 std::vector<std::string> Scene::cGetAllObjectNames() const

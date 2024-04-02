@@ -85,7 +85,8 @@
         "hash_map": "cpp",
         "typeindex": "cpp",
         "*.def": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "gl.h": "c"
     },
     "C_Cpp.default.compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
 }

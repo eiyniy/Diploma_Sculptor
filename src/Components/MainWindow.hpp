@@ -12,13 +12,17 @@
 class MainWindow
 {
 public:
-    MainWindow(Point &_resolution);
+    MainWindow(const Point &_resolution);
 
     void setKeyCallback(GLFWkeyfun callback);
 
     Point getActiveResolution() const;
 
+    bool shouldClose() const;
+
     void clear();
+
+    void swapBuffers();
 
 private:
     GLFWwindow *window;
@@ -30,4 +34,9 @@ private:
 inline Point MainWindow::getActiveResolution() const
 {
     return activeResolution;
+}
+
+inline bool MainWindow::shouldClose() const
+{
+    return glfwWindowShouldClose(window);
 }

@@ -3,11 +3,13 @@
 #endif
 
 #include <MainWindow.hpp>
+#include <Point.hpp>
+#include <ShaderProgramm.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <stddef.h>
+#include <SOIL.h>
 
 #include <iostream>
 
@@ -35,55 +37,23 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello world!" << std::endl;
 
-    // Build and compile our shader program
-    // Vertex shader
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // Check for compile time errors
-    GLint success;
-    GLchar infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-                  << infoLog << std::endl;
-    }
-    // Fragment shader
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // Check for compile time errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
-                  << infoLog << std::endl;
-    }
+    MainWindow mainWindow{{1280, 720}};
 
-    // Link shaders
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // Check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
-                  << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    // Set the required callback functions
+    mainWindow.setKeyCallback(key_callback);
+
+    ShaderProgram shaderProgram;
+
+    shaderProgram.addShader("resources/shaders/base.vert", GL_VERTEX_SHADER);
+    shaderProgram.addShader("resources/shaders/base.frag", GL_FRAGMENT_SHADER);
+
+    shaderProgram.link();
 
     GLfloat vertices[] = {
-        0.5f, 0.5f, 0.0f,   // Top Right
-        0.5f, -0.5f, 0.0f,  // Bottom Right
-        -0.5f, -0.5f, 0.0f, // Bottom Left
-        -0.5f, 0.5f, 0.0f   // Top Left
+        0.5f, 0.5f, 0.0f, 0.f, 0.f, 1.f,   // Top Right
+        0.5f, -0.5f, 0.0f, 0.f, 1.f, 0.f,  // Bottom Right
+        -0.5f, -0.5f, 0.0f, 1.f, 1.f, 0.f, // Bottom Left
+        -0.5f, 0.5f, 0.0f, 1.f, 0.f, 0.f   // Top Left
     };
     GLuint indices[] = {
         // Note that we start from 0!
@@ -105,8 +75,11 @@ int main(int argc, char **argv)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
 
     // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -114,29 +87,30 @@ int main(int argc, char **argv)
     // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
     glBindVertexArray(0);
 
+    int width, height;
+    unsigned char *image = SOIL_load_image("/resources/textures/container.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+
     // Uncommenting this call will result in wireframe polygons.
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     // Game loop
-    // while (!glfwWindowShouldClose(window))
-    while (true)
+    while (!mainWindow.shouldClose())
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
 
         // Render
         // Clear the colorbuffer
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        mainWindow.clear();
 
         // Draw our first triangle
-        glUseProgram(shaderProgram);
+        shaderProgram.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
         // Swap the screen buffers
-        // glfwSwapBuffers(window);
+        mainWindow.swapBuffers();
     }
 
     // Properly de-allocate all resources once they've outlived their purpose

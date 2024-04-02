@@ -19,9 +19,9 @@ public:
         char divider,
         bool allowEmpty = false);
 
+    std::unique_ptr<std::string> readFile();
+
 protected:
     std::string pathToFile;
     std::ifstream readStream;
-
-    std::unique_ptr<std::string> readFile(const std::string &pathToFile);
 };
