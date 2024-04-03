@@ -20,6 +20,8 @@ public:
 
     bool shouldClose() const;
 
+    GLfloat getAspect() const;
+
     void clear();
 
     void swapBuffers();
@@ -39,4 +41,9 @@ inline Point MainWindow::getActiveResolution() const
 inline bool MainWindow::shouldClose() const
 {
     return glfwWindowShouldClose(window);
+}
+
+inline GLfloat MainWindow::getAspect() const
+{
+    return (GLfloat)activeResolution.cGetX() / activeResolution.cGetY();
 }
