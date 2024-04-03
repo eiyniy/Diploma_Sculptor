@@ -11,27 +11,17 @@
 
 #include <SOIL.h>
 
+#define GLM_FORCE_SWIZZLE
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <iostream>
+#include <filesystem>
 
 // Function prototypes
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
-
-// Shaders
-const GLchar *vertexShaderSource =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 position;\n"
-    "void main()\n"
-    "{\n"
-    "gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
-    "}\0";
-
-const GLchar *fragmentShaderSource =
-    "#version 330 core\n"
-    "out vec4 color;\n"
-    "void main()\n"
-    "{\n"
-    "color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
 
 int main(int argc, char **argv)
 {
@@ -42,23 +32,32 @@ int main(int argc, char **argv)
     // Set the required callback functions
     mainWindow.setKeyCallback(key_callback);
 
+    glfwSwapInterval(1);
+
     ShaderProgram shaderProgram;
 
-    shaderProgram.addShader("resources/shaders/base.vert", GL_VERTEX_SHADER);
-    shaderProgram.addShader("resources/shaders/base.frag", GL_FRAGMENT_SHADER);
+    // const auto s = std::filesystem::current_path().string();
+
+    // shaderProgram.addShader("../../../resources/shaders/base.vert", GL_VERTEX_SHADER);
+    // shaderProgram.addShader("../../../resources/shaders/base.frag", GL_FRAGMENT_SHADER);
+
+    shaderProgram.addShader("C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/shaders/base.vert", GL_VERTEX_SHADER);
+    shaderProgram.addShader("C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/shaders/base.frag", GL_FRAGMENT_SHADER);
 
     shaderProgram.link();
 
     GLfloat vertices[] = {
-        0.5f, 0.5f, 0.0f, 0.f, 0.f, 1.f,   // Top Right
-        0.5f, -0.5f, 0.0f, 0.f, 1.f, 0.f,  // Bottom Right
-        -0.5f, -0.5f, 0.0f, 1.f, 1.f, 0.f, // Bottom Left
-        -0.5f, 0.5f, 0.0f, 1.f, 0.f, 0.f   // Top Left
+        0.5f, 0.5f, 0.0f, 0.f, 0.f, 1.f, 1.f, 1.f,   // Top Right
+        0.5f, -0.5f, 0.0f, 0.f, 1.f, 0.f, 1.f, 0.f,  // Bottom Right
+        -0.5f, -0.5f, 0.0f, 1.f, 1.f, 0.f, 0.f, 0.f, // Bottom Left
+        -0.5f, 0.5f, 0.0f, 1.f, 0.f, 0.f, 0.f, 1.f,  // Top Left
+        0.f, 1.f, 0.0f, 0.f, 0.f, 1.f, 0.5f, 0.5f,   // Top Top
     };
     GLuint indices[] = {
         // Note that we start from 0!
         0, 1, 3, // First Triangle
-        1, 2, 3  // Second Triangle
+        1, 2, 3, // Second Triangle
+        3, 4, 0  // Second Triangle
     };
 
     GLuint VBO, VAO, EBO;
@@ -75,11 +74,14 @@ int main(int argc, char **argv)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid *)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
 
     // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -87,11 +89,70 @@ int main(int argc, char **argv)
     // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
     glBindVertexArray(0);
 
+    GLuint texture;
+    glGenTextures(1, &texture);
+
+    // Активируем текстурный блок перед привязкой текстуры
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     int width, height;
-    unsigned char *image = SOIL_load_image("/resources/textures/container.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+    unsigned char *image = SOIL_load_image(
+        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/container.jpg",
+        &width,
+        &height,
+        0,
+        SOIL_LOAD_RGB);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    GLuint texture2;
+    glGenTextures(1, &texture2);
+
+    // Активируем текстурный блок перед привязкой текстуры
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width2, height2;
+    unsigned char *image2 = SOIL_load_image(
+        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/awesomeface.png",
+        &width2,
+        &height2,
+        0,
+        SOIL_LOAD_RGB);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, image2);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    SOIL_free_image_data(image2);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     // Uncommenting this call will result in wireframe polygons.
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    glm::mat4 trans{1};
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
 
     // Game loop
     while (!mainWindow.shouldClose())
@@ -103,10 +164,23 @@ int main(int argc, char **argv)
         // Clear the colorbuffer
         mainWindow.clear();
 
+        // Bind texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glUniform1i(glGetUniformLocation(shaderProgram.get(), "ourTexture1"), 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+        glUniform1i(glGetUniformLocation(shaderProgram.get(), "ourTexture2"), 1);
+
         // Draw our first triangle
         shaderProgram.use();
+
+        GLuint transformLoc = glGetUniformLocation(shaderProgram.get(), "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
         // Swap the screen buffers

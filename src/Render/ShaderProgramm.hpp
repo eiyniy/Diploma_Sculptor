@@ -28,4 +28,11 @@ public:
 
     void link();
     void use();
+
+    inline GLuint get() const;
 };
+
+inline GLuint ShaderProgram::get() const
+{
+    return shaderProgram;
+}

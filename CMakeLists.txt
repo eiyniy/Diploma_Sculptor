@@ -102,9 +102,9 @@ target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE openGL32)
 
 # ---IWYU---
 if (CMAKE_BUILD_TYPE STREQUAL  "Debug")
-    find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
-    set(iwyu_path_and_options ${iwyu_path})
-    set_property(TARGET ${LOCAL_PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options}) 
+find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
+set(iwyu_path_and_options ${iwyu_path})
+set_property(TARGET ${LOCAL_PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options}) 
 endif ()
 
 
@@ -113,3 +113,10 @@ endif ()
 add_subdirectory("libraries/SOIL")
 target_link_libraries(${LOCAL_PROJECT_NAME} PUBLIC soil)
 target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${SOIL_H_PATH})
+
+
+# ---GLM---
+# find_package(glm REQUIRED)
+add_subdirectory("libraries/GLM")
+target_link_libraries(${LOCAL_PROJECT_NAME} PUBLIC glm::glm)
+target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE glm)

@@ -10,5 +10,8 @@ add_library(soil STATIC
 )
 
 target_include_directories(soil PUBLIC includes)
+target_link_libraries(soil PRIVATE 
+    openGL32
+)
 
-export(TARGETS soil FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.cmake)
+# export(TARGETS soil FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.cmake)
