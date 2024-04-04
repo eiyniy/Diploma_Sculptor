@@ -2,7 +2,7 @@
 
 #include <Globals.hpp>
 #include <Enums.hpp>
-#include <Texture.hpp>
+#include <OldTexture.hpp>
 #include <Matrix.hpp>
 
 #include <CImg.h>
@@ -17,7 +17,7 @@ ImageParser::ImageParser(
     : path(_path),
       type(_type) {}
 
-std::unique_ptr<const Texture> ImageParser::parse() const
+std::unique_ptr<const OldTexture> ImageParser::parse() const
 {
     const cimg::CImg<char> image = cimg::CImg<>(path.c_str());
 
@@ -27,7 +27,7 @@ std::unique_ptr<const Texture> ImageParser::parse() const
     std::vector<Vector<4>> data{(unsigned long long)width * height};
     // image.display();
 
-#pragma omp parallel for if (!_DEBUG)
+#pragma omp parallel for if (!_IS_DEBUG)
     for (int i = 0; i < height; ++i)
     {
         for (int j = 0; j < width; ++j)
@@ -59,5 +59,5 @@ std::unique_ptr<const Texture> ImageParser::parse() const
         }
     }
 
-    return std::make_unique<const Texture>(width, height, data);
+    return std::make_unique<const OldTexture>(width, height, data);
 }

@@ -1,10 +1,10 @@
-#include <Texture.hpp>
+#include <OldTexture.hpp>
 
 #include <Matrix.hpp>
 
 #include <vector>
 
-Texture::Texture(
+OldTexture::OldTexture(
     const int _width,
     const int _height,
     const std::vector<Vector<4>> &_data)

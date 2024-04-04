@@ -2,13 +2,13 @@
 
 #include <Matrix.hpp>
 #include <Graph.hpp>
-#include <Point.hpp>
 #include <Object.hpp>
 #include <Triangle.hpp>
 
 #include <memory>
 #include <vector>
 #include <iostream>
+#include <utility>
 
 Sculptor::Sculptor(const int _radius)
     : radius(_radius) {}
@@ -20,7 +20,7 @@ void Sculptor::createGraph(Object *object)
 
 void Sculptor::pull(
     std::vector<Vector<4>> &vertices,
-    const Point &mousePos,
+    const std::pair<int, int> &mousePos,
     const Vector<4> &direction)
 {
     const auto affectedVerticesIds = graph.getAffectedVerticesIds(mousePos, radius);
@@ -34,7 +34,7 @@ void Sculptor::pull(
 void Sculptor::pull(
     Object *object,
     const int triangleId,
-    const Point mousePos)
+    const std::pair<int, int> mousePos)
 {
     // std::cout << "      " << triangleId << std::endl;
 

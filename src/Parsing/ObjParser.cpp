@@ -56,7 +56,7 @@ Object *ObjParser::parse()
 
     polygons.reserve(polygonsStringAndMaterial.size());
 
-#pragma omp parallel for if (!_DEBUG)
+#pragma omp parallel for if (!_IS_DEBUG)
     for (const auto &pair : polygonsStringAndMaterial)
     {
         const auto triangulated = Triangle::parseAndTriangulate(pair.first, vertices, pair.second);

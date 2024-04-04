@@ -4,14 +4,15 @@
 #include <Object.hpp>
 #include <Matrix.hpp>
 
+#include <utility>
+
 class MainWindow;
-class Point;
 
 SculptorPullCommand::SculptorPullCommand(
     Sculptor &_sculptor,
     Object *_object,
     const MainWindow &_mainWindow,
-    const Point &_mousePos,
+    const std::pair<int, int> &_mousePos,
     const Vector<4> &_direction)
     : sculptor(_sculptor),
       object(_object),

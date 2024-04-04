@@ -1,9 +1,10 @@
 #pragma once
 
 #include <Command.hpp>
-#include <Point.hpp>
 #include <MainWindow.hpp>
 #include <Matrix.hpp>
+
+#include <utility>
 
 class Object;
 class Sculptor;
@@ -15,7 +16,7 @@ public:
         Sculptor &_sculptor,
         Object *_object,
         const MainWindow &_mainWindow,
-        const Point &_mousePos,
+        const std::pair<int, int> &_mousePos,
         const Vector<4> &_direction);
 
     ~SculptorPullCommand() override = default;
@@ -26,6 +27,6 @@ protected:
     Sculptor &sculptor;
     Object *object;
     const MainWindow &mainWindow;
-    const Point mousePos;
+    const std::pair<int, int> mousePos;
     const Vector<4> direction;
 };

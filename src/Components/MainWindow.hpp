@@ -4,19 +4,19 @@
 #define GLEW_STATIC
 #endif
 
-#include <Point.hpp>
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <utility>
 
 class MainWindow
 {
 public:
-    MainWindow(const Point &_resolution);
+    MainWindow(const std::pair<int, int> &_resolution);
 
     void setKeyCallback(GLFWkeyfun callback);
 
-    Point getActiveResolution() const;
+    std::pair<int, int> getActiveResolution() const;
 
     bool shouldClose() const;
 
@@ -29,11 +29,11 @@ public:
 private:
     GLFWwindow *window;
 
-    Point resolution;
-    Point activeResolution;
+    std::pair<int, int> resolution;
+    std::pair<int, int> activeResolution;
 };
 
-inline Point MainWindow::getActiveResolution() const
+inline std::pair<int, int> MainWindow::getActiveResolution() const
 {
     return activeResolution;
 }
@@ -45,5 +45,5 @@ inline bool MainWindow::shouldClose() const
 
 inline GLfloat MainWindow::getAspect() const
 {
-    return (GLfloat)activeResolution.cGetX() / activeResolution.cGetY();
+    return (GLfloat)activeResolution.first / activeResolution.second;
 }

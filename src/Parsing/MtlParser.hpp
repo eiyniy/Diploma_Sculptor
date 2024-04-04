@@ -4,7 +4,7 @@
 #include <Matrix.hpp>
 #include <BaseTextParser.hpp>
 #include <Enums.hpp>
-#include <Texture.hpp>
+#include <OldTexture.hpp>
 
 #include <string>
 #include <memory>
@@ -26,10 +26,10 @@ private:
     std::optional<Vector<4>> diffuse;
     std::optional<Vector<4>> specular;
     std::optional<double> specularExp;
-    std::unique_ptr<const Texture> diffuseMap;
-    std::unique_ptr<const Texture> emissiveMap;
-    std::unique_ptr<const Texture> normalMap;
-    std::unique_ptr<const Texture> mraoMap;
+    std::unique_ptr<const OldTexture> diffuseMap;
+    std::unique_ptr<const OldTexture> emissiveMap;
+    std::unique_ptr<const OldTexture> normalMap;
+    std::unique_ptr<const OldTexture> mraoMap;
 
     void parseEntry(const std::string &line);
 
@@ -38,7 +38,7 @@ private:
     void resetMaterial();
 
     static const Vector<4> parseCoeff(const std::string &line);
-    static std::unique_ptr<const Texture> parseTexture(
+    static std::unique_ptr<const OldTexture> parseTexture(
         const std::string &line,
         const std::string &pathToFile,
         std::optional<MtlEntryType> optType = std::nullopt);

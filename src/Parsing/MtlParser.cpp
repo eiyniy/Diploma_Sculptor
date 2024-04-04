@@ -5,7 +5,7 @@
 #include <Enums.hpp>
 #include <BaseTextParser.hpp>
 #include <Matrix.hpp>
-#include <Texture.hpp>
+#include <OldTexture.hpp>
 
 #include <stdexcept>
 #include <utility>
@@ -197,7 +197,7 @@ const Vector<4> MtlParser::parseCoeff(const std::string &line)
     return {accumulator[0], accumulator[1], accumulator[2]};
 }
 
-std::unique_ptr<const Texture> MtlParser::parseTexture(
+std::unique_ptr<const OldTexture> MtlParser::parseTexture(
     const std::string &line,
     const std::string &pathToFile,
     std::optional<MtlEntryType> optType)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Texture.hpp>
+#include <OldTexture.hpp>
 
 #include <CImg.h>
 
@@ -20,5 +20,5 @@ private:
 public:
     ImageParser(const std::string &_path, const TextureType _type);
 
-    std::unique_ptr<const Texture> parse() const;
+    std::unique_ptr<const OldTexture> parse() const;
 };

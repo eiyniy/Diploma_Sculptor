@@ -3,9 +3,9 @@
 #include <SphericalCoordinate.hpp>
 #include <Math.hpp>
 #include <Matrix.hpp>
-#include <Point.hpp>
 
 #include <cmath>
+#include <utility>
 
 enum class AxisName;
 enum class Direction;
@@ -14,7 +14,7 @@ Camera::Camera(
     const Vector<4> &_up,
     const Vector<4> &_position,
     const Vector<4> &_target,
-    Point &_resolution,
+    std::pair<int, int> &_resolution,
     const int _fov)
     : up(_up),
       position(_position),
@@ -46,7 +46,7 @@ void Camera::rotateAround(
     position = cameraRelative + target;
 }
 
-void Camera::setResolution(const Point &newResolution)
+void Camera::setResolution(const std::pair<int, int> &newResolution)
 {
     resolution = newResolution;
 }

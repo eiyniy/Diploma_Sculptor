@@ -4,14 +4,13 @@
 
 #include <MainWindow.hpp>
 
-#include <Point.hpp>
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <utility>
 
-MainWindow::MainWindow(const Point &_resolution)
+MainWindow::MainWindow(const std::pair<int, int> &_resolution)
     : resolution(_resolution)
 {
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
@@ -25,8 +24,8 @@ MainWindow::MainWindow(const Point &_resolution)
 
     // Create a GLFWwindow object that we can use for GLFW's functions
     window = glfwCreateWindow(
-        resolution.cGetX(),
-        resolution.cGetY(),
+        resolution.first,
+        resolution.second,
         "Sculptor",
         nullptr,
         nullptr);

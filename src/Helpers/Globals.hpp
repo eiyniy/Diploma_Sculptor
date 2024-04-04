@@ -1,3 +1,3 @@
 #pragma once
 
-extern bool _DEBUG;
+extern bool _IS_DEBUG;

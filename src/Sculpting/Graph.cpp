@@ -2,7 +2,6 @@
 
 #include <Matrix.hpp>
 #include <Triangle.hpp>
-#include <Point.hpp>
 
 #include <array>
 #include <utility>
@@ -46,14 +45,14 @@ Graph::Graph(
     }
 }
 
-int Graph::findNearestVertexId(const Point &pos) const
+int Graph::findNearestVertexId(const std::pair<int, int> &pos) const
 {
     int id = 0;
     double distance = INFINITY;
 
     for (int i = 0; i < nodes.size(); ++i)
     {
-        const Point nodePos{
+        const std::pair<int, int> nodePos{
             (int)nodes[i]->cGetX(),
             (int)nodes[i]->cGetY()};
         const auto newDistance = findDistance(pos, nodePos);
@@ -69,7 +68,7 @@ int Graph::findNearestVertexId(const Point &pos) const
 }
 
 std::unique_ptr<std::vector<int>> Graph::getAffectedVerticesIds(
-    const Point &mousePos,
+    const std::pair<int, int> &mousePos,
     const int radius) const
 {
     auto affectedVertices = std::make_unique<std::vector<int>>();
@@ -83,17 +82,17 @@ std::unique_ptr<std::vector<int>> Graph::getAffectedVerticesIds(
     idsQueue.push(nearestVertexId);
     used[nearestVertexId] = true;
 
-    const Point nearestVertexPos{
+    const std::pair<int, int> nearestVertexPos{
         (int)nodes[nearestVertexId]->cGetX(),
         (int)nodes[nearestVertexId]->cGetY()};
-    std::cout << "Nearest vertex pos: " << nearestVertexPos.cGetX() << ' ' << nearestVertexPos.cGetY() << std::endl;
+    std::cout << "Nearest vertex pos: " << nearestVertexPos.first << ' ' << nearestVertexPos.second << std::endl;
 
     while (!idsQueue.empty())
     {
         int id = idsQueue.front();
         idsQueue.pop();
 
-        const Point nodePos{
+        const std::pair<int, int> nodePos{
             (int)nodes[id]->cGetX(),
             (int)nodes[id]->cGetY()};
         const auto distance = findDistance(mousePos, nodePos);

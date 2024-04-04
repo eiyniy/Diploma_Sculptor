@@ -1,7 +1,7 @@
 #include <Globals.hpp>
 
 #ifndef NDEBUG
-bool _DEBUG = 1;
+bool _IS_DEBUG = 1;
 #else
-bool _DEBUG = 0;
+bool _IS_DEBUG = 0;
 #endif

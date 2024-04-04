@@ -3,22 +3,26 @@
 #endif
 
 #include <MainWindow.hpp>
-#include <Point.hpp>
 #include <ShaderProgramm.hpp>
+#include <Texture.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <SOIL.h>
 
-#define GLM_FORCE_SWIZZLE
+// #define GLM_FORCE_SWIZZLE
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+// IWYU pragma: begin_keep
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/vector_float3.hpp>
 #include <glm/gtc/type_ptr.hpp>
+// IWYU pragma: end_keep
 
 #include <iostream>
-#include <filesystem>
+#include <utility>
 
 // Function prototypes
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -32,7 +36,7 @@ int main(int argc, char **argv)
     // Set the required callback functions
     mainWindow.setKeyCallback(key_callback);
 
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
     glEnable(GL_DEPTH_TEST);
 
     ShaderProgram shaderProgram;
@@ -137,11 +141,6 @@ int main(int argc, char **argv)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)0);
     glEnableVertexAttribArray(0);
 
-    /* Color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-    */
-
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
 
@@ -151,71 +150,24 @@ int main(int argc, char **argv)
     // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
     glBindVertexArray(0);
 
-    GLuint texture;
-    glGenTextures(1, &texture);
+    Texture containerTexture{GL_TEXTURE0, GL_TEXTURE_2D};
+    containerTexture.bind();
 
-    // Активируем текстурный блок перед привязкой текстуры
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    containerTexture.setDefaults();
+    containerTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/container.jpg");
 
-    // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    containerTexture.unbind();
 
-    // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    Texture faceTexture{GL_TEXTURE0, GL_TEXTURE_2D};
+    faceTexture.bind();
 
-    int width, height;
-    unsigned char *image = SOIL_load_image(
-        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/container.jpg",
-        &width,
-        &height,
-        0,
-        SOIL_LOAD_RGB);
+    faceTexture.setDefaults();
+    faceTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/awesomeface.jpg");
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    SOIL_free_image_data(image);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    GLuint texture2;
-    glGenTextures(1, &texture2);
-
-    // Активируем текстурный блок перед привязкой текстуры
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-
-    // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int width2, height2;
-    unsigned char *image2 = SOIL_load_image(
-        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/awesomeface.png",
-        &width2,
-        &height2,
-        0,
-        SOIL_LOAD_RGB);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, image2);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    SOIL_free_image_data(image2);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    faceTexture.unbind();
 
     // Uncommenting this call will result in wireframe polygons.
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    /*
-    glm::mat4 modelMat{1};
-    modelMat = glm::rotate(modelMat, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    */
 
     glm::mat4 viewMat{1};
     // Обратите внимание, что мы смещаем сцену в направлении обратном тому, в котором мы хотим переместиться
@@ -224,30 +176,19 @@ int main(int argc, char **argv)
     glm::mat4 projectionMat{1};
     projectionMat = glm::perspective(glm::radians(45.0f), mainWindow.getAspect(), 0.1f, 100.0f);
 
-    // Game loop
     while (!mainWindow.shouldClose())
     {
-        // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
-
-        // glm::mat4 trans{1};
-        // trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        // trans = glm::rotate(trans, (GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        // glm::mat4 modelMat{1};
-        // modelMat = glm::rotate(modelMat, (GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
         // Render
         // Clear the colorbuffer
         mainWindow.clear();
 
         // Bind texture
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        containerTexture.bind();
         glUniform1i(glGetUniformLocation(shaderProgram.get(), "ourTexture1"), 0);
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        faceTexture.bind();
         glUniform1i(glGetUniformLocation(shaderProgram.get(), "ourTexture2"), 1);
 
         // Draw our first triangle

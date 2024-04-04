@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Point.hpp>
 #include <Matrix.hpp>
+
+#include <utility>
 
 enum class AxisName;
 enum class Direction;
@@ -12,7 +13,7 @@ private:
     Vector<4> up;
     Vector<4> position;
     Vector<4> target;
-    Point resolution;
+    std::pair<int, int> resolution;
 
     const int fov;
 
@@ -21,7 +22,7 @@ public:
         const Vector<4> &_up,
         const Vector<4> &_position,
         const Vector<4> &_target,
-        Point &_resolution,
+        std::pair<int, int> &_resolution,
         int _fov);
 
     void move(const Vector<4> &transition);
@@ -31,7 +32,7 @@ public:
         Direction direction,
         double step);
 
-    void setResolution(const Point &newResolution);
+    void setResolution(const std::pair<int, int> &newResolution);
 
     void setTarget(const Vector<4> &newTarget);
 
@@ -41,7 +42,7 @@ public:
 
     const Vector<4> &cGetTarget() const;
 
-    const Point &cGetResolution() const;
+    const std::pair<int, int> &cGetResolution() const;
 
     int cGetFOV() const;
 
@@ -63,7 +64,7 @@ inline const Vector<4> &Camera::cGetTarget() const
     return target;
 }
 
-inline const Point &Camera::cGetResolution() const
+inline const std::pair<int, int> &Camera::cGetResolution() const
 {
     return resolution;
 }
@@ -75,5 +76,5 @@ inline int Camera::cGetFOV() const
 
 inline double Camera::cGetAspect() const
 {
-    return ((double)resolution.cGetX()) / resolution.cGetY();
+    return ((double)resolution.first) / resolution.second;
 }

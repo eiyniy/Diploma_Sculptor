@@ -1,7 +1,6 @@
 #include <Object.hpp>
 
 #include <Camera.hpp>
-#include <Point.hpp>
 #include <Globals.hpp>
 #include <Triangle.hpp>
 #include <Material.hpp>
@@ -49,7 +48,7 @@ void Object::move(const Vector<4> &transition)
 
     // vertices[0].log();
 
-#pragma omp parallel for if (!_DEBUG)
+#pragma omp parallel for if (!_IS_DEBUG)
     for (int j = 0; j < vertices.size(); ++j)
         vertices[j] = moveConvert * vertices[j];
 
@@ -65,9 +64,9 @@ void Object::convertToDrawable(const Camera &camera)
 
     const auto &resolution = camera.cGetResolution();
     const auto viewportConvert = Matrix<4, 4>::getViewportConvert(
-        resolution.cGetX(), resolution.cGetY(), 0, 0);
+        resolution.first, resolution.second, 0, 0);
 
-#pragma omp parallel for if (!_DEBUG)
+#pragma omp parallel for if (!_IS_DEBUG)
     for (int j = 0; j < vertices.size(); ++j)
         drawable[j] = convertVertex(vertices[j], convertMatrix, viewportConvert);
 }
