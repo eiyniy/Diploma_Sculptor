@@ -158,19 +158,19 @@ int main(int argc, char **argv)
 
     containerTexture.unbind();
 
-    Texture faceTexture{GL_TEXTURE0, GL_TEXTURE_2D};
+    Texture faceTexture{GL_TEXTURE1, GL_TEXTURE_2D};
     faceTexture.bind();
 
     faceTexture.setDefaults();
-    faceTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/awesomeface.jpg");
+    faceTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/awesomeface.png");
 
     faceTexture.unbind();
 
     // Uncommenting this call will result in wireframe polygons.
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    glm::mat4 viewMat{1};
     // Обратите внимание, что мы смещаем сцену в направлении обратном тому, в котором мы хотим переместиться
+    glm::mat4 viewMat{1};
     viewMat = glm::translate(viewMat, glm::vec3(0.0f, -0.0f, -3.0f));
 
     glm::mat4 projectionMat{1};
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
             glm::mat4 modelMat{1};
             modelMat = glm::translate(modelMat, cubePositions[i]);
             GLfloat angle = 20.0f * i;
-            if (i % 3 == 0) // every 3rd iteration (including the first) we set the angle using GLFW's time function.
+            if (i % 2 == 0) // every 3rd iteration (including the first) we set the angle using GLFW's time function.
                 angle = glfwGetTime() * (i + 1) * 10.0f;
             modelMat = glm::rotate(modelMat, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMat));

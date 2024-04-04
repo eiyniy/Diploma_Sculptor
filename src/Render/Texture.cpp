@@ -71,7 +71,7 @@ void Texture::load(const std::string &path)
     throwIfNotBinded("load");
 
     image = SOIL_load_image(
-        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/container.jpg",
+        path.c_str(),
         &width,
         &height,
         0,
