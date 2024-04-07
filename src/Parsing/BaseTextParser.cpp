@@ -1,6 +1,7 @@
 #include <BaseTextParser.hpp>
 
 #include <ctype.h>
+#include <stddef.h>
 
 #include <memory>
 #include <compare>
@@ -13,12 +14,9 @@
 
 BaseTextParser::BaseTextParser(const std::string &_pathToFile)
 {
-    // const auto realPath = std::filesystem::canonical(_pathToFile);
-
     if (!std::filesystem::exists(_pathToFile))
         throw std::logic_error("Could not open file");
 
-    // pathToFile = realPath.string();
     pathToFile = _pathToFile;
 }
 
@@ -69,16 +67,22 @@ std::optional<std::string> BaseTextParser::getNextPart(
 
 std::unique_ptr<std::string> BaseTextParser::readFile()
 {
-    readStream.open(pathToFile);
+    readStream.open(pathToFile, std::ios::in);
     if (!readStream.is_open())
         throw std::logic_error("Could not open file");
 
     readStream.seekg(0, std::ios::end);
-    auto size = readStream.tellg();
-    auto buffer = std::make_unique<std::string>(size, ' ');
-    readStream.seekg(0);
+    auto size = static_cast<size_t>(readStream.tellg());
+    auto buffer = std::make_unique<std::string>(size, 0);
+    readStream.seekg(0, std::istream::beg);
     readStream.read(&((*buffer)[0]), size);
     readStream.close();
+
+    /*
+    std::cout << "~~~~~~~~~~~~~~" << std::endl
+              << *buffer << std::endl
+              << "~~~~~~~~~~~~~~" << std::endl;
+    */
 
     return buffer;
 }

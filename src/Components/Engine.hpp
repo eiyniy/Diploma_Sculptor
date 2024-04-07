@@ -1,13 +1,16 @@
 #pragma once
 
-#include <Command.hpp>
+#include <ShaderProgramm.hpp>
+#include <Texture.hpp>
 
-#include <queue>
-#include <memory>
+// IWYU pragma: begin_keep
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+// IWYU pragma: end_keep
 
 class MainWindow;
 class Scene;
-class Sculptor;
+class Camera;
 
 enum class AxisName;
 enum class Direction;
@@ -15,7 +18,12 @@ enum class Direction;
 class Engine
 {
 public:
-    Engine(Scene &_scene, MainWindow &_mainWindow, Sculptor &_sculptor);
+    Engine(
+        Scene &_scene,
+        MainWindow &_mainWindow,
+        Camera &_camera);
+
+    ~Engine();
 
     void start();
 
@@ -24,25 +32,23 @@ private:
 
     Scene &scene;
     MainWindow &mainWindow;
-    Sculptor &sculptor;
+    Camera &camera;
 
     AxisName moveAxis;
     Direction moveDirection;
 
-    // sf::Clock clock;
-    int dt;
+    GLfloat deltaTime, lastFrameTime;
 
-    std::queue<std::unique_ptr<Command>> commandsQueue;
+    GLuint VBO, VAO, EBO;
+    ShaderProgram shaderProgram;
 
-    void handleEvents();
+    Texture containerTexture;
+    Texture faceTexture;
 
-    // TODO
-    // void updateInput(const sf::Event &event);
+    glm::mat4 projectionMat;
 
-    // TODO
-    // void sendInputCommand(const sf::Event &event);
-
-    void update();
+    void
+    update();
 
     void draw();
 };

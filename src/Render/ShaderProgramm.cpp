@@ -1,7 +1,3 @@
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <ShaderProgramm.hpp>
 
 #include <BaseTextParser.hpp>
@@ -23,6 +19,11 @@ void ShaderProgram::addShader(
     GLenum shaderType)
 {
     BaseTextParser parser{sourcePath};
+    /*
+    const auto sourcePtr = parser.readFile();
+    const auto sourceStr = *sourcePtr;
+    const GLchar *source = sourceStr.c_str();
+    */
     const GLchar *source = parser.readFile()->c_str();
 
     GLuint shader = glCreateShader(shaderType);

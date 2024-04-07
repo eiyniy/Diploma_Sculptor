@@ -5,15 +5,7 @@
             "program": "${command:cmake.launchTargetPath}",
             "name": "Launch (gdb)",
             "request": "launch",
-            "args": [
-                "${workspaceFolder}/resources/models/untitled.obj"
-                // "${workspaceFolder}/resources/models/Stone_01_Base.OBJ"
-                // "${workspaceFolder}/resources/models/rubik.obj"
-                // "${workspaceFolder}/resources/models/cat.obj"
-                // "${workspaceFolder}/resources/models/woman1.obj"
-                // "${workspaceFolder}/resources/models/woman2.obj"
-                // "${workspaceFolder}/resources/models/Z3_OBJ.obj"
-            ],
+            "args": [],
             "environment": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

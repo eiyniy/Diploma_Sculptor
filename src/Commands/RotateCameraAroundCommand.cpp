@@ -1,6 +1,6 @@
 #include <RotateCameraAroundCommand.hpp>
 
-#include <Camera.hpp>
+// #include <Camera.hpp>
 
 RotateCameraAroundCommand::RotateCameraAroundCommand(
     Camera &_camera,
@@ -14,5 +14,5 @@ RotateCameraAroundCommand::RotateCameraAroundCommand(
 
 void RotateCameraAroundCommand::execute()
 {
-  camera.rotateAround(axisName, direction, step);
+  // camera.rotateAround(axisName, direction, step);
 }

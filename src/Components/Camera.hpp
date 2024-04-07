@@ -1,6 +1,11 @@
 #pragma once
 
-#include <Matrix.hpp>
+#include <GL/glew.h>
+
+// IWYU pragma: begin_keep
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+// IWYU pragma: end_keep
 
 #include <utility>
 
@@ -10,71 +15,48 @@ enum class Direction;
 class Camera
 {
 private:
-    Vector<4> up;
-    Vector<4> position;
-    Vector<4> target;
-    std::pair<int, int> resolution;
+    GLfloat yaw, pitch;
+    GLfloat mouseSens;
 
-    const int fov;
+    glm::vec3 pos;
+    glm::vec3 front;
+    glm::vec3 worldUp;
+
+    glm::mat4 view;
+
+    GLfloat speed;
+
+    const GLfloat fov;
+
+    void updateFront(
+        const GLfloat pitch,
+        const GLfloat yaw);
 
 public:
     Camera(
-        const Vector<4> &_up,
-        const Vector<4> &_position,
-        const Vector<4> &_target,
-        std::pair<int, int> &_resolution,
-        int _fov);
+        const GLfloat _speed,
+        const GLfloat _fov);
 
-    void move(const Vector<4> &transition);
+    void updateViewMat();
 
-    void rotateAround(
-        AxisName axisName,
-        Direction direction,
-        double step);
+    void move(
+        const AxisName axis,
+        const Direction direction,
+        const GLfloat dt);
 
-    void setResolution(const std::pair<int, int> &newResolution);
+    void rotate(const std::pair<GLfloat, GLfloat> coordOffset);
 
-    void setTarget(const Vector<4> &newTarget);
+    const glm::mat4 &cGetViewMat() const;
 
-    const Vector<4> &cGetUp() const;
-
-    const Vector<4> &cGetPosition() const;
-
-    const Vector<4> &cGetTarget() const;
-
-    const std::pair<int, int> &cGetResolution() const;
-
-    int cGetFOV() const;
-
-    double cGetAspect() const;
+    GLfloat cGetFOV() const;
 };
 
-inline const Vector<4> &Camera::cGetUp() const
-{
-    return up;
-}
-
-inline const Vector<4> &Camera::cGetPosition() const
-{
-    return position;
-}
-
-inline const Vector<4> &Camera::cGetTarget() const
-{
-    return target;
-}
-
-inline const std::pair<int, int> &Camera::cGetResolution() const
-{
-    return resolution;
-}
-
-inline int Camera::cGetFOV() const
+inline GLfloat Camera::cGetFOV() const
 {
     return fov;
 }
 
-inline double Camera::cGetAspect() const
+inline const glm::mat4 &Camera::cGetViewMat() const
 {
-    return ((double)resolution.first) / resolution.second;
+    return view;
 }

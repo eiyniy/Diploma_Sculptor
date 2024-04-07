@@ -1,8 +1,6 @@
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <MainWindow.hpp>
+
+#include <Settings.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,7 +9,9 @@
 #include <utility>
 
 MainWindow::MainWindow(const std::pair<int, int> &_resolution)
-    : resolution(_resolution)
+    : resolution(_resolution),
+      keys({0}),
+      isMoved(false)
 {
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
     // Init GLFW
@@ -20,16 +20,25 @@ MainWindow::MainWindow(const std::pair<int, int> &_resolution)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, Settings::get()->isResizeEnabled());
 
     // Create a GLFWwindow object that we can use for GLFW's functions
     window = glfwCreateWindow(
         resolution.first,
         resolution.second,
-        "Sculptor",
+        Settings::get()->getWindowName().c_str(),
         nullptr,
         nullptr);
     glfwMakeContextCurrent(window);
+
+    glfwSetWindowUserPointer(window, this);
+
+    double cursorPosX, cursorPosY;
+    glfwGetCursorPos(window, &cursorPosX, &cursorPosY);
+    lastCoord = {cursorPosX, cursorPosY};
+
+    glfwSetKeyCallback(window, keyCallback);
+    glfwSetCursorPosCallback(window, mouseCallback);
 
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
@@ -43,9 +52,15 @@ MainWindow::MainWindow(const std::pair<int, int> &_resolution)
     activeResolution = {width, height};
 }
 
-void MainWindow::setKeyCallback(GLFWkeyfun callback)
+const std::pair<GLfloat, GLfloat> MainWindow::resetCoordOffset()
 {
-    glfwSetKeyCallback(window, callback);
+    if (!isMoved)
+        return {0.f, 0.f};
+    else
+    {
+        isMoved = false;
+        return coordOffset;
+    }
 }
 
 void MainWindow::clear()
@@ -57,4 +72,59 @@ void MainWindow::clear()
 void MainWindow::swapBuffers()
 {
     glfwSwapBuffers(window);
+}
+
+void MainWindow::close()
+{
+    glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+void MainWindow::keyCallback(
+    GLFWwindow *window,
+    int key,
+    int scancode,
+    int action,
+    int mode)
+{
+    auto *obj = glfwGetWindowUserPointer(window);
+    auto mainWindow = static_cast<MainWindow *>(obj);
+
+    mainWindow->keyCallbackInner(key, scancode, action, mode);
+}
+
+void MainWindow::mouseCallback(
+    GLFWwindow *window,
+    double xpos,
+    double ypos)
+{
+    auto *obj = glfwGetWindowUserPointer(window);
+    auto mainWindow = static_cast<MainWindow *>(obj);
+
+    mainWindow->mouseCallbackInner(xpos, ypos);
+}
+
+void MainWindow::keyCallbackInner(
+    const int key,
+    const int scancode,
+    const int action,
+    const int mode)
+{
+    if (action == GLFW_PRESS)
+        keys[key] = true;
+    else if (action == GLFW_RELEASE)
+        keys[key] = false;
+}
+
+void MainWindow::mouseCallbackInner(
+    const double xpos,
+    const double ypos)
+{
+    isMoved = true;
+
+    // Обратный порядок вычитания Y, потому что оконные Y-координаты возрастают с верху вниз
+    coordOffset = {
+        xpos - lastCoord.first,
+        lastCoord.second - ypos};
+
+    lastCoord = {xpos, ypos};
 }

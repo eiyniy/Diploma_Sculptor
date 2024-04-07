@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 
+set(LOCAL_PROJECT_NAME "Sculptor")
+set(LOCAL_PROJECT_VERSION "0.0.1")
+
 project(${LOCAL_PROJECT_NAME}
         VERSION ${LOCAL_PROJECT_VERSION}
         LANGUAGES C CXX)
-
-
-set(LOCAL_PROJECT_NAME "Sculptor")
-set(LOCAL_PROJECT_VERSION "0.0.1")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -101,7 +100,7 @@ target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE openGL32)
 
 
 # ---IWYU---
-if (CMAKE_BUILD_TYPE STREQUAL  "Debug")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
 set(iwyu_path_and_options ${iwyu_path})
 set_property(TARGET ${LOCAL_PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options}) 

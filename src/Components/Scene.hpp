@@ -11,26 +11,15 @@ class BaseLightSource;
 class Scene
 {
 private:
-    const int floorStepsCount = 30;
-
     std::string selectedObjectName;
     std::map<std::string, Object *> objects;
-    Camera &camera;
 
     BaseLightSource *lightSource;
 
 public:
     const std::string floorObjectName = "_FLOOR";
 
-    const double defaultFrameTime;
-    const double moveSpeed;
-    const double rotationSpeed;
-
-    Scene(
-        Camera &_camera,
-        BaseLightSource *_lightSource,
-        double _moveSpeed,
-        double _rotationSpeed);
+    Scene();
 
     ~Scene();
 
@@ -41,8 +30,6 @@ public:
     [[nodiscard]] std::vector<std::string> cGetAllObjectNames() const;
 
     [[nodiscard]] const std::string &cGetSelectedObjectName() const;
-
-    [[nodiscard]] const Camera &cGetCamera() const;
 
     [[nodiscard]] const BaseLightSource *cGetLightSource() const;
 
@@ -56,17 +43,7 @@ inline const Object *Scene::cGetObject(const std::string &key) const
     return objects.at(key);
 }
 
-inline const Camera &Scene::cGetCamera() const
-{
-    return camera;
-}
-
 inline Object *Scene::getObject(const std::string &key)
 {
     return objects.at(key);
-}
-
-inline Camera &Scene::getCamera()
-{
-    return camera;
 }

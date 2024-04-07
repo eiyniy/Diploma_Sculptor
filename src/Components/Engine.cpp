@@ -1,248 +1,213 @@
 #include <Engine.hpp>
 
-#include <Scene.hpp>
 #include <MainWindow.hpp>
 #include <Enums.hpp>
 #include <Camera.hpp>
-#include <Command.hpp>
-#include <Object.hpp>
+#include <Texture.hpp>
+#include <ShaderProgramm.hpp>
+
+// IWYU pragma: begin_keep
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+// IWYU pragma: end_keep
+
+#include <GLFW/glfw3.h>
 
 #include <utility>
-#include <vector>
+#include <array>
 
-class Sculptor;
-
-Engine::Engine(Scene &_scene, MainWindow &_mainWindow, Sculptor &_sculptor)
+Engine::Engine(
+    Scene &_scene,
+    MainWindow &_mainWindow,
+    Camera &_camera)
     : scene(_scene),
       mainWindow(_mainWindow),
-      sculptor(_sculptor),
+      camera(_camera),
       moveAxis(AxisName::X),
-      moveDirection(Direction::Forward)
+      moveDirection(Direction::Forward),
+      deltaTime(0.f),
+      lastFrameTime(0.f),
+      shaderProgram(),
+      containerTexture{GL_TEXTURE0, GL_TEXTURE_2D},
+      faceTexture{GL_TEXTURE1, GL_TEXTURE_2D}
 {
-    draw();
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    float vertices[] = {
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f};
+
+    // Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    shaderProgram.addShader(
+        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/shaders/base.vert",
+        GL_VERTEX_SHADER);
+    shaderProgram.addShader(
+        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/shaders/base.frag",
+        GL_FRAGMENT_SHADER);
+
+    shaderProgram.link();
+
+    // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
+    glBindVertexArray(0);
+
+    containerTexture.bind();
+
+    containerTexture.setDefaults();
+    containerTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/container.jpg");
+
+    containerTexture.unbind();
+
+    faceTexture.bind();
+
+    faceTexture.setDefaults();
+    faceTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/textures/awesomeface.png");
+
+    faceTexture.unbind();
+
+    projectionMat = glm::perspective(
+        camera.cGetFOV(),
+        mainWindow.getAspect(),
+        0.1f,
+        100.0f);
+}
+
+Engine::~Engine()
+{
+    // Properly de-allocate all resources once they've outlived their purpose
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    // Terminate GLFW, clearing any resources allocated by GLFW.
+    glfwTerminate();
 }
 
 void Engine::start()
 {
-    for (const auto &key : scene.cGetAllObjectNames())
-        scene.getObject(key)->convertToDrawable(scene.cGetCamera());
-
-    // auto ts = std::chrono::high_resolution_clock::now();
-    // auto te = std::chrono::high_resolution_clock::now();
-
-    // TODO
-    while (true)
+    while (!mainWindow.shouldClose())
     {
-        // ts = std::chrono::high_resolution_clock::now();
-        handleEvents();
-        // te = std::chrono::high_resolution_clock::now();
-        // const auto inputMs = std::chrono::duration_cast<std::chrono::milliseconds>(te - ts).count();
+        GLfloat currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrameTime;
+        lastFrameTime = currentFrame;
 
-        // ts = std::chrono::high_resolution_clock::now();
+        glfwPollEvents();
+
         update();
-        // te = std::chrono::high_resolution_clock::now();
-        // const auto updateMs = std::chrono::duration_cast<std::chrono::milliseconds>(te - ts).count();
 
-        // ts = std::chrono::high_resolution_clock::now();
         draw();
-        // te = std::chrono::high_resolution_clock::now();
-        // const auto drawMs = std::chrono::duration_cast<std::chrono::milliseconds>(te - ts).count();
-
-        // std::cout << "Input time: " << inputMs << " ms" << std::endl;
-        // std::cout << "Update time: " << updateMs << " ms" << std::endl;
-        // std::cout << "Draw time: " << drawMs << " ms" << std::endl;
-        // std::cout << "Timer frame time: " << Timer::getMcs() / 1000 << " ms" << std::endl; // 26 ms
-
-        // std::cout << "Frame time: " << inputMs + updateMs + drawMs << " ms" << std::endl;
-
-        // std::cout << std::endl;
-
-        // Timer::reset();
     }
 }
-
-void Engine::handleEvents()
-{
-    // TODO
-    /*
-    // static sf::Event event;
-    // const auto isPooled = mainWindow.getWindow().pollEvent(event);
-    const auto isPooled = false;
-
-    if (!isPooled)
-        return;
-
-    switch (event.type)
-    {
-    case sf::Event::Closed:
-        commandsQueue.emplace(std::make_unique<CloseCommand>(mainWindow));
-        break;
-    case sf::Event::Resized:
-        commandsQueue.emplace(std::make_unique<ResizeCommand>(
-            scene.getCamera(),
-            mainWindow,
-            event.size.width,
-            event.size.height));
-        break;
-    case sf::Event::KeyPressed:
-        updateInput(event);
-        sendInputCommand(event);
-        break;
-    case sf::Event::MouseButtonPressed:
-    {
-        // std::cout << "Sculptor pull" << std::endl;
-
-        // TODO
-        // const auto mousePosSF = sf::Mouse::getPosition(mainWindow.getWindow());
-        const sf::Vector2i mousePosSF{};
-        const Point mousePos{mousePosSF.x, mousePosSF.y};
-
-        std::cout << "Mouse pos: " << mousePos.cGetX() << ' ' << mousePos.cGetY() << std::endl;
-
-        const auto camera = scene.cGetCamera();
-        auto direction = camera.cGetTarget() - camera.cGetPosition();
-        direction.normalize();
-
-        commandsQueue.emplace(std::make_unique<SculptorPullCommand>(
-            sculptor,
-            scene.getObject("MainObject"),
-            mainWindow,
-            mousePos,
-            direction));
-    }
-    }
-    */
-}
-
-// TODO
-/*
-void Engine::updateInput(const sf::Event &event)
-{
-    switch (event.key.code)
-    {
-    case sf::Keyboard::Up:
-    case sf::Keyboard::Right:
-        moveDirection = Direction::Forward;
-        break;
-    case sf::Keyboard::Down:
-    case sf::Keyboard::Left:
-        moveDirection = Direction::Backward;
-        break;
-    case sf::Keyboard::X:
-        moveAxis = AxisName::X;
-        break;
-    case sf::Keyboard::Y:
-        moveAxis = AxisName::Y;
-        break;
-    case sf::Keyboard::Z:
-        moveAxis = AxisName::Z;
-        break;
-    }
-}
-*/
-
-// TODO
-/*
-void Engine::sendInputCommand(const sf::Event &event)
-{
-    switch (event.key.code)
-    {
-    case sf::Keyboard::Up:
-    case sf::Keyboard::Right:
-    case sf::Keyboard::Down:
-    case sf::Keyboard::Left:
-    {
-        const double ratio = dt != 0 ? (dt / scene.defaultFrameTime) : 1.f;
-
-        if (event.key.control && !event.key.alt)
-        {
-            const double step = scene.moveSpeed * ratio;
-
-            commandsQueue.emplace(std::make_unique<MoveObjectCommand>(
-                *scene.getObject(scene.cGetSelectedObjectName()),
-                moveAxis,
-                moveDirection,
-                step));
-        }
-        else if (event.key.control && event.key.alt)
-        {
-            const double step = scene.rotationSpeed * ratio;
-
-            commandsQueue.emplace(std::make_unique<RotateCameraAroundCommand>(
-                scene.getCamera(),
-                moveAxis,
-                moveDirection,
-                step));
-        }
-        else if (!event.key.control && !event.key.alt)
-        {
-            const double step = scene.moveSpeed * ratio;
-
-            commandsQueue.emplace(std::make_unique<MoveCameraCommand>(
-                scene.getCamera(),
-                moveAxis,
-                moveDirection,
-                step));
-        }
-        break;
-    }
-    case sf::Keyboard::C:
-        if (!event.key.control)
-            break;
-
-        commandsQueue.emplace(std::make_unique<CentralizeCameraCommand>(
-            scene.getCamera(),
-            *scene.getObject(scene.cGetSelectedObjectName())));
-
-        break;
-    case sf::Keyboard::F11:
-    case sf::Keyboard::Escape:
-        commandsQueue.emplace(std::make_unique<SwitchVideoModeCommand>(
-            scene.getCamera(),
-            mainWindow,
-            event.key.code == sf::Keyboard::Escape));
-        break;
-    }
-}
-*/
 
 void Engine::update()
 {
-    if (commandsQueue.empty())
-        return;
+    const auto &keys = mainWindow.cGetKeys();
+    const auto coordOffset = mainWindow.resetCoordOffset();
 
-    while (!commandsQueue.empty())
-    {
-        const auto command = std::move(commandsQueue.front());
-        commandsQueue.pop();
-        command->execute();
-    }
+    if (keys[GLFW_KEY_ESCAPE])
+        mainWindow.close();
 
-    for (const auto &key : scene.cGetAllObjectNames())
-        scene.getObject(key)->convertToDrawable(scene.cGetCamera());
+    if (keys[GLFW_KEY_W])
+        camera.move(AxisName::Z, Direction::Forward, deltaTime);
+    if (keys[GLFW_KEY_S])
+        camera.move(AxisName::Z, Direction::Backward, deltaTime);
+    if (keys[GLFW_KEY_D])
+        camera.move(AxisName::X, Direction::Forward, deltaTime);
+    if (keys[GLFW_KEY_A])
+        camera.move(AxisName::X, Direction::Backward, deltaTime);
+    if (keys[GLFW_KEY_SPACE])
+        camera.move(AxisName::Y, Direction::Forward, deltaTime);
+    if (keys[GLFW_KEY_LEFT_SHIFT])
+        camera.move(AxisName::Y, Direction::Backward, deltaTime);
+
+    camera.rotate(coordOffset);
 }
 
 void Engine::draw()
 {
     mainWindow.clear();
 
-    const auto &cameraPosition = scene.cGetCamera().cGetPosition();
+    const auto &viewMat = camera.cGetViewMat();
+    glm::mat4 modelMat{1};
 
-    // TODO
-    /*
-    for (const auto &key : scene.cGetAllObjectNames())
-    {
-        auto object = scene.getObject(key);
-        mainWindow.drawModel(*object, cameraPosition);
-    }
+    // Render
+    shaderProgram.use();
 
-    const auto mousePosSF = sf::Mouse::getPosition(mainWindow.getWindow());
-    const Point mousePos{mousePosSF.x, mousePosSF.y};
+    // Bind texture
+    containerTexture.bind();
+    glUniform1i(glGetUniformLocation(shaderProgram.get(), "texture1"), 0);
 
-    mainWindow.drawPixels();
-    mainWindow.drawSculptor(sculptor, mousePos);
-    mainWindow.getWindow().display();
-    */
+    faceTexture.bind();
+    glUniform1i(glGetUniformLocation(shaderProgram.get(), "texture2"), 1);
 
-    // dt = clock.restart().asMilliseconds();
+    // Draw our first triangle
+    GLint modelLoc = glGetUniformLocation(shaderProgram.get(), "model");
+    GLint viewLoc = glGetUniformLocation(shaderProgram.get(), "view");
+    GLint projectionLoc = glGetUniformLocation(shaderProgram.get(), "projection");
+
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMat));
+    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMat));
+
+    glBindVertexArray(VAO);
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glBindVertexArray(0);
+
+    // Swap the screen buffers
+    mainWindow.swapBuffers();
 }

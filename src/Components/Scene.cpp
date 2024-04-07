@@ -8,18 +8,8 @@
 #include <vector>
 
 class BaseLightSource;
-class Camera;
 
-Scene::Scene(
-    Camera &_camera,
-    BaseLightSource *_lightSource,
-    const double _moveSpeed,
-    const double _rotationSpeed)
-    : camera(_camera),
-      lightSource(_lightSource),
-      defaultFrameTime(1000.f / 60),
-      moveSpeed(_moveSpeed),
-      rotationSpeed(_rotationSpeed) {}
+Scene::Scene() = default;
 
 Scene::~Scene()
 {

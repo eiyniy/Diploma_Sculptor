@@ -1,8 +1,8 @@
-#include <Texture.hpp>
-
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
 #endif
+
+#include <Texture.hpp>
 
 #include <GL/glew.h>
 

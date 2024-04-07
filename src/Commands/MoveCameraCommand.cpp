@@ -1,6 +1,6 @@
 #include <MoveCameraCommand.hpp>
 
-#include <Camera.hpp>
+// #include <Camera.hpp>
 #include <MoveCommand.hpp>
 
 enum class AxisName;
@@ -16,5 +16,5 @@ MoveCameraCommand::MoveCameraCommand(
 
 void MoveCameraCommand::execute()
 {
-  camera.move(getTransition());
+  // camera.move(getTransition());
 }

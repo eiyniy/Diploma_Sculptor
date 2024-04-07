@@ -1,7 +1,7 @@
 #include <CentralizeCameraCommand.hpp>
 
-#include <Camera.hpp>
-#include <Object.hpp>
+// #include <Camera.hpp>
+// #include <Object.hpp>
 
 CentralizeCameraCommand::CentralizeCameraCommand(
     Camera &_camera,
@@ -11,5 +11,5 @@ CentralizeCameraCommand::CentralizeCameraCommand(
 
 void CentralizeCameraCommand::execute()
 {
-  camera.setTarget(object.getCenter());
+  // camera.setTarget(object.getCenter());
 }
