@@ -1,88 +1,85 @@
 #include <BaseTextParser.hpp>
 
-#include <ctype.h>
-#include <stddef.h>
+#include <cctype>
+#include <ios>
 
-#include <memory>
-#include <compare>
+#include <filesystem>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
-#include <optional>
-#include <vector>
 #include <string>
-#include <filesystem>
+#include <utility>
+#include <vector>
 
-BaseTextParser::BaseTextParser(const std::string &_pathToFile)
+// TODO Replace all (const std::string &) with (std::string_view)
+
+BaseTextParser::BaseTextParser(std::string _pathToFile)
+    : pathToFile(std::move(_pathToFile))
 {
-    if (!std::filesystem::exists(_pathToFile))
+    std::error_code ec;
+    if (!std::filesystem::exists(pathToFile, ec)) {
         throw std::logic_error("Could not open file");
-
-    pathToFile = _pathToFile;
+    }
 }
 
-std::vector<std::string> BaseTextParser::splitByLines(const std::string &string)
+std::vector<std::string> BaseTextParser::splitByLines(const std::string& string)
 {
-    auto result = std::vector<std::string>{};
-    auto ss = std::stringstream{string};
+    auto result = std::vector<std::string> {};
+    auto ss = std::stringstream { string };
 
-    for (std::string line; std::getline(ss, line, '\n');)
+    for (std::string line; std::getline(ss, line, '\n');) {
         result.emplace_back(line);
+    }
 
     return result;
 }
 
 std::optional<std::string> BaseTextParser::getNextPart(
-    std::string::const_iterator *iter,
+    std::string::const_iterator* iter,
     std::string::const_iterator iterEnd,
     char divider,
     bool allowEmpty)
 {
-    if (*iter >= iterEnd)
+    if (*iter >= iterEnd) {
         return std::nullopt;
+    }
 
     auto iterSecond = *iter;
 
-    while (iterSecond < iterEnd && *iterSecond != divider)
+    while (iterSecond < iterEnd && *iterSecond != divider) {
         ++iterSecond;
+    }
 
     auto result = std::string(*iter, iterSecond);
 
     *iter = iterSecond;
 
-    if (allowEmpty)
-    {
-        do
-        {
+    if (allowEmpty) {
+        do { // NOLINT
             ++(*iter);
-        } while (*iter < iterEnd && **iter != divider && **iter != '-' && !isdigit(**iter));
-    }
-    else
-    {
-        while (*iter < iterEnd && (**iter == divider || **iter == '\r'))
+        } while (*iter < iterEnd && **iter != divider && **iter != '-'
+                 && (isdigit(**iter) == 0));
+    } else {
+        while (*iter < iterEnd && (**iter == divider || **iter == '\r')) {
             ++(*iter);
+        }
     }
 
     return result;
 }
 
-std::unique_ptr<std::string> BaseTextParser::readFile()
+std::string BaseTextParser::readFile()
 {
-    readStream.open(pathToFile, std::ios::in);
-    if (!readStream.is_open())
+    readStream.open(pathToFile, std::ios::binary);
+    if (!readStream.is_open()) {
         throw std::logic_error("Could not open file");
+    }
 
-    readStream.seekg(0, std::ios::end);
-    auto size = static_cast<size_t>(readStream.tellg());
-    auto buffer = std::make_unique<std::string>(size, 0);
-    readStream.seekg(0, std::istream::beg);
-    readStream.read(&((*buffer)[0]), size);
+    const auto size = std::filesystem::file_size(pathToFile);
+    auto buffer = std::string(size, 0);
+
+    readStream.read(buffer.data(), static_cast<std::streamsize>(size));
     readStream.close();
-
-    /*
-    std::cout << "~~~~~~~~~~~~~~" << std::endl
-              << *buffer << std::endl
-              << "~~~~~~~~~~~~~~" << std::endl;
-    */
 
     return buffer;
 }

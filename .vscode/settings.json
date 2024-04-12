@@ -86,7 +86,10 @@
         "typeindex": "cpp",
         "*.def": "cpp",
         "queue": "cpp",
-        "gl.h": "c"
+        "gl.h": "c",
+        "expected": "cpp",
+        "filesystem": "cpp"
     },
     "C_Cpp.default.compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
+    "cmake.copyCompileCommands": "",
 }

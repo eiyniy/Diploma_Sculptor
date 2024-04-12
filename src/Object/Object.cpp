@@ -1,158 +1,257 @@
 #include <Object.hpp>
 
-#include <Globals.hpp>
-#include <Triangle.hpp>
-#include <Material.hpp>
-#include <Matrix.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
-#include <utility>
-#include <memory>
-#include <iostream>
-#include <vector>
+#include <Camera.hpp>
 
-Vector<4> convertVertex(
-    const Vector<4> &,
-    const Matrix<4, 4> &,
-    const Matrix<4, 4> &);
-
-std::shared_ptr<const Material> Object::defaultMaterial = std::make_shared<const Material>(
-    "__DEFAULT_MATERIAL",
-    Vector<4>{0, 0, 0, 0},
-    Vector<4>{1, 1, 1, 0},
-    Vector<4>{0, 0, 0, 0},
-    1,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr);
+#include <stdexcept>
 
 Object::Object(
-    const std::vector<Vector<4>> &_vertices,
-    const std::vector<Vector<4>> &_tVertices,
-    const std::vector<Vector<4>> &_nVertices,
-    const std::vector<Triangle> &_polygons,
-    std::unique_ptr<const std::map<std::string, std::shared_ptr<const Material>>> _materials)
-    : vertices(_vertices),
-      tVertices(_tVertices),
-      nVertices(_nVertices),
-      polygons(_polygons),
-      materials(std::move(_materials))
+    const std::vector<glm::vec3>& _vertices,
+    const std::optional<std::vector<glm::vec3>>& _colorVertices = std::nullopt,
+    const std::optional<std::vector<glm::vec2>>& _textureVertices
+    = std::nullopt,
+    const std::optional<std::vector<glm::vec<3, GLuint>>>& _indices
+    = std::nullopt)
+    : _hasColor(_colorVertices.has_value())
+    , _hasTexture(_textureVertices.has_value())
+    , _hasIndices(_indices.has_value())
+    , verticesSize(_vertices.size())
+    , verticesUnionSize(0)
+    , indicesUnionSize(0)
+    , VAO(0)
+    , VBO(0)
+    , EBO(0)
 {
-    drawable = std::vector<Vector<4>>(vertices.size());
-}
-
-void Object::move(const Vector<4> &transition)
-{
-    const auto moveConvert = Matrix<4, 4>::getMoveConvert(transition);
-
-    // vertices[0].log();
-
-#pragma omp parallel for if (!_IS_DEBUG)
-    for (int j = 0; j < vertices.size(); ++j)
-        vertices[j] = moveConvert * vertices[j];
-
-    // vertices[0].log();
-    std::cout << std::endl;
-}
-
-void Object::convertToDrawable(const Camera &camera)
-{
-    /*
-    const auto convertMatrix =
-        Matrix<4, 4>::getProjectionConvert(camera.cGetFOV(), camera.cGetAspect(), 2000, 0.1) *
-        Matrix<4, 4>::getViewConvert(camera.cGetPosition(), camera.cGetTarget(), camera.cGetUp());
-
-    const auto &resolution = camera.cGetResolution();
-    const auto viewportConvert = Matrix<4, 4>::getViewportConvert(
-        resolution.first, resolution.second, 0, 0);
-
-#pragma omp parallel for if (!_IS_DEBUG)
-    for (int j = 0; j < vertices.size(); ++j)
-        drawable[j] = convertVertex(vertices[j], convertMatrix, viewportConvert);
-    */
-}
-
-void Object::calcGeometricParams()
-{
-    double cx = 0, cy = 0, cz = 0;
-
-    auto first = vertices.cbegin();
-    double xMax = first->cGetX(),
-           xMin = first->cGetX(),
-           zMax = first->cGetZ(),
-           zMin = first->cGetZ();
-
-    for (auto &&vertex : vertices)
-    {
-        const auto x = vertex.cGetX();
-        const auto y = vertex.cGetY();
-        const auto z = vertex.cGetZ();
-
-        if (x > xMax)
-            xMax = x;
-        else if (x < xMin)
-            xMin = x;
-        if (z > zMax)
-            zMax = z;
-        else if (z < zMin)
-            zMin = z;
-
-        cx += x;
-        cy += y;
-        cz += z;
+    if (_hasColor && _colorVertices->size() != _vertices.size()) {
+        throw std::logic_error(
+            "Can't create Object: colorVertices vector has incorrect size.");
+    }
+    if (_hasTexture && _textureVertices->size() != _vertices.size()) {
+        throw std::logic_error(
+            "Can't create Object: textureVertices vector has incorrect size.");
     }
 
-    const auto vCount = (double)vertices.size();
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    if (_hasIndices) {
+        glGenBuffers(1, &EBO);
+    }
 
-    center = Vector<4>(cx / vCount, cy / vCount, cz / vCount);
-    maxXZ = Vector<4>(xMax, 0, zMax);
-    minXZ = Vector<4>(xMin, 0, zMin);
+    const auto vectorSize = _vertices.size();
+
+    verticesUnionSize = vectorSize * 3;
+    verticesUnionStep = 3;
+
+    if (_hasColor) {
+        verticesUnionSize += vectorSize * 3;
+        verticesUnionStep += 3;
+    }
+    if (_hasTexture) {
+        verticesUnionSize += vectorSize * 2;
+        verticesUnionStep += 2;
+    }
+
+    verticesUnion.resize(verticesUnionSize);
+
+    for (std::size_t i = 0; i < vectorSize; ++i) {
+        const auto j = i * verticesUnionStep;
+        const auto& vertex = _vertices[i];
+
+        verticesUnion[j] = vertex.x;
+        verticesUnion[j + 1] = vertex.y;
+        verticesUnion[j + 2] = vertex.z;
+
+        auto k = 3;
+
+        if (_hasColor) {
+            const auto& colorVertex = _colorVertices->at(i);
+
+            verticesUnion[j + k] = colorVertex.r;
+            verticesUnion[j + k + 1] = colorVertex.g;
+            verticesUnion[j + k + 2] = colorVertex.b;
+
+            k += 3;
+        }
+
+        if (_hasTexture) {
+            const auto& textureVertex = _textureVertices->at(i);
+
+            verticesUnion[j + k] = textureVertex.x;
+            verticesUnion[j + k + 1] = textureVertex.y;
+
+            k += 2;
+        }
+    }
+
+    if (_indices.has_value()) {
+        indicesUnionSize = _indices->size() * 3;
+        indicesUnion.resize(indicesUnionSize);
+
+        for (std::size_t i = 0; i < _indices->size(); ++i) {
+            const auto j = i * 3;
+            const auto& index = _indices->at(i);
+
+            indicesUnion[j] = index.x;
+            indicesUnion[j + 1] = index.y;
+            indicesUnion[j + 2] = index.z;
+        }
+    }
+
+    shaderProgram.addShader(
+        "C:\\Users\\Natallia\\Documents\\Labs\\Diploma\\Diploma_"
+        "Sculptor\\resources\\shaders\\base.vert",
+        GL_VERTEX_SHADER);
+    shaderProgram.addShader(
+        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/"
+        "shaders/"
+        "base.frag",
+        GL_FRAGMENT_SHADER);
+
+    shaderProgram.link();
 }
 
-const Vector<4> &Object::getCenter()
+Object::~Object()
 {
-    // if (!center.has_value())
-    calcGeometricParams();
+    // Properly de-allocate all resources once they've outlived their purpose
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 
-    return *center;
+    if (hasIndices()) {
+        glDeleteBuffers(1, &EBO);
+    }
 }
 
-const Vector<4> &Object::getMaxXZ()
+GLint Object::findUniform(const std::string& uniformName) const
 {
-    // if (!maxXZ.has_value())
-    calcGeometricParams();
+    const auto uniformLocation
+        = glGetUniformLocation(shaderProgram.get(), uniformName.c_str());
 
-    return *maxXZ;
+    if (uniformLocation == -1) {
+        throw std::logic_error(
+            "Can't find uniform location. Uniform name - " + uniformName);
+    }
+
+    return uniformLocation;
 }
 
-const Vector<4> &Object::getMinXZ()
+void Object::loadTransformMatrices(
+    const glm::mat4& modelMat,
+    const glm::mat4& viewMat,
+    const glm::mat4& projectionMat) const
 {
-    // if (!minXZ.has_value())
-    calcGeometricParams();
+    const auto modelLoc = findUniform(ShaderProgram::defaultModelUniformName);
+    const auto viewLoc = findUniform(ShaderProgram::defaultViewUniformName);
+    const auto projectionLoc
+        = findUniform(ShaderProgram::defaultProjectionUniformName);
 
-    return *minXZ;
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMat));
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMat));
+    glUniformMatrix4fv(
+        projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));
 }
 
-Vector<4> convertVertex(
-    const Vector<4> &vertex,
-    const Matrix<4, 4> &toProjectionConvert,
-    const Matrix<4, 4> &viewportConvert)
+void Object::addTexture(const Texture& texture, const std::string& name)
 {
-    bool isWNegative = false;
+    if (!textures.has_value()) {
+        textures = std::map<std::string, Texture>();
+    }
 
-    auto vertexCopy = toProjectionConvert * vertex;
+    textures->emplace(name, texture);
+}
 
-    if (vertexCopy.cGetW() <= 0)
-        isWNegative = true;
+void Object::bindTexture(
+    const std::string& name, const std::string& uniformName)
+{
+    shaderProgram.use();
 
-    const auto w = vertexCopy.cGetW();
-    const auto z = vertexCopy.cGetZ();
-    vertexCopy /= w;
+    textures->at(name).bind();
+    glUniform1i(
+        glGetUniformLocation(shaderProgram.get(), uniformName.c_str()),
+        textures->at(name).getTextureBlock());
+}
 
-    vertexCopy = viewportConvert * vertexCopy;
+void Object::setupVAO()
+{
+    // Bind the Vertex Array Object first, then bind and set vertex buffer(s)
+    // and attribute pointer(s).
+    glBindVertexArray(VAO);
 
-    vertexCopy.getZ() = z;
-    vertexCopy.getW() = w;
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(verticesUnionSize),
+        verticesUnion.data(),
+        GL_STATIC_DRAW);
 
-    return vertexCopy;
+    if (hasIndices()) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(
+            GL_ELEMENT_ARRAY_BUFFER,
+            static_cast<GLsizeiptr>(indicesUnionSize),
+            indicesUnion.data(),
+            GL_STATIC_DRAW);
+    }
+
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        static_cast<GLsizei>(verticesUnionStep * sizeof(GLfloat)),
+        (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    auto offset = 3;
+    if (hasColor()) {
+        glVertexAttribPointer(
+            1,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            static_cast<GLsizei>(verticesUnionStep * sizeof(GLfloat)),
+            reinterpret_cast<GLvoid*>(offset * sizeof(GLfloat))); // NOLINT
+        glEnableVertexAttribArray(1);
+
+        offset += 3;
+    }
+
+    if (hasTexture()) {
+        glVertexAttribPointer(
+            2,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            static_cast<GLsizei>(verticesUnionStep * sizeof(GLfloat)),
+            reinterpret_cast<GLvoid*>(offset * sizeof(GLfloat))); // NOLINT
+        glEnableVertexAttribArray(2);
+
+        offset += 2;
+    }
+
+    // Note that this is allowed, the call to glVertexAttribPointer registered
+    // VBO as the currently bound vertex buffer object so afterwards we can
+    // safely unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Unbind VAO (it's always a good thing to unbind any buffer/array to
+    // prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to
+    // this VAO
+    glBindVertexArray(0);
+}
+
+void Object::draw() const
+{
+    glBindVertexArray(VAO);
+
+    if (hasIndices()) {
+        glDrawElements(
+            GL_TRIANGLES,
+            static_cast<GLsizei>(indicesUnionSize),
+            GL_UNSIGNED_INT,
+            0);
+    } else {
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(verticesSize));
+    }
+
+    glBindVertexArray(0);
 }

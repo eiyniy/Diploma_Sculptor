@@ -1,54 +1,44 @@
 #pragma once
 
-#include <ShaderProgramm.hpp>
+#include <Camera.hpp>
+#include <MainWindow.hpp>
+#include <Scene.hpp>
+#include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
-// IWYU pragma: begin_keep
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-// IWYU pragma: end_keep
-
-class MainWindow;
-class Scene;
-class Camera;
+#include <glm/fwd.hpp>
 
 enum class AxisName;
 enum class Direction;
 
-class Engine
-{
+class Engine {
 public:
-    Engine(
-        Scene &_scene,
-        MainWindow &_mainWindow,
-        Camera &_camera);
+    Engine(const Engine&) = default;
+    Engine(Engine&&) = delete;
+    Engine& operator=(const Engine&) = delete;
+    Engine& operator=(Engine&&) = delete;
+    Engine(Scene _scene, MainWindow _mainWindow, Camera _camera);
 
     ~Engine();
 
     void start();
 
 private:
-    const int defaultFps = 165;
-
-    Scene &scene;
-    MainWindow &mainWindow;
-    Camera &camera;
+    Scene scene;
+    MainWindow mainWindow;
+    Camera camera;
 
     AxisName moveAxis;
     Direction moveDirection;
 
-    GLfloat deltaTime, lastFrameTime;
+    GLfloat deltaTime;
+    GLfloat lastFrameTime;
 
-    GLuint VBO, VAO, EBO;
-    ShaderProgram shaderProgram;
-
-    Texture containerTexture;
-    Texture faceTexture;
-
+    glm::mat4 modelMat;
+    glm::mat4 viewMat;
     glm::mat4 projectionMat;
 
-    void
-    update();
+    void update();
 
     void draw();
 };

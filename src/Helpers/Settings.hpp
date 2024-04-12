@@ -1,80 +1,84 @@
 #pragma once
 
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+
 #include <GL/glew.h>
 
-#include <utility>
-#include <string>
 #include <mutex>
+#include <string>
 
-class Settings
-{
+class Settings {
 private:
-	static Settings *instance;
-	static std::mutex mutex;
+    static Settings* instance;
+    static std::mutex mutex;
 
-	std::pair<int, int> startupResolution;
+    GLfloat cameraSpeed;
+    GLfloat cameraFoV;
 
-	GLfloat cameraSpeed;
-	GLfloat cameraFoV;
+    GLfloat cameraMouseSens;
 
-	bool vSyncEnabled;
-	bool depthBufferEnabled;
-	bool resizeEnabled;
+    float zNear;
+    float zFar;
 
-	std::string windowName;
+    glm::vec<4, GLclampf> windowClearColor;
+
+    bool vSyncEnabled;
+    bool depthBufferEnabled;
+    bool resizeEnabled;
+
+    std::string windowName;
 
 protected:
-	Settings();
+    Settings();
+    ~Settings() = default;
 
 public:
-	Settings(Settings &other) = delete;
-	void operator=(const Settings &) = delete;
+    Settings(Settings&&) = delete;
+    Settings& operator=(Settings&&) = delete;
+    Settings(Settings& other) = delete;
+    void operator=(const Settings&) = delete;
 
-	static Settings *get();
+    static Settings* get();
 
-	std::pair<int, int> getStartupResolution();
+    [[nodiscard]] GLfloat getCameraSpeed() const;
+    [[nodiscard]] GLfloat getCameraFoV() const;
+    [[nodiscard]] GLfloat getCameraMouseSens() const;
 
-	GLfloat getCameraSpeed();
-	GLfloat getCameraFoV();
+    [[nodiscard]] float getZNear() const;
+    [[nodiscard]] float getZFar() const;
 
-	bool isVSyncEnabled();
-	bool isDepthBufferEnabled();
-	bool isResizeEnabled();
+    [[nodiscard]] glm::vec<4, GLclampf> getWindowClearColor() const;
 
-	const std::string &getWindowName();
+    [[nodiscard]] bool isVSyncEnabled() const;
+    [[nodiscard]] bool isDepthBufferEnabled() const;
+    [[nodiscard]] bool isResizeEnabled() const;
+
+    const std::string& getWindowName();
 };
 
-inline std::pair<int, int> Settings::getStartupResolution()
+inline GLfloat Settings::getCameraSpeed() const { return cameraSpeed; }
+
+inline GLfloat Settings::getCameraFoV() const { return cameraFoV; }
+
+inline GLfloat Settings::getCameraMouseSens() const { return cameraMouseSens; }
+
+inline float Settings::getZNear() const { return zNear; }
+
+inline float Settings::getZFar() const { return zFar; }
+
+inline glm::vec<4, GLclampf> Settings::getWindowClearColor() const
 {
-	return startupResolution;
+    return windowClearColor;
 }
 
-inline GLfloat Settings::getCameraSpeed()
+inline bool Settings::isVSyncEnabled() const { return vSyncEnabled; }
+
+inline bool Settings::isDepthBufferEnabled() const
 {
-	return cameraSpeed;
+    return depthBufferEnabled;
 }
 
-inline GLfloat Settings::getCameraFoV()
-{
-	return cameraFoV;
-}
+inline bool Settings::isResizeEnabled() const { return resizeEnabled; }
 
-inline bool Settings::isVSyncEnabled()
-{
-	return vSyncEnabled;
-}
-
-inline bool Settings::isDepthBufferEnabled()
-{
-	return depthBufferEnabled;
-}
-
-inline bool Settings::isResizeEnabled()
-{
-	return resizeEnabled;
-}
-
-inline const std::string &Settings::getWindowName()
-{
-	return windowName;
-}
+inline const std::string& Settings::getWindowName() { return windowName; }

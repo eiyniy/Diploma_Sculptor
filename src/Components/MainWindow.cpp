@@ -5,13 +5,15 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <cmath>
 #include <iostream>
+#include <stdexcept>
 #include <utility>
 
-MainWindow::MainWindow(const std::pair<int, int> &_resolution)
-    : resolution(_resolution),
-      keys({0}),
-      isMoved(false)
+MainWindow::MainWindow(const std::pair<int, int> _resolution)
+    : resolution(_resolution)
+    , keys()
+    , isMoved(false)
 {
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
     // Init GLFW
@@ -20,7 +22,8 @@ MainWindow::MainWindow(const std::pair<int, int> &_resolution)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, Settings::get()->isResizeEnabled());
+    glfwWindowHint(
+        GLFW_RESIZABLE, static_cast<int>(Settings::get()->isResizeEnabled()));
 
     // Create a GLFWwindow object that we can use for GLFW's functions
     window = glfwCreateWindow(
@@ -33,98 +36,93 @@ MainWindow::MainWindow(const std::pair<int, int> &_resolution)
 
     glfwSetWindowUserPointer(window, this);
 
-    double cursorPosX, cursorPosY;
+    double cursorPosX = NAN;
+    double cursorPosY = NAN;
     glfwGetCursorPos(window, &cursorPosX, &cursorPosY);
-    lastCoord = {cursorPosX, cursorPosY};
+    lastCoord = { cursorPosX, cursorPosY };
 
     glfwSetKeyCallback(window, keyCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
 
-    // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
+    // Set this to true so GLEW knows to use a modern approach to retrieving
+    // function pointers and extensions
     glewExperimental = GL_TRUE;
     // Initialize GLEW to setup the OpenGL Function pointers
     glewInit();
 
     // Define the viewport dimensions
-    int width, height;
+    int width = 0;
+    int height = 0;
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
-    activeResolution = {width, height};
+    activeResolution = { width, height };
 }
 
-const std::pair<GLfloat, GLfloat> MainWindow::resetCoordOffset()
+std::pair<GLfloat, GLfloat> MainWindow::resetCoordOffset()
 {
-    if (!isMoved)
-        return {0.f, 0.f};
-    else
-    {
-        isMoved = false;
-        return coordOffset;
+    if (!isMoved) {
+        return { 0.F, 0.F };
     }
+
+    isMoved = false;
+    return coordOffset;
 }
 
 void MainWindow::clear()
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    const auto clearColor = Settings::get()->getWindowClearColor();
+
+    glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+
+    if (Settings::get()->isDepthBufferEnabled()) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    } else {
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
 }
 
-void MainWindow::swapBuffers()
-{
-    glfwSwapBuffers(window);
-}
+void MainWindow::swapBuffers() { glfwSwapBuffers(window); }
 
-void MainWindow::close()
-{
-    glfwSetWindowShouldClose(window, GL_TRUE);
-}
+void MainWindow::close() { glfwSetWindowShouldClose(window, GL_TRUE); }
 
 void MainWindow::keyCallback(
-    GLFWwindow *window,
-    int key,
-    int scancode,
-    int action,
-    int mode)
+    GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    auto *obj = glfwGetWindowUserPointer(window);
-    auto mainWindow = static_cast<MainWindow *>(obj);
+    auto* obj = glfwGetWindowUserPointer(window);
+    auto* mainWindow = static_cast<MainWindow*>(obj);
 
     mainWindow->keyCallbackInner(key, scancode, action, mode);
 }
 
-void MainWindow::mouseCallback(
-    GLFWwindow *window,
-    double xpos,
-    double ypos)
+void MainWindow::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-    auto *obj = glfwGetWindowUserPointer(window);
-    auto mainWindow = static_cast<MainWindow *>(obj);
+    auto* obj = glfwGetWindowUserPointer(window);
+    auto* mainWindow = static_cast<MainWindow*>(obj);
 
     mainWindow->mouseCallbackInner(xpos, ypos);
 }
 
 void MainWindow::keyCallbackInner(
-    const int key,
-    const int scancode,
-    const int action,
-    const int mode)
+    const int key, const int scancode, const int action, const int mode)
 {
-    if (action == GLFW_PRESS)
-        keys[key] = true;
-    else if (action == GLFW_RELEASE)
-        keys[key] = false;
+    if (key >= keys.size()) {
+        throw std::out_of_range("Key code is out of range");
+    }
+
+    if (action == GLFW_PRESS) {
+        keys.at(key) = true;
+    } else if (action == GLFW_RELEASE) {
+        keys.at(key) = false;
+    }
 }
 
-void MainWindow::mouseCallbackInner(
-    const double xpos,
-    const double ypos)
+void MainWindow::mouseCallbackInner(const double xpos, const double ypos)
 {
     isMoved = true;
 
-    // Обратный порядок вычитания Y, потому что оконные Y-координаты возрастают с верху вниз
-    coordOffset = {
-        xpos - lastCoord.first,
-        lastCoord.second - ypos};
+    // Обратный порядок вычитания Y, потому что оконные Y-координаты возрастают
+    // с верху вниз
+    coordOffset = { xpos - lastCoord.first, lastCoord.second - ypos };
 
-    lastCoord = {xpos, ypos};
+    lastCoord = { xpos, ypos };
 }

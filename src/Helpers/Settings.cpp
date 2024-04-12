@@ -1,29 +1,38 @@
 #include <Settings.hpp>
+#include <trigonometric.hpp>
 
-// IWYU pragma: begin_keep
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-// IWYU pragma: end_keep
+Settings* Settings::instance { nullptr };
+std::mutex Settings::mutex {};
 
-Settings *Settings::instance{nullptr};
-std::mutex Settings::mutex{};
+constexpr float defaultCameraSpeed = 3.F;
+constexpr float defaultCameraFoV = glm::radians(45.F);
+constexpr float defaultCameraMouseSens = 0.05F;
+constexpr float defaultZNear = 0.1F;
+constexpr float defaultZFar = 100.F;
+constexpr glm::vec<4, GLclampf> defaultWindowClearColor {
+    0.2F, 0.3F, 0.3F, 1.0F
+};
 
 Settings::Settings()
-	: startupResolution{1280, 720},
-	  cameraSpeed{3.f},
-	  cameraFoV(glm::radians(45.0f)),
-	  vSyncEnabled(true),
-	  depthBufferEnabled(true),
-	  resizeEnabled(false),
-	  windowName("Sculptor")
+    : cameraSpeed(defaultCameraSpeed)
+    , cameraFoV(defaultCameraFoV)
+    , cameraMouseSens(defaultCameraMouseSens)
+    , vSyncEnabled(true)
+    , depthBufferEnabled(true)
+    , resizeEnabled(false)
+    , windowName("Sculptor")
+    , zNear(defaultZNear)
+    , zFar(defaultZFar)
+    , windowClearColor(defaultWindowClearColor)
 {
 }
 
-Settings *Settings::get()
+Settings* Settings::get()
 {
-	std::lock_guard<std::mutex> lock(mutex);
-	if (instance == nullptr)
-		instance = new Settings();
+    std::lock_guard<std::mutex> lock(mutex);
+    if (instance == nullptr) {
+        instance = new Settings();
+    }
 
-	return instance;
+    return instance;
 }

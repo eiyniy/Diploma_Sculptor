@@ -4,38 +4,33 @@
 
 #include <string>
 
-class Texture
-{
+class Texture {
 private:
     GLuint texture;
 
-    const int textureBlock;
-    const int dimensionality;
+    int textureBlock;
+    int dimensionality;
 
     bool isBinded;
 
-    unsigned char *image;
+    unsigned char* image;
     int width, height;
 
-    void throwIfNotBinded(const std::string &message);
+    void throwIfNotBinded(const std::string& message) const;
 
 public:
-    Texture(
-        const int _textureBlock,
-        const int _dimensionality);
+    Texture(int _textureBlock, int _dimensionality);
 
     void bind();
     void unbind();
 
-    void setWrapping(
-        const int axis,
-        const int method);
+    void setWrapping(int axis, int method);
 
-    void setFiltering(
-        const int filter,
-        const int method);
+    void setFiltering(int filter, int method);
 
     void setDefaults();
 
-    void load(const std::string &path);
+    void load(const std::string& path);
+
+    [[nodiscard]] int getTextureBlock() const;
 };

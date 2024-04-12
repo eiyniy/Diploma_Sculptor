@@ -1,31 +1,38 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <Object.hpp>
+
 #include <map>
+#include <string>
 
 class Object;
 class Camera;
 class BaseLightSource;
 
-class Scene
-{
+class Scene {
 private:
-    std::string selectedObjectName;
-    std::map<std::string, Object *> objects;
+    // std::string selectedObjectName;
+    // std::map<std::string, OldObject *> objects;
 
-    BaseLightSource *lightSource;
+    // BaseLightSource *lightSource;
+
+    std::map<std::string, Object> objects;
 
 public:
-    const std::string floorObjectName = "_FLOOR";
+    // const std::string floorObjectName = "_FLOOR";
 
     Scene();
 
-    ~Scene();
+    // ~Scene();
 
-    void addObject(const std::string &key, Object *object);
+    void addObject(const std::string& key, Object object);
 
-    [[nodiscard]] const Object *cGetObject(const std::string &key) const;
+    const Object& getObject(const std::string& key);
+
+    const std::map<std::string, Object>& getAllObjects();
+
+    /*
+    [[nodiscard]] const OldObject *cGetObject(const std::string &key) const;
 
     [[nodiscard]] std::vector<std::string> cGetAllObjectNames() const;
 
@@ -33,17 +40,30 @@ public:
 
     [[nodiscard]] const BaseLightSource *cGetLightSource() const;
 
-    Object *getObject(const std::string &key);
+    OldObject *getObject(const std::string &key);
 
     Camera &getCamera();
+    */
 };
 
-inline const Object *Scene::cGetObject(const std::string &key) const
+/*
+inline const OldObject *Scene::cGetObject(const std::string &key) const
 {
     return objects.at(key);
 }
 
-inline Object *Scene::getObject(const std::string &key)
+inline OldObject *Scene::getObject(const std::string &key)
 {
     return objects.at(key);
+}
+*/
+
+inline const Object& Scene::getObject(const std::string& key)
+{
+    return objects.at(key);
+}
+
+inline const std::map<std::string, Object>& Scene::getAllObjects()
+{
+    return objects;
 }

@@ -3,36 +3,30 @@
 #include <Graph.hpp>
 #include <Matrix.hpp>
 
-#include <vector>
 #include <utility>
+#include <vector>
 
-class Object;
+class OldObject;
 
-class Sculptor
-{
+class Sculptor {
 private:
     int radius;
     Graph graph;
 
 public:
-    Sculptor(const int _radius);
+    Sculptor(int _radius);
 
-    inline int cGetRadius() const;
+    [[nodiscard]] inline int cGetRadius() const;
 
-    void createGraph(Object *object);
-
-    void pull(
-        std::vector<Vector<4>> &vertices,
-        const std::pair<int, int> &mousePos,
-        const Vector<4> &direction);
+    void createGraph(OldObject* object);
 
     void pull(
-        Object *object,
-        const int triangleId,
-        const std::pair<int, int> mousePos);
+        std::vector<Vector<4>>& vertices,
+        std::pair<int, int> mousePos,
+        const Vector<4>& direction);
+
+    static void
+    pull(OldObject* object, int triangleId, std::pair<int, int> mousePos);
 };
 
-inline int Sculptor::cGetRadius() const
-{
-    return radius;
-}
+inline int Sculptor::cGetRadius() const { return radius; }

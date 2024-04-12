@@ -10,7 +10,7 @@ project(${LOCAL_PROJECT_NAME}
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CIMG_NEED_X11 0)
 set(CIMG_NEED_PNG 1)
@@ -27,11 +27,30 @@ MACRO(HEADER_DIRECTORIES return_list)
     SET(dir_list "")
     FOREACH (file_path ${new_list})
         # GET_FILENAME_COMPONENT(file_name ${file_path} NAME)
-        # message(STATUS "[INFO] Found ${file_name} header.")
         # message(STATUS "${file_name}")
         GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
+        # message(STATUS "${dir_path}")
         SET(dir_list ${dir_list} ${dir_path})
     ENDFOREACH ()
+        
+    FILE(GLOB_RECURSE new_list "${PROJECT_SOURCE_DIR}/libraries/*.hpp")
+    FOREACH (file_path ${new_list})
+        # GET_FILENAME_COMPONENT(file_name ${file_path} NAME)
+        # message(STATUS "${file_name}")
+        GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
+        # message(STATUS "${dir_path}")
+        SET(dir_list ${dir_list} ${dir_path})
+    ENDFOREACH ()
+
+    FILE(GLOB_RECURSE new_list "${PROJECT_SOURCE_DIR}/libraries/*.h")
+    FOREACH (file_path ${new_list})
+        # GET_FILENAME_COMPONENT(file_name ${file_path} NAME)
+        # message(STATUS "${file_name}")
+        GET_FILENAME_COMPONENT(dir_path ${file_path} PATH)
+        # message(STATUS "${dir_path}")
+        SET(dir_list ${dir_list} ${dir_path})
+    ENDFOREACH ()
+    
     LIST(REMOVE_DUPLICATES dir_list)
     SET(${return_list} ${dir_list})
 ENDMACRO()
@@ -119,3 +138,14 @@ target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${SOIL_H_PATH})
 add_subdirectory("libraries/GLM")
 target_link_libraries(${LOCAL_PROJECT_NAME} PUBLIC glm::glm)
 target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE glm)
+
+
+add_compile_options(-Wall)
+add_compile_options(-Wextra)
+add_compile_options(-Werror)
+
+file(CREATE_LINK
+  "${CMAKE_BINARY_DIR}/compile_commands.json"
+  "${CMAKE_SOURCE_DIR}/compile_commands.json"
+  SYMBOLIC
+)

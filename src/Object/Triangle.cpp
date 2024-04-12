@@ -1,28 +1,30 @@
 #include <Triangle.hpp>
 
-#include <ObjParser.hpp>
 #include <EarClipper.hpp>
-#include <Matrix.hpp>
 #include <Enums.hpp>
 #include <Math.hpp>
+#include <Matrix.hpp>
+#include <ObjParser.hpp>
 
+#include <array>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <optional>
-#include <array>
 
-VertexIds::VertexIds() = default;
+// VertexIds::VertexIds() = default;
 
 VertexIds::VertexIds(
     const int _vertexId,
-    const std::optional<int> &_tVertexId,
-    const std::optional<int> &_nVertexId)
-    : vertexId(_vertexId),
-      tVertexId(_tVertexId),
-      nVertexId(_nVertexId) {}
+    const std::optional<int>& _tVertexId,
+    const std::optional<int>& _nVertexId)
+    : vertexId(_vertexId)
+    , tVertexId(_tVertexId)
+    , nVertexId(_nVertexId)
+{
+}
 
-VertexIds VertexIds::parse(const std::string &str)
+VertexIds VertexIds::parse(const std::string& str)
 {
     auto accumulator = std::array<std::optional<int>, 3>();
 
@@ -30,61 +32,53 @@ VertexIds VertexIds::parse(const std::string &str)
     auto iterEnd = str.cend();
 
     int i = 0;
-    while (auto strPart = ObjParser::getNextPart(&iter, iterEnd, '/', true))
-    {
-        accumulator[i] = Math::optStoi(*strPart);
+    while (auto strPart = ObjParser::getNextPart(&iter, iterEnd, '/', true)) {
+        accumulator.at(i) = Math::optStoi(*strPart);
         ++i;
     }
 
-    if (!accumulator[0].has_value())
+    if (!accumulator[0].has_value()) {
         throw std::logic_error("Invalid argument");
+    }
 
-    return VertexIds{*accumulator[0], accumulator[1], accumulator[2]};
+    return VertexIds { *accumulator[0], accumulator[1], accumulator[2] };
 }
 
 Triangle::Triangle(
-    const std::vector<VertexIds> &indexes,
-    const std::optional<std::string> &_materialName)
-    : vertexIndexesCount((int)indexes.size()),
-      materialName(_materialName)
+    const std::vector<VertexIds>& indexes,
+    const std::optional<std::string>& _materialName)
+    : vertexIndexesCount((int)indexes.size())
+    , materialName(_materialName)
+    , values { indexes[0], indexes[1], indexes[2] }
 {
-    if (values.size() != 3)
-        throw std::logic_error("Invalid argument");
-
-    values[0] = indexes[0];
-    values[1] = indexes[1];
-    values[2] = indexes[2];
 }
 
-int Triangle::cGetVertexIdsCount() const
-{
-    return vertexIndexesCount;
-}
+int Triangle::cGetVertexIdsCount() const { return vertexIndexesCount; }
 
-const VertexIds &Triangle::cGetVertexIds(const int i) const
+const VertexIds& Triangle::cGetVertexIds(const int i) const
 {
-    if (i > 2)
+    if (i > 2) {
         throw std::invalid_argument("Could not get VertexIds");
+    }
 
-    return values[i];
+    return values.at(i);
 }
 
 std::vector<Triangle> Triangle::parseAndTriangulate(
-    const std::string &line,
-    const std::vector<Vector<4>> &vertices,
-    const std::optional<std::string> &materialName)
+    const std::string& line,
+    const std::vector<Vector<4>>& vertices,
+    const std::optional<std::string>& materialName)
 {
     const auto accumulator = parseInner(line);
     return EarClipper::triangulate(accumulator, vertices, materialName);
 }
 
-const Vector<4> &Triangle::getFlatNormal(const std::vector<Vector<4>> &vertices)
+const Vector<4>& Triangle::getFlatNormal(const std::vector<Vector<4>>& vertices)
 {
-    if (!normal.has_value())
-    {
-        const auto &a = vertices.at(cGetVertexIds(0).cGetVertexId() - 1);
-        const auto &b = vertices.at(cGetVertexIds(1).cGetVertexId() - 1);
-        const auto &c = vertices.at(cGetVertexIds(2).cGetVertexId() - 1);
+    if (!normal.has_value()) {
+        const auto& a = vertices.at(cGetVertexIds(0).cGetVertexId() - 1);
+        const auto& b = vertices.at(cGetVertexIds(1).cGetVertexId() - 1);
+        const auto& c = vertices.at(cGetVertexIds(2).cGetVertexId() - 1);
 
         const auto v0 = b - a;
         const auto v1 = c - a;
@@ -96,9 +90,11 @@ const Vector<4> &Triangle::getFlatNormal(const std::vector<Vector<4>> &vertices)
     return *normal;
 }
 
-const Vector<4> Triangle::getPhongNormal(
-    const std::vector<Vector<4>> &nVertices,
-    const double b0, const double b1, const double b2)
+Vector<4> Triangle::getPhongNormal(
+    const std::vector<Vector<4>>& nVertices,
+    const double b0,
+    const double b1,
+    const double b2) const
 {
     Vector<4> phongNormal;
 
@@ -106,12 +102,13 @@ const Vector<4> Triangle::getPhongNormal(
     const auto nId1 = cGetVertexIds(1).cGetNormalVertexId();
     const auto nId2 = cGetVertexIds(2).cGetNormalVertexId();
 
-    if (!nId0.has_value() || !nId1.has_value() || !nId2.has_value())
+    if (!nId0.has_value() || !nId1.has_value() || !nId2.has_value()) {
         throw std::runtime_error("Can not get normal");
+    }
 
-    const auto &aNormal = nVertices.at(*nId0 - 1);
-    const auto &bNormal = nVertices.at(*nId1 - 1);
-    const auto &cNormal = nVertices.at(*nId2 - 1);
+    const auto& aNormal = nVertices.at(*nId0 - 1);
+    const auto& bNormal = nVertices.at(*nId1 - 1);
+    const auto& cNormal = nVertices.at(*nId2 - 1);
 
     phongNormal = aNormal * b0 + bNormal * b1 + cNormal * b2;
     phongNormal.normalize();
@@ -119,13 +116,13 @@ const Vector<4> Triangle::getPhongNormal(
     return phongNormal;
 }
 
-const Vector<4> &Triangle::getCenter(const std::vector<Vector<4>> &vertices)
+const Vector<4>& Triangle::getCenter(const std::vector<Vector<4>>& vertices)
 {
     // if (!center.has_value())
     // {
-    const auto &a = vertices.at(cGetVertexIds(0).cGetVertexId() - 1);
-    const auto &b = vertices.at(cGetVertexIds(1).cGetVertexId() - 1);
-    const auto &c = vertices.at(cGetVertexIds(2).cGetVertexId() - 1);
+    const auto& a = vertices.at(cGetVertexIds(0).cGetVertexId() - 1);
+    const auto& b = vertices.at(cGetVertexIds(1).cGetVertexId() - 1);
+    const auto& c = vertices.at(cGetVertexIds(2).cGetVertexId() - 1);
 
     center = {
         (a.cGetX() + b.cGetX() + c.cGetX()) / 3,
@@ -137,13 +134,14 @@ const Vector<4> &Triangle::getCenter(const std::vector<Vector<4>> &vertices)
     return *center;
 }
 
-std::vector<VertexIds> Triangle::parseInner(const std::string &line)
+std::vector<VertexIds> Triangle::parseInner(const std::string& line)
 {
     auto entryType = ObjParser::getEntryType(line);
-    if (entryType != ObjEntryType::Polygon)
+    if (entryType != ObjEntryType::Polygon) {
         throw std::logic_error("Could not parse polygon");
+    }
 
-    std::vector<VertexIds> accumulator{};
+    std::vector<VertexIds> accumulator {};
     accumulator.reserve(3);
 
     auto iter = line.cbegin();
@@ -152,8 +150,7 @@ std::vector<VertexIds> Triangle::parseInner(const std::string &line)
     ObjParser::getNextPart(&iter, iterEnd, ' ');
 
     int i = 0;
-    while (auto strPart = ObjParser::getNextPart(&iter, iterEnd, ' '))
-    {
+    while (auto strPart = ObjParser::getNextPart(&iter, iterEnd, ' ')) {
         accumulator.emplace_back(VertexIds::parse(*strPart));
         ++i;
     }

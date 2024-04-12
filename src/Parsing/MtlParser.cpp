@@ -1,38 +1,41 @@
 #include <MtlParser.hpp>
 
+#include <BaseTextParser.hpp>
+#include <Enums.hpp>
 #include <ImageParser.hpp>
 #include <Material.hpp>
-#include <Enums.hpp>
-#include <BaseTextParser.hpp>
 #include <Matrix.hpp>
 #include <OldTexture.hpp>
 
-#include <stdexcept>
-#include <utility>
-#include <vector>
 #include <array>
-#include <string>
-#include <memory>
 #include <map>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <utility>
 
-MtlParser::MtlParser(const std::string &_pathToMtl)
+const auto chanelMaxValue = 255.F;
+
+MtlParser::MtlParser(const std::string& _pathToMtl)
     : BaseTextParser(_pathToMtl)
 {
     resetMaterial();
 
-    materials = std::make_unique<std::map<std::string, std::shared_ptr<const Material>>>();
+    materials = std::make_unique<
+        std::map<std::string, std::shared_ptr<const Material>>>();
 }
 
-std::unique_ptr<const std::map<std::string, std::shared_ptr<const Material>>> MtlParser::parse()
+std::unique_ptr<const std::map<std::string, std::shared_ptr<const Material>>>
+MtlParser::parse()
 {
     const auto fileContent = readFile();
-    const auto lines = splitByLines(*fileContent);
+    const auto lines = splitByLines(fileContent);
 
-    for (const auto &line : lines)
+    for (const auto& line : lines) {
         parseEntry(line);
+    }
 
-    if (!name.empty())
-    {
+    if (!name.empty()) {
         (*materials)[name] = std::make_shared<const Material>(
             name,
             ambient,
@@ -50,23 +53,21 @@ std::unique_ptr<const std::map<std::string, std::shared_ptr<const Material>>> Mt
     return std::move(materials);
 }
 
-void MtlParser::parseEntry(const std::string &line)
+void MtlParser::parseEntry(const std::string& line)
 {
     const auto type = getEntryType(line);
-    if (!type.has_value())
+    if (!type.has_value()) {
         return;
+    }
 
     auto iter = line.cbegin();
     const auto iterEnd = line.cend();
 
     MtlParser::getNextPart(&iter, iterEnd, ' ');
 
-    switch (*type)
-    {
-    case MtlEntryType::NewMaterial:
-    {
-        if (!name.empty())
-        {
+    switch (*type) {
+    case MtlEntryType::NewMaterial: {
+        if (!name.empty()) {
             (*materials)[name] = std::make_shared<const Material>(
                 name,
                 ambient,
@@ -83,8 +84,9 @@ void MtlParser::parseEntry(const std::string &line)
 
         const auto optName = MtlParser::getNextPart(&iter, iterEnd, ' ');
 
-        if (!optName)
+        if (!optName) {
             throw std::logic_error("Can't parse material name");
+        }
 
         name = *optName;
         break;
@@ -98,64 +100,74 @@ void MtlParser::parseEntry(const std::string &line)
     case MtlEntryType::Specular:
         specular = parseCoeff(line);
         break;
-    case MtlEntryType::SpecularExp:
-    {
-        const auto optSpecularExpString = MtlParser::getNextPart(&iter, iterEnd, ' ');
+    case MtlEntryType::SpecularExp: {
+        const auto optSpecularExpString
+            = MtlParser::getNextPart(&iter, iterEnd, ' ');
 
-        if (!optSpecularExpString)
+        if (!optSpecularExpString) {
             throw std::logic_error("Can't parse specular exponent");
+        }
 
         specularExp = std::stod(*optSpecularExpString);
         break;
     }
     case MtlEntryType::DiffuseMap:
-        diffuseMap = parseTexture(line, pathToFile);
+        diffuseMap = parseTexture(line, getPathToFile());
         break;
     case MtlEntryType::EmissiveMap:
-        emissiveMap = parseTexture(line, pathToFile);
+        emissiveMap = parseTexture(line, getPathToFile());
         break;
     case MtlEntryType::NormalMap:
-        normalMap = parseTexture(line, pathToFile);
+        normalMap = parseTexture(line, getPathToFile());
         break;
     case MtlEntryType::MRAOMap:
-        mraoMap = parseTexture(line, pathToFile);
+        mraoMap = parseTexture(line, getPathToFile());
         break;
     default:
         break;
     }
 }
 
-std::optional<MtlEntryType> MtlParser::getEntryType(const std::string &line)
+std::optional<MtlEntryType> MtlParser::getEntryType(const std::string& line)
 {
     auto iter = line.begin();
 
     auto type = getNextPart(&iter, line.end(), ' ');
 
-    if (!type)
+    if (!type) {
         return std::nullopt;
+    }
 
-    if (type == "newmtl")
+    if (type == "newmtl") {
         return MtlEntryType::NewMaterial;
-    else if (type == "Ka")
+    }
+    if (type == "Ka") {
         return MtlEntryType::Ambient;
-    else if (type == "Kd")
+    }
+    if (type == "Kd") {
         return MtlEntryType::Diffuse;
-    else if (type == "Ks")
+    }
+    if (type == "Ks") {
         return MtlEntryType::Specular;
-    else if (type == "Ns")
+    }
+    if (type == "Ns") {
         return MtlEntryType::SpecularExp;
-    // else if (type == "map_Ka")
-    // return MtlEntryType::AmbientMap;
-    else if (type == "map_Kd")
+        // else if (type == "map_Ka")
+        // return MtlEntryType::AmbientMap;
+    }
+    if (type == "map_Kd") {
         return MtlEntryType::DiffuseMap;
-    else if (type == "map_Ke")
+    }
+    if (type == "map_Ke") {
         return MtlEntryType::EmissiveMap;
-    else if (type == "norm")
+    }
+    if (type == "norm") {
         return MtlEntryType::NormalMap;
-    else if (type == "map_MRAO")
+    }
+    if (type == "map_MRAO") {
         return MtlEntryType::MRAOMap;
-    else
-        return std::nullopt;
+    }
+    return std::nullopt;
 }
 
 void MtlParser::resetMaterial()
@@ -171,13 +183,13 @@ void MtlParser::resetMaterial()
     mraoMap = nullptr;
 }
 
-const Vector<4> MtlParser::parseCoeff(const std::string &line)
+Vector<4> MtlParser::parseCoeff(const std::string& line)
 {
     const auto entryType = MtlParser::getEntryType(line);
-    if (entryType != MtlEntryType::Ambient &&
-        entryType != MtlEntryType::Diffuse &&
-        entryType != MtlEntryType::Specular)
+    if (entryType != MtlEntryType::Ambient && entryType != MtlEntryType::Diffuse
+        && entryType != MtlEntryType::Specular) {
         throw std::logic_error("Can't parse material coefficent");
+    }
 
     std::optional<std::string> strPart;
     auto accumulator = std::array<double, 3>();
@@ -188,33 +200,37 @@ const Vector<4> MtlParser::parseCoeff(const std::string &line)
     MtlParser::getNextPart(&iter, iterEnd, ' ');
 
     int i = 0;
-    for (; (strPart = MtlParser::getNextPart(&iter, line.end(), ' ')); ++i)
-        accumulator[i] = std::stod(*strPart) * 255;
+    for (; (strPart = MtlParser::getNextPart(&iter, line.end(), ' ')); ++i) {
+        accumulator.at(i) = std::stod(*strPart) * chanelMaxValue;
+    }
 
     // if (i != 3)
     // throw std::logic_error("MtlParser. Can't parse value.");
 
-    return {accumulator[0], accumulator[1], accumulator[2]};
+    return { accumulator[0], accumulator[1], accumulator[2] };
 }
 
 std::unique_ptr<const OldTexture> MtlParser::parseTexture(
-    const std::string &line,
-    const std::string &pathToFile,
+    const std::string& line,
+    const std::string& pathToFile,
     std::optional<MtlEntryType> optType)
 {
-    if (!optType)
-    {
+    if (!optType) {
         optType = MtlParser::getEntryType(line);
-        if (!optType)
-            throw std::logic_error("Can't parse material texture. Can't get entry type");
+        if (!optType) {
+            throw std::logic_error(
+                "Can't parse material texture. Can't get entry type");
+        }
     }
 
     const auto entryType = *optType;
-    if (entryType != MtlEntryType::DiffuseMap &&
-        entryType != MtlEntryType::EmissiveMap &&
-        entryType != MtlEntryType::NormalMap &&
-        entryType != MtlEntryType::MRAOMap)
-        throw std::logic_error("Can't parse material texture. Invalid entry type");
+    if (entryType != MtlEntryType::DiffuseMap
+        && entryType != MtlEntryType::EmissiveMap
+        && entryType != MtlEntryType::NormalMap
+        && entryType != MtlEntryType::MRAOMap) {
+        throw std::logic_error(
+            "Can't parse material texture. Invalid entry type");
+    }
 
     auto iter = line.cbegin();
     const auto iterEnd = line.cend();
@@ -223,13 +239,14 @@ std::unique_ptr<const OldTexture> MtlParser::parseTexture(
 
     const auto optTexturePath = MtlParser::getNextPart(&iter, iterEnd, ' ');
 
-    if (!optTexturePath)
-        throw std::logic_error("Can't parse material texture. Invalid texture path");
+    if (!optTexturePath) {
+        throw std::logic_error(
+            "Can't parse material texture. Invalid texture path");
+    }
 
-    TextureType textureType;
+    TextureType textureType {};
 
-    switch (entryType)
-    {
+    switch (entryType) {
     case MtlEntryType::DiffuseMap:
         textureType = TextureType::Diffuse;
         break;
@@ -243,11 +260,13 @@ std::unique_ptr<const OldTexture> MtlParser::parseTexture(
         textureType = TextureType::MRAO;
         break;
     default:
-        throw std::logic_error("Can't parse material texture. Invalid entry type");
+        throw std::logic_error(
+            "Can't parse material texture. Invalid entry type");
     }
 
-    const auto texturePath = pathToFile.substr(0, pathToFile.rfind('/') + 1) + *optTexturePath;
+    const auto texturePath
+        = pathToFile.substr(0, pathToFile.rfind('/') + 1) + *optTexturePath;
 
-    const ImageParser parser{texturePath, textureType};
+    const ImageParser parser { texturePath, textureType };
     return parser.parse();
 }

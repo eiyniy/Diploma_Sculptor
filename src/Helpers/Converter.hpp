@@ -1,7 +1,6 @@
 #pragma once
 
-class Converter
-{
+class Converter {
 public:
     /*
     static Vector<4> colorToMatrix(const sf::Color &value);

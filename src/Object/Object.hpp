@@ -1,116 +1,75 @@
 #pragma once
 
-#include <Triangle.hpp>
-#include <Matrix.hpp>
-#include <Material.hpp>
+#include <ShaderProgram.hpp>
+#include <Texture.hpp>
 
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+
+#include <GL/glew.h>
+
+#include <map>
 #include <optional>
-#include <stdexcept>
 #include <string>
 #include <vector>
-#include <memory>
-#include <map>
 
-class Camera;
-
-class Object
-{
-public:
-    Object(
-        const std::vector<Vector<4>> &_vertices,
-        const std::vector<Vector<4>> &_tVertices,
-        const std::vector<Vector<4>> &_nVertices,
-        const std::vector<Triangle> &_polygons,
-        std::unique_ptr<const std::map<std::string, std::shared_ptr<const Material>>> _materials);
-
-    void move(const Vector<4> &transition);
-
-    const std::vector<Vector<4>> &cGetVertices() const;
-
-    const std::vector<Vector<4>> &cGetTVertices() const;
-
-    const std::vector<Vector<4>> &cGetNVertices() const;
-
-    const std::vector<Triangle> &cGetPolygons() const;
-
-    const std::shared_ptr<const Material> cGetMaterial(const std::string &name) const;
-    static const std::shared_ptr<const Material> getDefaultMaterial();
-
-    std::vector<Vector<4>> &getVertices();
-
-    std::vector<Triangle> &getPolygons();
-
-    void convertToDrawable(const Camera &camera);
-
-    const std::vector<Vector<4>> &cGetDrawable() const;
-
-    const Vector<4> &getCenter();
-
-    const Vector<4> &getMaxXZ();
-
-    const Vector<4> &getMinXZ();
-
+class Object {
 private:
-    void calcGeometricParams();
+    GLuint VBO, VAO, EBO;
 
-    std::vector<Vector<4>> vertices;
-    const std::vector<Vector<4>> nVertices;
-    const std::vector<Vector<4>> tVertices;
-    std::vector<Triangle> polygons;
+    ShaderProgram shaderProgram;
 
-    std::unique_ptr<const std::map<std::string, std::shared_ptr<const Material>>> materials;
-    static std::shared_ptr<const Material> defaultMaterial;
+    bool _hasColor;
+    bool _hasTexture;
+    bool _hasIndices;
 
-    std::optional<Vector<4>> center;
-    std::optional<Vector<4>> maxXZ, minXZ;
+    std::vector<GLfloat> verticesUnion;
+    std::size_t verticesSize;
+    std::size_t verticesUnionSize;
+    GLsizei verticesUnionStep;
 
-    std::vector<Vector<4>> drawable;
+    std::vector<GLuint> indicesUnion;
+    std::size_t indicesUnionSize;
+
+    // TODO: Remove optional's from class fields
+    std::optional<std::map<std::string, Texture>> textures;
+
+    [[nodiscard]] GLint findUniform(const std::string& uniformName) const;
+
+public:
+    Object(const Object&) = default;
+    Object(Object&&) = delete;
+    Object& operator=(const Object&) = delete;
+    Object& operator=(Object&&) = delete;
+
+    Object(
+        const std::vector<glm::vec3>& _vertices,
+        const std::optional<std::vector<glm::vec3>>& _colorVertices,
+        const std::optional<std::vector<glm::vec2>>& _textureVertices,
+        const std::optional<std::vector<glm::vec<3, GLuint>>>& _indices);
+
+    ~Object();
+
+    [[nodiscard]] bool hasIndices() const;
+    [[nodiscard]] bool hasColor() const;
+    [[nodiscard]] bool hasTexture() const;
+
+    void addTexture(const Texture& texture, const std::string& name);
+
+    void bindTexture(const std::string& name, const std::string& uniformName);
+
+    void setupVAO();
+
+    void loadTransformMatrices(
+        const glm::mat4& modelMat,
+        const glm::mat4& viewMat,
+        const glm::mat4& projectionMat) const;
+
+    void draw() const;
 };
 
-inline const std::vector<Vector<4>> &Object::cGetDrawable() const
-{
-    return drawable;
-}
+inline bool Object::hasIndices() const { return _hasIndices; }
 
-inline const std::vector<Vector<4>> &Object::cGetVertices() const
-{
-    return vertices;
-}
+inline bool Object::hasColor() const { return _hasColor; }
 
-inline const std::vector<Vector<4>> &Object::cGetTVertices() const
-{
-    return tVertices;
-}
-
-inline const std::vector<Vector<4>> &Object::cGetNVertices() const
-{
-    return nVertices;
-}
-
-inline const std::vector<Triangle> &Object::cGetPolygons() const
-{
-    return polygons;
-}
-
-inline const std::shared_ptr<const Material> Object::cGetMaterial(const std::string &name) const
-{
-    if (!materials->contains(name))
-        throw std::runtime_error("Can't get material");
-
-    return materials->at(name);
-}
-
-inline const std::shared_ptr<const Material> Object::getDefaultMaterial()
-{
-    return defaultMaterial;
-}
-
-inline std::vector<Vector<4>> &Object::getVertices()
-{
-    return vertices;
-}
-
-inline std::vector<Triangle> &Object::getPolygons()
-{
-    return polygons;
-}
+inline bool Object::hasTexture() const { return _hasTexture; }

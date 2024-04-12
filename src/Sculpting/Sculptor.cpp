@@ -1,44 +1,47 @@
 #include <Sculptor.hpp>
 
-#include <Matrix.hpp>
 #include <Graph.hpp>
-#include <Object.hpp>
+#include <Matrix.hpp>
+#include <OldObject.hpp>
 #include <Triangle.hpp>
 
-#include <memory>
-#include <vector>
 #include <iostream>
+#include <memory>
 #include <utility>
+#include <vector>
 
 Sculptor::Sculptor(const int _radius)
-    : radius(_radius) {}
+    : radius(_radius)
+{
+}
 
-void Sculptor::createGraph(Object *object)
+void Sculptor::createGraph(OldObject* object)
 {
     graph = Graph(object->cGetDrawable(), object->cGetPolygons());
 }
 
 void Sculptor::pull(
-    std::vector<Vector<4>> &vertices,
-    const std::pair<int, int> &mousePos,
-    const Vector<4> &direction)
+    std::vector<Vector<4>>& vertices,
+    const std::pair<int, int> mousePos,
+    const Vector<4>& direction)
 {
-    const auto affectedVerticesIds = graph.getAffectedVerticesIds(mousePos, radius);
+    const auto affectedVerticesIds
+        = graph.getAffectedVerticesIds(mousePos, radius);
     // std::cout << "Sculptor log: " << std::endl;
-    std::cout << "Affected Vertices count: " << affectedVerticesIds->size() << std::endl;
+    std::cout << "Affected Vertices count: " << affectedVerticesIds->size()
+              << std::endl;
 
-    for (auto &&vertexId : *affectedVerticesIds)
+    for (auto&& vertexId : *affectedVerticesIds) {
         vertices[vertexId] += direction;
+    }
 }
 
 void Sculptor::pull(
-    Object *object,
-    const int triangleId,
-    const std::pair<int, int> mousePos)
+    OldObject* object, const int triangleId, const std::pair<int, int> mousePos)
 {
     // std::cout << "      " << triangleId << std::endl;
 
-    auto &vertices = object->getVertices();
+    auto& vertices = object->getVertices();
     auto polygon = object->getPolygons().at(triangleId);
 
     const auto normal = polygon.getFlatNormal(vertices);

@@ -1,19 +1,27 @@
 #pragma once
 
-#include <GL/glew.h>
-
-// IWYU pragma: begin_keep
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
-#include <glm/ext.hpp>
-// IWYU pragma: end_keep
+
+#include <GL/glew.h>
 
 #include <utility>
 
 enum class AxisName;
 enum class Direction;
 
-class Camera
-{
+constexpr GLfloat startYaw = -90.F;
+constexpr GLfloat startPitch = 0.F;
+
+constexpr GLfloat minPitch = -89.F;
+constexpr GLfloat maxPitch = 89.F;
+
+constexpr auto startPos = glm::vec3(0.F, 0.F, 5.F);
+constexpr auto startFront = glm::vec3(0.F, 0.F, -1.F);
+
+constexpr auto startWorldUp = glm::vec3(0.F, 1.F, 0.F);
+
+class Camera {
 private:
     GLfloat yaw, pitch;
     GLfloat mouseSens;
@@ -26,37 +34,24 @@ private:
 
     GLfloat speed;
 
-    const GLfloat fov;
+    GLfloat fov;
 
-    void updateFront(
-        const GLfloat pitch,
-        const GLfloat yaw);
+    void updateFront();
 
 public:
-    Camera(
-        const GLfloat _speed,
-        const GLfloat _fov);
+    Camera(GLfloat _speed, GLfloat _fov);
 
     void updateViewMat();
 
-    void move(
-        const AxisName axis,
-        const Direction direction,
-        const GLfloat dt);
+    void move(AxisName axis, Direction direction, GLfloat dt);
 
-    void rotate(const std::pair<GLfloat, GLfloat> coordOffset);
+    void rotate(std::pair<GLfloat, GLfloat> coordOffset);
 
-    const glm::mat4 &cGetViewMat() const;
+    [[nodiscard]] const glm::mat4& cGetViewMat() const;
 
-    GLfloat cGetFOV() const;
+    [[nodiscard]] GLfloat cGetFOV() const;
 };
 
-inline GLfloat Camera::cGetFOV() const
-{
-    return fov;
-}
+inline GLfloat Camera::cGetFOV() const { return fov; }
 
-inline const glm::mat4 &Camera::cGetViewMat() const
-{
-    return view;
-}
+inline const glm::mat4& Camera::cGetViewMat() const { return view; }

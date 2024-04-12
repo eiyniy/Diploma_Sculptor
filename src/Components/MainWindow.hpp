@@ -3,68 +3,53 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <utility>
 #include <array>
+#include <cstddef>
+#include <utility>
 
-class MainWindow
-{
+constexpr std::size_t keysLength = 1024;
+
+class MainWindow {
 public:
-    MainWindow(const std::pair<int, int> &_resolution);
+    MainWindow(std::pair<int, int> _resolution);
 
-    std::pair<int, int> getActiveResolution() const;
+    [[nodiscard]] std::pair<int, int> getActiveResolution() const;
 
-    bool shouldClose() const;
+    [[nodiscard]] bool shouldClose() const;
 
-    GLfloat getAspect() const;
+    [[nodiscard]] GLfloat getAspect() const;
 
-    const std::array<bool, 1024> &cGetKeys() const;
+    [[nodiscard]] const std::array<bool, keysLength>& cGetKeys() const;
 
-    GLFWwindow *get();
+    GLFWwindow* get();
 
-    const std::pair<GLfloat, GLfloat> resetCoordOffset();
+    std::pair<GLfloat, GLfloat> resetCoordOffset();
 
-    void clear();
+    static void clear();
 
     void swapBuffers();
 
     void close();
 
 private:
-    GLFWwindow *window;
+    GLFWwindow* window;
 
-    std::pair<int, int>
-        resolution,
-        activeResolution;
+    std::pair<int, int> resolution, activeResolution;
 
-    std::array<bool, 1024> keys;
+    std::array<bool, keysLength> keys;
 
-    std::pair<GLfloat, GLfloat>
-        lastCoord,
-        coordOffset;
+    std::pair<GLfloat, GLfloat> lastCoord, coordOffset;
 
     bool isMoved;
 
     static void keyCallback(
-        GLFWwindow *window,
-        int key,
-        int scancode,
-        int action,
-        int mode);
+        GLFWwindow* window, int key, int scancode, int action, int mode);
 
-    static void mouseCallback(
-        GLFWwindow *window,
-        double xpos,
-        double ypos);
+    static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
 
-    void keyCallbackInner(
-        const int key,
-        const int scancode,
-        const int action,
-        const int mode);
+    void keyCallbackInner(int key, int scancode, int action, int mode);
 
-    void mouseCallbackInner(
-        const double xpos,
-        const double ypos);
+    void mouseCallbackInner(double xpos, double ypos);
 };
 
 inline std::pair<int, int> MainWindow::getActiveResolution() const
@@ -74,20 +59,18 @@ inline std::pair<int, int> MainWindow::getActiveResolution() const
 
 inline bool MainWindow::shouldClose() const
 {
-    return glfwWindowShouldClose(window);
+    return glfwWindowShouldClose(window) != 0;
 }
 
 inline GLfloat MainWindow::getAspect() const
 {
-    return (GLfloat)activeResolution.first / activeResolution.second;
+    return static_cast<GLfloat>(activeResolution.first)
+        / static_cast<GLfloat>(activeResolution.second);
 }
 
-inline const std::array<bool, 1024> &MainWindow::cGetKeys() const
+inline const std::array<bool, keysLength>& MainWindow::cGetKeys() const
 {
     return keys;
 }
 
-inline GLFWwindow *MainWindow::get()
-{
-    return window;
-}
+inline GLFWwindow* MainWindow::get() { return window; }

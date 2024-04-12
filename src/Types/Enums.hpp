@@ -1,7 +1,6 @@
 #pragma once
 
-enum class ObjEntryType
-{
+enum class ObjEntryType {
     MtlPath,
     UseMtl,
     Vertex,
@@ -10,8 +9,7 @@ enum class ObjEntryType
     Polygon
 };
 
-enum class MtlEntryType
-{
+enum class MtlEntryType {
     NewMaterial,
     Ambient,
     Diffuse,
@@ -24,43 +22,14 @@ enum class MtlEntryType
     MRAOMap
 };
 
-enum class AxisName
-{
-    X,
-    Y,
-    Z
-};
+enum class AxisName { X, Y, Z };
 
-enum class Direction
-{
-    Forward,
-    Backward
-};
+enum class Direction { Forward, Backward };
 
-enum class ModelMatrixConvert
-{
-    Move,
-    Rotate,
-    Scale
-};
+enum class ModelMatrixConvert { Move, Rotate, Scale };
 
-enum class SceneMatrixConvert
-{
-    View,
-    Projection,
-    Viewport
-};
+enum class SceneMatrixConvert { View, Projection, Viewport };
 
-enum ShadingModel
-{
-    Flat,
-    Phong
-};
+enum ShadingModel { Flat, Phong };
 
-enum class TextureType
-{
-    Diffuse,
-    Normal,
-    Emissive,
-    MRAO
-};
+enum class TextureType { Diffuse, Normal, Emissive, MRAO };

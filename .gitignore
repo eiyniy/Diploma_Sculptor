@@ -35,3 +35,4 @@
 **/.PVS-Studio
 **/.idea
 **/cmake-build-debug
+.cache

@@ -11,20 +11,23 @@
 #include <stdexcept>
 #include <string>
 
-Texture::Texture(
-    const int _textureBlock,
-    const int _dimensionality)
-    : dimensionality(_dimensionality),
-      textureBlock(_textureBlock),
-      isBinded(false)
+Texture::Texture(const int _textureBlock, const int _dimensionality)
+    : dimensionality(_dimensionality)
+    , textureBlock(_textureBlock)
+    , isBinded(false)
+    , image(nullptr)
+    , width(0)
+    , height(0)
+    , texture(0)
 {
     glGenTextures(1, &texture);
 }
 
-void Texture::throwIfNotBinded(const std::string &message = std::string())
+void Texture::throwIfNotBinded(const std::string& message = std::string()) const
 {
-    if (!isBinded)
+    if (!isBinded) {
         throw std::logic_error("Texture isn't binded. " + message);
+    }
 }
 
 void Texture::bind()
@@ -66,19 +69,25 @@ void Texture::setDefaults()
     glTexParameteri(dimensionality, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-void Texture::load(const std::string &path)
+void Texture::load(const std::string& path)
 {
     throwIfNotBinded("load");
 
-    image = SOIL_load_image(
-        path.c_str(),
-        &width,
-        &height,
-        0,
-        SOIL_LOAD_RGB);
+    image = SOIL_load_image(path.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 
-    glTexImage2D(dimensionality, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(
+        dimensionality,
+        0,
+        GL_RGB,
+        width,
+        height,
+        0,
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
+        image);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     SOIL_free_image_data(image);
 }
+
+int Texture::getTextureBlock() const { return textureBlock; }

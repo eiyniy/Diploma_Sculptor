@@ -2,22 +2,26 @@
 
 #include <Object.hpp>
 
-#include <utility>
-#include <stdexcept>
 #include <string>
-#include <vector>
+#include <utility>
 
 class BaseLightSource;
 
 Scene::Scene() = default;
 
+void Scene::addObject(const std::string& key, Object object)
+{
+    objects.emplace(key, std::move(object));
+}
+
+/*
 Scene::~Scene()
 {
     for (const auto &pair : objects)
         delete pair.second;
 }
 
-void Scene::addObject(const std::string &key, Object *object)
+void Scene::addObject(const std::string &key, OldObject *object)
 {
     if (key == floorObjectName)
         throw std::invalid_argument("This object name is reserved!");
@@ -46,3 +50,4 @@ const BaseLightSource *Scene::cGetLightSource() const
 {
     return lightSource;
 }
+*/

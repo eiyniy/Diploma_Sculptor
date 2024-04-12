@@ -4,21 +4,20 @@
 
 #include <CImg.h>
 
-#include <string>
 #include <memory>
+#include <string>
 
 enum class TextureType;
 
 namespace cimg = cimg_library;
 
-class ImageParser
-{
+class ImageParser {
 private:
-    const std::string path;
-    const TextureType type;
+    std::string path;
+    TextureType type;
 
 public:
-    ImageParser(const std::string &_path, const TextureType _type);
+    ImageParser(std::string _path, TextureType _type);
 
-    std::unique_ptr<const OldTexture> parse() const;
+    [[nodiscard]] std::unique_ptr<const OldTexture> parse() const;
 };

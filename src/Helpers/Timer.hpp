@@ -1,10 +1,10 @@
 #pragma once
 
-#include <bits/chrono.h>
+#include <chrono>
 
-class Timer
-{
-    static std::chrono::time_point<std::chrono::high_resolution_clock> timeStart;
+class Timer {
+    static std::chrono::time_point<std::chrono::high_resolution_clock>
+        timeStart;
     static long long nsCount;
     static long long callsCount;
 
