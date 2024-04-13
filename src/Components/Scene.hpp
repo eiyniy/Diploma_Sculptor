@@ -3,6 +3,7 @@
 #include <Object.hpp>
 
 #include <map>
+#include <memory>
 #include <string>
 
 class Object;
@@ -16,7 +17,7 @@ private:
 
     // BaseLightSource *lightSource;
 
-    std::map<std::string, Object> objects;
+    std::map<std::string, std::shared_ptr<Object>> objects;
 
 public:
     // const std::string floorObjectName = "_FLOOR";
@@ -25,11 +26,11 @@ public:
 
     // ~Scene();
 
-    void addObject(const std::string& key, Object object);
+    void addObject(const std::string& key, std::shared_ptr<Object> object);
 
-    const Object& getObject(const std::string& key);
+    std::shared_ptr<Object> getObject(const std::string& key);
 
-    const std::map<std::string, Object>& getAllObjects();
+    std::map<std::string, std::shared_ptr<Object>>& getAllObjects();
 
     /*
     [[nodiscard]] const OldObject *cGetObject(const std::string &key) const;
@@ -58,12 +59,12 @@ inline OldObject *Scene::getObject(const std::string &key)
 }
 */
 
-inline const Object& Scene::getObject(const std::string& key)
+inline std::shared_ptr<Object> Scene::getObject(const std::string& key)
 {
     return objects.at(key);
 }
 
-inline const std::map<std::string, Object>& Scene::getAllObjects()
+inline std::map<std::string, std::shared_ptr<Object>>& Scene::getAllObjects()
 {
     return objects;
 }

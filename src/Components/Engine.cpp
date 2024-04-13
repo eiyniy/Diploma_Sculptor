@@ -16,9 +16,13 @@
 #include <GLFW/glfw3.h>
 
 #include <array>
+#include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
-Engine::Engine(Scene _scene, MainWindow _mainWindow, Camera _camera)
+Engine::Engine(
+    Scene _scene, std::unique_ptr<MainWindow> _mainWindow, Camera _camera)
     : scene(std::move(_scene))
     , mainWindow(std::move(_mainWindow))
     , camera(_camera)
@@ -32,7 +36,7 @@ Engine::Engine(Scene _scene, MainWindow _mainWindow, Camera _camera)
 {
     projectionMat = glm::perspective(
         camera.cGetFOV(),
-        mainWindow.getAspect(),
+        mainWindow->getAspect(),
         Settings::get()->getZNear(),
         Settings::get()->getZFar());
 }
@@ -80,7 +84,9 @@ void Engine::start()
         { -0.5f,  0.5f,  0.5f },
         { -0.5f,  0.5f, -0.5f }
     };
+    // NOLINTEND
 
+    // NOLINTBEGIN
     std::vector<glm::vec2> objectTextureVertices {
         { 1.0f, 0.0f },
         { 0.0f, 0.0f },
@@ -126,36 +132,44 @@ void Engine::start()
     };
     // NOLINTEND
 
-    Object object {
-        objectVertices, std::nullopt, objectTextureVertices, std::nullopt
-    };
+    ShaderProgram shaderProgram {};
+    shaderProgram.addShader(
+        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
+        GL_VERTEX_SHADER);
+    shaderProgram.addShader(
+        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.frag)",
+        GL_FRAGMENT_SHADER);
+
+    shaderProgram.link();
+
+    auto object = std::make_shared<Object>(
+        objectVertices, std::nullopt, objectTextureVertices, std::nullopt);
 
     Texture containerTexture { GL_TEXTURE0, GL_TEXTURE_2D };
     Texture faceTexture { GL_TEXTURE1, GL_TEXTURE_2D };
 
     containerTexture.bind();
     containerTexture.setDefaults();
-    containerTexture.load("C:/Users/Natallia/Documents/"
-                          "Labs/Diploma/"
-                          "Diploma_Sculptor/resources/"
-                          "textures/container.jpg");
+    containerTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/"
+                          "Diploma_Sculptor/resources/textures/container.jpg");
     containerTexture.unbind();
 
     faceTexture.bind();
     faceTexture.setDefaults();
-    faceTexture.load("C:/Users/Natallia/Documents/"
-                     "Labs/Diploma/"
-                     "Diploma_Sculptor/resources/"
-                     "textures/awesomeface.png");
+    faceTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/"
+                     "Diploma_Sculptor/resources/textures/awesomeface.png");
     faceTexture.unbind();
 
     // TODO: remove texture name
-    object.addTexture(containerTexture, "containerTexture");
-    object.addTexture(faceTexture, "faceTexture");
+    // TODO: make Texture unique_ptr
+    object->addTexture(containerTexture, "containerTexture");
+    object->addTexture(faceTexture, "faceTexture");
+
+    object->setupVAO();
 
     scene.addObject("OBJECT", object);
 
-    while (!mainWindow.shouldClose()) {
+    while (!mainWindow->shouldClose()) {
         auto currentFrame = static_cast<GLfloat>(glfwGetTime());
         deltaTime = currentFrame - lastFrameTime;
         lastFrameTime = currentFrame;
@@ -170,11 +184,11 @@ void Engine::start()
 
 void Engine::update()
 {
-    const auto& keys = mainWindow.cGetKeys();
-    const auto coordOffset = mainWindow.resetCoordOffset();
+    const auto keys = mainWindow->cGetKeys();
+    const auto coordOffset = mainWindow->resetCoordOffset();
 
     if (keys[GLFW_KEY_ESCAPE]) {
-        mainWindow.close();
+        mainWindow->close();
     }
 
     if (keys[GLFW_KEY_W]) {
@@ -205,12 +219,16 @@ void Engine::draw()
 
     viewMat = camera.cGetViewMat();
 
-    const auto& objects = scene.getAllObjects();
+    // TODO: made const
+    auto& objects = scene.getAllObjects();
 
     for (auto&& object : objects) {
-        object.second.loadTransformMatrices(modelMat, viewMat, projectionMat);
-        object.second.draw();
+        object.second->enableShader();
+        object.second->bindTextures();
+        object.second->loadTransformMatrices(modelMat, viewMat, projectionMat);
+        object.second->draw();
+        object.second->disableShader();
     }
 
-    mainWindow.swapBuffers();
+    mainWindow->swapBuffers();
 }

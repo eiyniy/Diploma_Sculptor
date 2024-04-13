@@ -18,6 +18,7 @@ ShaderProgram::ShaderProgram()
     : shaderProgram(glCreateProgram())
     , success(0)
     , infoLog()
+    , _isUsed(false)
 {
 }
 
@@ -51,10 +52,6 @@ void ShaderProgram::link()
 
     glLinkProgram(shaderProgram);
 
-    for (auto&& shader : shaders) {
-        glDeleteShader(shader);
-    }
-
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (success == 0) {
         glGetProgramInfoLog(
@@ -62,6 +59,20 @@ void ShaderProgram::link()
         std::cout << infoLog.data() << std::endl;
         throw std::runtime_error("ERROR::SHADER::PROGRAM::LINKING_FAILED");
     }
+
+    for (auto&& shader : shaders) {
+        glDeleteShader(shader);
+    }
 }
 
-void ShaderProgram::use() const { glUseProgram(shaderProgram); }
+void ShaderProgram::enable()
+{
+    _isUsed = true;
+    glUseProgram(shaderProgram);
+}
+
+void ShaderProgram::disable()
+{
+    _isUsed = false;
+    glUseProgram(0);
+}

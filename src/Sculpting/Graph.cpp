@@ -5,7 +5,6 @@
 
 #include <array>
 #include <cmath>
-#include <iostream>
 #include <memory>
 #include <queue>
 #include <utility>
@@ -85,8 +84,9 @@ std::unique_ptr<std::vector<int>> Graph::getAffectedVerticesIds(
         (int)nodes[nearestVertexId]->cGetX(),
         (int)nodes[nearestVertexId]->cGetY()
     };
-    std::cout << "Nearest vertex pos: " << nearestVertexPos.first << ' '
-              << nearestVertexPos.second << std::endl;
+
+    // std::cout << "Nearest vertex pos: " << nearestVertexPos.first << ' '
+    //   << nearestVertexPos.second << std::endl;
 
     while (!idsQueue.empty()) {
         int id = idsQueue.front();

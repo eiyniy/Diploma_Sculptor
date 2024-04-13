@@ -3,15 +3,14 @@
 #include <Object.hpp>
 
 #include <string>
-#include <utility>
 
 class BaseLightSource;
 
 Scene::Scene() = default;
 
-void Scene::addObject(const std::string& key, Object object)
+void Scene::addObject(const std::string& key, std::shared_ptr<Object> object)
 {
-    objects.emplace(key, std::move(object));
+    objects.emplace(key, object);
 }
 
 /*

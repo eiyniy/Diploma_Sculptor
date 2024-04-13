@@ -1,3 +1,4 @@
+#include "ShaderProgram.hpp"
 #include <Object.hpp>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -5,6 +6,7 @@
 #include <Camera.hpp>
 
 #include <stdexcept>
+#include <string>
 
 Object::Object(
     const std::vector<glm::vec3>& _vertices,
@@ -98,14 +100,12 @@ Object::Object(
         }
     }
 
+    // TODO: Remove this from here & do addShader func
     shaderProgram.addShader(
-        "C:\\Users\\Natallia\\Documents\\Labs\\Diploma\\Diploma_"
-        "Sculptor\\resources\\shaders\\base.vert",
+        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
         GL_VERTEX_SHADER);
     shaderProgram.addShader(
-        "C:/Users/Natallia/Documents/Labs/Diploma/Diploma_Sculptor/resources/"
-        "shaders/"
-        "base.frag",
+        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.frag)",
         GL_FRAGMENT_SHADER);
 
     shaderProgram.link();
@@ -132,7 +132,18 @@ GLint Object::findUniform(const std::string& uniformName) const
             "Can't find uniform location. Uniform name - " + uniformName);
     }
 
+    // std::cout << "Found \"" << uniformName << "\" at " << uniformLocation
+    //   << std::endl;
+
     return uniformLocation;
+}
+
+void Object::throwIfShaderNotUsed(
+    const std::string& message = std::string()) const
+{
+    if (!shaderProgram.isEnabled()) {
+        throw std::logic_error("Shader isn't used. " + message);
+    }
 }
 
 void Object::loadTransformMatrices(
@@ -160,16 +171,32 @@ void Object::addTexture(const Texture& texture, const std::string& name)
     textures->emplace(name, texture);
 }
 
-void Object::bindTexture(
-    const std::string& name, const std::string& uniformName)
+void Object::bindTexture(const std::string& name)
 {
-    shaderProgram.use();
+    throwIfShaderNotUsed("bindTexture");
 
     textures->at(name).bind();
-    glUniform1i(
-        glGetUniformLocation(shaderProgram.get(), uniformName.c_str()),
-        textures->at(name).getTextureBlock());
+
+    const auto location = findUniform(name);
+
+    glUniform1i(location, textures->at(name).getTextureBlock() - GL_TEXTURE0);
 }
+
+void Object::bindTextures()
+{
+    throwIfShaderNotUsed("bindTextures");
+
+    if (!hasTexture()) {
+        throw std::logic_error("Can't bind Textures. Object doesn't has them");
+    }
+
+    for (auto&& texture : *textures) {
+        bindTexture(texture.first);
+    }
+}
+
+void Object::enableShader() { shaderProgram.enable(); }
+void Object::disableShader() { shaderProgram.disable(); }
 
 void Object::setupVAO()
 {
@@ -180,7 +207,7 @@ void Object::setupVAO()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(
         GL_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(verticesUnionSize),
+        static_cast<GLsizeiptr>(verticesUnionSize * sizeof(GLfloat)),
         verticesUnion.data(),
         GL_STATIC_DRAW);
 
@@ -188,20 +215,23 @@ void Object::setupVAO()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(
             GL_ELEMENT_ARRAY_BUFFER,
-            static_cast<GLsizeiptr>(indicesUnionSize),
+            static_cast<GLsizeiptr>(indicesUnionSize * sizeof(GLuint)),
             indicesUnion.data(),
             GL_STATIC_DRAW);
     }
 
+    // TODO: Replace this magic numbers with constants
     glVertexAttribPointer(
         0,
         3,
         GL_FLOAT,
         GL_FALSE,
         static_cast<GLsizei>(verticesUnionStep * sizeof(GLfloat)),
-        (GLvoid*)0);
+        (GLvoid*)nullptr);
     glEnableVertexAttribArray(0);
 
+    // TODO: Fix color attribute in shaders. Now it doesn't work
+    // Color = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0f);
     auto offset = 3;
     if (hasColor()) {
         glVertexAttribPointer(
@@ -241,6 +271,8 @@ void Object::setupVAO()
 
 void Object::draw() const
 {
+    throwIfShaderNotUsed("draw");
+
     glBindVertexArray(VAO);
 
     if (hasIndices()) {
@@ -248,7 +280,7 @@ void Object::draw() const
             GL_TRIANGLES,
             static_cast<GLsizei>(indicesUnionSize),
             GL_UNSIGNED_INT,
-            0);
+            nullptr);
     } else {
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(verticesSize));
     }

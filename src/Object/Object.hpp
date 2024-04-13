@@ -32,9 +32,12 @@ private:
     std::size_t indicesUnionSize;
 
     // TODO: Remove optional's from class fields
+    // TODO: Move texture name to its fields
     std::optional<std::map<std::string, Texture>> textures;
 
     [[nodiscard]] GLint findUniform(const std::string& uniformName) const;
+
+    void throwIfShaderNotUsed(const std::string& message) const;
 
 public:
     Object(const Object&) = default;
@@ -56,7 +59,12 @@ public:
 
     void addTexture(const Texture& texture, const std::string& name);
 
-    void bindTexture(const std::string& name, const std::string& uniformName);
+    void bindTexture(const std::string& name);
+
+    void bindTextures();
+
+    void enableShader();
+    void disableShader();
 
     void setupVAO();
 
@@ -72,4 +80,7 @@ inline bool Object::hasIndices() const { return _hasIndices; }
 
 inline bool Object::hasColor() const { return _hasColor; }
 
-inline bool Object::hasTexture() const { return _hasTexture; }
+inline bool Object::hasTexture() const
+{
+    return _hasTexture && textures.has_value();
+}

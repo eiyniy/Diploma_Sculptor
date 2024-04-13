@@ -1,16 +1,17 @@
+// /*
 #version 330 core
 
 in vec2 invertedTexCoord;
 
 out vec4 color;
 
-uniform sampler2D texture1;
-uniform sampler2D texture2;
+uniform sampler2D containerTexture;
+uniform sampler2D faceTexture;
 
 void main()
 {
     color = mix(
-        texture(texture1, invertedTexCoord), 
-        texture(texture2, invertedTexCoord), 
+        texture(containerTexture, invertedTexCoord), 
+        texture(faceTexture, invertedTexCoord), 
         0.2);
 }

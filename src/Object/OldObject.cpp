@@ -5,7 +5,6 @@
 #include <Matrix.hpp>
 #include <Triangle.hpp>
 
-#include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -56,7 +55,7 @@ void OldObject::move(const Vector<4>& transition)
     }
 
     // vertices[0].log();
-    std::cout << std::endl;
+    // std::cout << std::endl;
 }
 
 void OldObject::convertToDrawable(const Camera& camera)

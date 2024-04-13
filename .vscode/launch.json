@@ -2,6 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "cwd": "${workspaceRoot}"
+        },
+        /*
+        {
             "program": "${command:cmake.launchTargetPath}",
             "name": "Launch (gdb)",
             "request": "launch",
@@ -22,5 +31,6 @@
                 }
             ]
         },
+        */
     ]
 }

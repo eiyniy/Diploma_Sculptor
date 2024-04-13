@@ -18,6 +18,8 @@ private:
 
     std::vector<GLuint> shaders;
 
+    bool _isUsed;
+
 public:
     static const std::string defaultModelUniformName;
     static const std::string defaultViewUniformName;
@@ -28,9 +30,13 @@ public:
     void addShader(std::string sourcePath, GLenum shaderType);
 
     void link();
-    void use() const;
+
+    void enable();
+    void disable();
 
     [[nodiscard]] inline GLuint get() const;
+    [[nodiscard]] inline bool isEnabled() const;
 };
 
 inline GLuint ShaderProgram::get() const { return shaderProgram; }
+inline bool ShaderProgram::isEnabled() const { return _isUsed; }

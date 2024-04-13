@@ -11,7 +11,13 @@ constexpr std::size_t keysLength = 1024;
 
 class MainWindow {
 public:
+    MainWindow(MainWindow&&) = delete;
+    MainWindow& operator=(const MainWindow&) = delete;
+    MainWindow& operator=(MainWindow&&) = delete;
+    MainWindow(const MainWindow&) = delete;
+
     MainWindow(std::pair<int, int> _resolution);
+    ~MainWindow() = default;
 
     [[nodiscard]] std::pair<int, int> getActiveResolution() const;
 

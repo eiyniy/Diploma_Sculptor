@@ -5,7 +5,6 @@
 #include <OldObject.hpp>
 #include <Triangle.hpp>
 
-#include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -27,9 +26,10 @@ void Sculptor::pull(
 {
     const auto affectedVerticesIds
         = graph.getAffectedVerticesIds(mousePos, radius);
+
     // std::cout << "Sculptor log: " << std::endl;
-    std::cout << "Affected Vertices count: " << affectedVerticesIds->size()
-              << std::endl;
+    // std::cout << "Affected Vertices count: " << affectedVerticesIds->size()
+    //   << std::endl;
 
     for (auto&& vertexId : *affectedVerticesIds) {
         vertices[vertexId] += direction;

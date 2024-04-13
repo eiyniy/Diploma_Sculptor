@@ -10,6 +10,8 @@
 #include <Texture.hpp>
 
 #include <iostream>
+#include <memory>
+#include <utility>
 
 const std::pair<int, int> startupResolution { 1280, 720 };
 
@@ -17,14 +19,15 @@ int main(int argc, char** argv)
 {
     std::cout << "Hello world!" << std::endl;
 
-    MainWindow mainWindow { startupResolution };
+    auto mainWindow = std::make_unique<MainWindow>(startupResolution);
+    glfwSetInputMode(mainWindow->get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Camera camera { Settings::get()->getCameraSpeed(),
                     Settings::get()->getCameraFoV() };
 
     Scene scene {};
 
-    Engine engine { scene, mainWindow, camera };
+    Engine engine { scene, std::move(mainWindow), camera };
 
     glfwSwapInterval(static_cast<int>(Settings::get()->isVSyncEnabled()));
 
@@ -33,8 +36,6 @@ int main(int argc, char** argv)
     } else {
         glDisable(GL_DEPTH_TEST);
     }
-
-    glfwSetInputMode(mainWindow.get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Uncommenting this call will result in wireframe polygons.
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
