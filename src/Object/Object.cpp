@@ -1,12 +1,20 @@
-#include "ShaderProgram.hpp"
 #include <Object.hpp>
 
-#include <glm/gtc/type_ptr.hpp>
+#include <ShaderProgram.hpp>
+#include <Texture.hpp>
 
-#include <Camera.hpp>
+#include <matrix_float4x4.hpp>
+#include <type_mat4x4.hpp>
+#include <type_ptr.hpp>
+#include <type_vec2.hpp>
+#include <type_vec3.hpp>
+#include <vector_float2.hpp>
+#include <vector_float3.hpp>
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <utility>
 
 Object::Object(
     const std::vector<glm::vec3>& _vertices,
@@ -122,14 +130,16 @@ Object::~Object()
     }
 }
 
-GLint Object::findUniform(const std::string& uniformName) const
+GLint Object::findUniform(const std::string_view uniformName) const
 {
     const auto uniformLocation
-        = glGetUniformLocation(shaderProgram.get(), uniformName.c_str());
+        = glGetUniformLocation(shaderProgram.get(), uniformName.data());
 
     if (uniformLocation == -1) {
-        throw std::logic_error(
-            "Can't find uniform location. Uniform name - " + uniformName);
+        std::string message { "Can't find uniform location. Uniform name - " };
+        message += uniformName;
+
+        throw std::logic_error(message);
     }
 
     // std::cout << "Found \"" << uniformName << "\" at " << uniformLocation
@@ -162,16 +172,17 @@ void Object::loadTransformMatrices(
         projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));
 }
 
-void Object::addTexture(const Texture& texture, const std::string& name)
+void Object::addTexture(const Texture& texture)
 {
+    // TODO: Fix texture name ownership. mb relace with std::string
     if (!textures.has_value()) {
-        textures = std::map<std::string, Texture>();
+        textures = std::map<std::string_view, Texture>();
     }
 
-    textures->emplace(name, texture);
+    textures->emplace(texture.getName(), texture);
 }
 
-void Object::bindTexture(const std::string& name)
+void Object::bindTexture(const std::string_view name)
 {
     throwIfShaderNotUsed("bindTexture");
 

@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glm/fwd.hpp>
-#include <glm/glm.hpp>
+#include <type_vec4.hpp>
 
 #include <GL/glew.h>
 

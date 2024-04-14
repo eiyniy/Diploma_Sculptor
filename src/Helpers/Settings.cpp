@@ -1,5 +1,7 @@
 #include <Settings.hpp>
+
 #include <trigonometric.hpp>
+#include <type_vec4.hpp>
 
 Settings* Settings::instance { nullptr };
 std::mutex Settings::mutex {};

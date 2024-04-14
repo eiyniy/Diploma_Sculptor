@@ -3,14 +3,20 @@
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
-#include <glm/fwd.hpp>
-#include <glm/glm.hpp>
+// #include <glm/fwd.hpp>
+// #include <glm/glm.hpp>
+
+#include <matrix_float4x4.hpp>
+#include <vector_float2.hpp>
+#include <vector_float3.hpp>
 
 #include <GL/glew.h>
 
+#include <cstddef>
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 class Object {
@@ -33,9 +39,9 @@ private:
 
     // TODO: Remove optional's from class fields
     // TODO: Move texture name to its fields
-    std::optional<std::map<std::string, Texture>> textures;
+    std::optional<std::map<std::string_view, Texture>> textures;
 
-    [[nodiscard]] GLint findUniform(const std::string& uniformName) const;
+    [[nodiscard]] GLint findUniform(std::string_view uniformName) const;
 
     void throwIfShaderNotUsed(const std::string& message) const;
 
@@ -57,9 +63,9 @@ public:
     [[nodiscard]] bool hasColor() const;
     [[nodiscard]] bool hasTexture() const;
 
-    void addTexture(const Texture& texture, const std::string& name);
+    void addTexture(const Texture& texture);
 
-    void bindTexture(const std::string& name);
+    void bindTexture(std::string_view name);
 
     void bindTextures();
 

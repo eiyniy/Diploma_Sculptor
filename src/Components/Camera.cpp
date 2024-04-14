@@ -3,7 +3,14 @@
 #include <Enums.hpp>
 #include <Settings.hpp>
 
-#include <glm/gtc/matrix_transform.hpp>
+#include <geometric.hpp>
+#include <matrix_transform.hpp>
+#include <qualifier.hpp>
+#include <trigonometric.hpp>
+#include <type_mat4x4.hpp>
+#include <type_vec3.hpp>
+#include <type_vec4.hpp>
+#include <vector_float3.hpp>
 
 #include <cmath>
 

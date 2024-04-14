@@ -9,9 +9,14 @@
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/fwd.hpp>
-#include <glm/glm.hpp>
+#include <matrix_clip_space.hpp>
+#include <qualifier.hpp>
+#include <type_mat4x4.hpp>
+#include <type_vec2.hpp>
+#include <type_vec3.hpp>
+#include <type_vec4.hpp>
+#include <vector_float2.hpp>
+#include <vector_float3.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -145,25 +150,33 @@ void Engine::start()
     auto object = std::make_shared<Object>(
         objectVertices, std::nullopt, objectTextureVertices, std::nullopt);
 
-    Texture containerTexture { GL_TEXTURE0, GL_TEXTURE_2D };
-    Texture faceTexture { GL_TEXTURE1, GL_TEXTURE_2D };
+    // TODO: Remove {} - onle for ownership test
+    {
 
-    containerTexture.bind();
-    containerTexture.setDefaults();
-    containerTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/"
-                          "Diploma_Sculptor/resources/textures/container.jpg");
-    containerTexture.unbind();
+        // auto containerTexture = std::make_unique<Texture>(
+        // "containerTexture", GL_TEXTURE0, GL_TEXTURE_2D);
+        Texture containerTexture { "containerTexture",
+                                   GL_TEXTURE0,
+                                   GL_TEXTURE_2D };
+        Texture faceTexture { "faceTexture", GL_TEXTURE1, GL_TEXTURE_2D };
 
-    faceTexture.bind();
-    faceTexture.setDefaults();
-    faceTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/"
-                     "Diploma_Sculptor/resources/textures/awesomeface.png");
-    faceTexture.unbind();
+        containerTexture.bind();
+        containerTexture.setDefaults();
+        containerTexture.load(
+            "C:/Users/Natallia/Documents/Labs/Diploma/"
+            "Diploma_Sculptor/resources/textures/container.jpg");
+        containerTexture.unbind();
 
-    // TODO: remove texture name
-    // TODO: make Texture unique_ptr
-    object->addTexture(containerTexture, "containerTexture");
-    object->addTexture(faceTexture, "faceTexture");
+        faceTexture.bind();
+        faceTexture.setDefaults();
+        faceTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/"
+                         "Diploma_Sculptor/resources/textures/awesomeface.png");
+        faceTexture.unbind();
+
+        // TODO: make Texture unique_ptr
+        object->addTexture(containerTexture);
+        object->addTexture(faceTexture);
+    }
 
     object->setupVAO();
 

@@ -1,5 +1,7 @@
 #ifndef GLEW_STATIC
 #define GLEW_STATIC
+#include <memory>
+#include <string_view>
 #endif
 
 #include <Texture.hpp>
@@ -11,15 +13,22 @@
 #include <stdexcept>
 #include <string>
 
-Texture::Texture(const int _textureBlock, const int _dimensionality)
+Texture::Texture(
+    const std::string_view _name,
+    const int _textureBlock,
+    const int _dimensionality)
     : dimensionality(_dimensionality)
     , textureBlock(_textureBlock)
     , isBinded(false)
-    , image(nullptr)
     , width(0)
     , height(0)
     , texture(0)
+    , name(_name)
 {
+    if (name.length() == 0) {
+        throw std::length_error("Texture name is too short.");
+    }
+
     glGenTextures(1, &texture);
 }
 
@@ -73,7 +82,8 @@ void Texture::load(const std::string& path)
 {
     throwIfNotBinded("load");
 
-    image = SOIL_load_image(path.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+    std::unique_ptr<unsigned char> image { SOIL_load_image(
+        path.c_str(), &width, &height, nullptr, SOIL_LOAD_RGB) };
 
     glTexImage2D(
         dimensionality,
@@ -84,10 +94,10 @@ void Texture::load(const std::string& path)
         0,
         GL_RGB,
         GL_UNSIGNED_BYTE,
-        image);
+        image.get());
     glGenerateMipmap(GL_TEXTURE_2D);
-
-    SOIL_free_image_data(image);
 }
 
 int Texture::getTextureBlock() const { return textureBlock; }
+
+std::string_view Texture::getName() const { return name; }

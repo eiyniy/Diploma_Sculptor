@@ -1,8 +1,5 @@
 #include <Math.hpp>
 
-#include <Matrix.hpp>
-
-#include <cmath>
 #include <optional>
 #include <string>
 

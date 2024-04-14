@@ -6,10 +6,6 @@
 #include <memory>
 #include <string>
 
-class Object;
-class Camera;
-class BaseLightSource;
-
 class Scene {
 private:
     // std::string selectedObjectName;

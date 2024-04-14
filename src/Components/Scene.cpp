@@ -1,10 +1,8 @@
 #include <Scene.hpp>
 
-#include <Object.hpp>
-
 #include <string>
 
-class BaseLightSource;
+class Object;
 
 Scene::Scene() = default;
 

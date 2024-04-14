@@ -1,13 +1,16 @@
 #pragma once
 
 #include <Camera.hpp>
-#include <MainWindow.hpp>
 #include <Scene.hpp>
-#include <ShaderProgram.hpp>
-#include <Texture.hpp>
 
-#include <glm/fwd.hpp>
+#include <matrix_float4x4.hpp>
+#include <qualifier.hpp>
+
+#include <GL/glew.h>
+
 #include <memory>
+
+class MainWindow;
 
 enum class AxisName;
 enum class Direction;

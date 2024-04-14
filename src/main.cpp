@@ -6,8 +6,6 @@
 #include <MainWindow.hpp>
 #include <Scene.hpp>
 #include <Settings.hpp>
-#include <ShaderProgram.hpp>
-#include <Texture.hpp>
 
 #include <iostream>
 #include <memory>
