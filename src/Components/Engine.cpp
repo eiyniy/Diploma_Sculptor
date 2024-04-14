@@ -24,6 +24,9 @@
 #include <utility>
 #include <vector>
 
+// TODO: Replace with smth normal
+const auto* const shaderProgramName = "base";
+
 Engine::Engine(
     Scene _scene, std::unique_ptr<MainWindow> _mainWindow, Camera _camera)
     : scene(std::move(_scene))
@@ -135,18 +138,20 @@ void Engine::start()
     };
     // NOLINTEND
 
-    ShaderProgram shaderProgram {};
-    shaderProgram.addShader(
+    auto shaderProgram = std::make_unique<ShaderProgram>(shaderProgramName);
+    shaderProgram->addShader(
         R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
         GL_VERTEX_SHADER);
-    shaderProgram.addShader(
+    shaderProgram->addShader(
         R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.frag)",
         GL_FRAGMENT_SHADER);
 
-    shaderProgram.link();
+    shaderProgram->link();
 
     auto object = std::make_shared<Object>(
         objectVertices, std::nullopt, objectTextureVertices, std::nullopt);
+
+    object->addShader(std::move(shaderProgram));
 
     auto containerTexture = std::make_unique<Texture>(
         "containerTexture", GL_TEXTURE0, GL_TEXTURE_2D);
@@ -168,9 +173,9 @@ void Engine::start()
     object->addTexture(std::move(containerTexture));
     object->addTexture(std::move(faceTexture));
 
-    object->enableShader();
+    object->enableShader(shaderProgramName);
     object->bindTextures();
-    object->disableShader();
+    object->disableCurrentShader();
 
     object->setupVAO();
 
@@ -226,14 +231,13 @@ void Engine::draw()
 
     viewMat = camera.cGetViewMat();
 
-    // TODO: made const
     auto& objects = scene.getAllObjects();
 
     for (auto&& object : objects) {
-        object.second->enableShader();
+        object.second->enableShader(shaderProgramName);
         object.second->loadTransformMatrices(modelMat, viewMat, projectionMat);
         object.second->draw();
-        object.second->disableShader();
+        object.second->disableCurrentShader();
     }
 
     mainWindow->swapBuffers();

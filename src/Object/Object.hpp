@@ -21,7 +21,12 @@ class Object {
 private:
     GLuint VBO, VAO, EBO;
 
-    ShaderProgram shaderProgram;
+    std::map<const std::string_view, std::unique_ptr<ShaderProgram>>
+        shaderPrograms;
+
+    std::string_view currentShaderProgramName;
+
+    bool _isAnyShaderEnabled;
 
     bool _hasColor;
     bool _hasTexture;
@@ -36,8 +41,7 @@ private:
     std::size_t indicesUnionSize;
 
     // TODO: Remove optional's from class fields
-    std::optional<std::map<std::string_view, std::unique_ptr<Texture>>>
-        textures;
+    std::map<const std::string_view, std::unique_ptr<Texture>> textures;
 
     [[nodiscard]] GLint findUniform(std::string_view uniformName) const;
 
@@ -58,8 +62,12 @@ public:
     ~Object();
 
     [[nodiscard]] bool hasIndices() const;
+
     [[nodiscard]] bool hasColor() const;
+
     [[nodiscard]] bool hasTexture() const;
+
+    [[nodiscard]] bool isAnyShaderEnabled() const;
 
     void addTexture(std::unique_ptr<Texture> texture);
 
@@ -67,8 +75,11 @@ public:
 
     void bindTextures();
 
-    void enableShader();
-    void disableShader();
+    void addShader(std::unique_ptr<ShaderProgram> shaderProgram);
+
+    void enableShader(std::string_view name);
+
+    void disableCurrentShader();
 
     void setupVAO();
 
@@ -86,5 +97,7 @@ inline bool Object::hasColor() const { return _hasColor; }
 
 inline bool Object::hasTexture() const
 {
-    return _hasTexture && textures.has_value();
+    return _hasTexture && !textures.empty();
 }
+
+inline bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }

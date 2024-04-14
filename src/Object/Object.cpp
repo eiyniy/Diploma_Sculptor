@@ -30,6 +30,7 @@ Object::Object(
     , VAO(0)
     , VBO(0)
     , EBO(0)
+    , _isAnyShaderEnabled(false)
 {
     if (_hasColor && _colorVertices->size() != _vertices.size()) {
         throw std::logic_error(
@@ -105,16 +106,6 @@ Object::Object(
             indicesUnion[j + 2] = index.z;
         }
     }
-
-    // TODO: Remove this from here & do addShader func
-    shaderProgram.addShader(
-        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
-        GL_VERTEX_SHADER);
-    shaderProgram.addShader(
-        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.frag)",
-        GL_FRAGMENT_SHADER);
-
-    shaderProgram.link();
 }
 
 Object::~Object()
@@ -130,8 +121,12 @@ Object::~Object()
 
 GLint Object::findUniform(const std::string_view uniformName) const
 {
+    throwIfShaderNotUsed("findUniform");
+
+    const auto& shaderProgram = shaderPrograms.at(currentShaderProgramName);
+
     const auto uniformLocation
-        = glGetUniformLocation(shaderProgram.get(), uniformName.data());
+        = glGetUniformLocation(shaderProgram->get(), uniformName.data());
 
     if (uniformLocation == -1) {
         std::string message { "Can't find uniform location. Uniform name - " };
@@ -149,8 +144,8 @@ GLint Object::findUniform(const std::string_view uniformName) const
 void Object::throwIfShaderNotUsed(
     const std::string& message = std::string()) const
 {
-    if (!shaderProgram.isEnabled()) {
-        throw std::logic_error("Shader isn't used. " + message);
+    if (!_isAnyShaderEnabled) {
+        throw std::logic_error("No one shader is enabled. " + message);
     }
 }
 
@@ -172,22 +167,18 @@ void Object::loadTransformMatrices(
 
 void Object::addTexture(std::unique_ptr<Texture> texture)
 {
-    if (!textures.has_value()) {
-        textures = std::map<std::string_view, std::unique_ptr<Texture>>();
-    }
-
-    textures->insert(std::make_pair(texture->getName(), std::move(texture)));
+    textures.insert(std::make_pair(texture->getName(), std::move(texture)));
 }
 
 void Object::bindTexture(const std::string_view name)
 {
     throwIfShaderNotUsed("bindTexture");
 
-    textures->at(name)->bind();
+    textures.at(name)->bind();
 
     const auto location = findUniform(name);
 
-    glUniform1i(location, textures->at(name)->getTextureBlock() - GL_TEXTURE0);
+    glUniform1i(location, textures.at(name)->getTextureBlock() - GL_TEXTURE0);
 }
 
 void Object::bindTextures()
@@ -198,13 +189,42 @@ void Object::bindTextures()
         throw std::logic_error("Can't bind Textures. Object doesn't has them");
     }
 
-    for (auto&& texture : *textures) {
+    for (auto&& texture : textures) {
         bindTexture(texture.first);
     }
 }
 
-void Object::enableShader() { shaderProgram.enable(); }
-void Object::disableShader() { shaderProgram.disable(); }
+void Object::addShader(std::unique_ptr<ShaderProgram> shaderProgram)
+{
+    shaderPrograms.insert(
+        std::make_pair(shaderProgram->getName(), std::move(shaderProgram)));
+}
+
+void Object::enableShader(const std::string_view name)
+{
+    if (_isAnyShaderEnabled) {
+        throw std::logic_error("Can't enable shader program. There is another "
+                               "one enabled already");
+    }
+
+    auto& shaderProgram = shaderPrograms.at(name);
+
+    shaderProgram->enable();
+
+    currentShaderProgramName = shaderProgram->getName();
+    _isAnyShaderEnabled = true;
+}
+
+void Object::disableCurrentShader()
+{
+    if (!_isAnyShaderEnabled) {
+        throw std::logic_error(
+            "Can't disable shader program. No one of them is enabled");
+    }
+
+    shaderPrograms.at(currentShaderProgramName)->disable();
+    _isAnyShaderEnabled = false;
+}
 
 void Object::setupVAO()
 {

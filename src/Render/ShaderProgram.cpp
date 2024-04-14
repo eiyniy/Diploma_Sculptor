@@ -14,11 +14,12 @@ const std::string ShaderProgram::defaultModelUniformName = "model";
 const std::string ShaderProgram::defaultViewUniformName = "view";
 const std::string ShaderProgram::defaultProjectionUniformName = "projection";
 
-ShaderProgram::ShaderProgram()
+ShaderProgram::ShaderProgram(const std::string_view _name)
     : shaderProgram(glCreateProgram())
     , success(0)
     , infoLog()
     , _isUsed(false)
+    , name(_name)
 {
 }
 
