@@ -94,8 +94,8 @@ void Engine::start()
 
     // NOLINTBEGIN
     std::vector<glm::vec2> objectTextureVertices {
-        { 1.0f, 0.0f },
         { 0.0f, 0.0f },
+        { 1.0f, 0.0f },
         { 1.0f, 1.0f },
         { 1.0f, 1.0f },
         { 0.0f, 1.0f },

@@ -13,6 +13,8 @@
 
 const std::pair<int, int> startupResolution { 1280, 720 };
 
+// TODO: Make libraries auto downloadable
+
 int main(int argc, char** argv)
 {
     std::cout << "Hello world!" << std::endl;
@@ -39,9 +41,6 @@ int main(int argc, char** argv)
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     engine.start();
-
-    // std::string ss =
-    // "QWERTYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY";
 
     return 0;
 }
