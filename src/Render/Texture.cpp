@@ -1,17 +1,13 @@
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#include <memory>
-#include <string_view>
-#endif
-
 #include <Texture.hpp>
 
 #include <GL/glew.h>
 
 #include <SOIL.h>
 
+#include <memory>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 
 Texture::Texture(
     const std::string_view _name,

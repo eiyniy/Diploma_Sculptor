@@ -1,6 +1,6 @@
 #pragma once
 
-#include <type_vec4.hpp>
+#include <vec4.hpp>
 
 #include <GL/glew.h>
 

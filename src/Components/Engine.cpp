@@ -9,14 +9,12 @@
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
+#include <mat4x4.hpp>
 #include <matrix_clip_space.hpp>
 #include <qualifier.hpp>
-#include <type_mat4x4.hpp>
-#include <type_vec2.hpp>
-#include <type_vec3.hpp>
-#include <type_vec4.hpp>
-#include <vector_float2.hpp>
-#include <vector_float3.hpp>
+#include <vec2.hpp>
+#include <vec3.hpp>
+#include <vec4.hpp>
 
 #include <GLFW/glfw3.h>
 

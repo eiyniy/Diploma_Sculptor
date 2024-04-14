@@ -1,9 +1,8 @@
 #pragma once
 
-#include <matrix_float4x4.hpp>
+#include <mat4x4.hpp>
 #include <qualifier.hpp>
-#include <type_vec3.hpp>
-#include <vector_float3.hpp>
+#include <vec3.hpp>
 
 #include <GL/glew.h>
 

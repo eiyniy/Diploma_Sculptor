@@ -1,4 +1,3 @@
-#include "matrix_float4x4.hpp"
 #include <OldObject.hpp>
 
 #include <Globals.hpp>
@@ -7,7 +6,6 @@
 
 #include <mat4x4.hpp>
 #include <vec4.hpp>
-
 
 #include <memory>
 #include <vector>
