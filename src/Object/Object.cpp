@@ -249,7 +249,7 @@ void Object::setupVAO()
     }
 
     // TODO: Replace this magic numbers with constants
-    // TODO: Extract object attribute as separate entity (as Texture f.e)
+    // TODO: Extract object attribute as separate entity (as Texture f.e.)
     glVertexAttribPointer(
         0,
         3,
@@ -259,8 +259,6 @@ void Object::setupVAO()
         (GLvoid*)nullptr);
     glEnableVertexAttribArray(0);
 
-    // TODO: Fix color attribute in shaders. Now it doesn't work
-    // Color = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0f);
     auto offset = 3;
     if (hasColor()) {
         glVertexAttribPointer(
