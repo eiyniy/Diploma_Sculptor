@@ -1,7 +1,9 @@
 #pragma once
 
-#include <Matrix.hpp>
 #include <Triangle.hpp>
+
+#include <geometric.hpp>
+#include <vec4.hpp>
 
 #include <cmath>
 #include <optional>
@@ -14,51 +16,45 @@ const float triangleToParallelogramRatio = 0.5F;
 class EarClipper {
 private:
     static double
-    area(const Vector<4>& v0, const Vector<4>& v1, const Vector<4>& v2);
+    area(const glm::vec4& v0, const glm::vec4& v1, const glm::vec4& v2);
 
     static bool isPointsInside(
-        const std::pair<Vector<4>, VertexIds>& v0,
-        const std::pair<Vector<4>, VertexIds>& v1,
-        const std::pair<Vector<4>, VertexIds>& v2,
-        const std::vector<std::pair<Vector<4>, VertexIds>>& polygonVertices);
+        const std::pair<glm::vec4, VertexIds>& v0,
+        const std::pair<glm::vec4, VertexIds>& v1,
+        const std::pair<glm::vec4, VertexIds>& v2,
+        const std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices);
 
     static Triangle clipEar(
-        std::vector<std::pair<Vector<4>, VertexIds>>& polygonVertices,
+        std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices,
         const std::optional<std::string>& materialName);
 
     static bool isConvexVertex(
-        const Vector<4>& vertex,
-        const Vector<4>& prevVertex,
-        const Vector<4>& nextVertex);
+        const glm::vec4& vertex,
+        const glm::vec4& prevVertex,
+        const glm::vec4& nextVertex);
 
 public:
     static std::vector<Triangle> triangulate(
-        std::vector<std::pair<Vector<4>, VertexIds>>& polygonVertices,
+        std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices,
         const std::optional<std::string>& materialName);
 
     static std::vector<Triangle> triangulate(
         const std::vector<VertexIds>& indexes,
-        const std::vector<Vector<4>>& vertices,
+        const std::vector<glm::vec4>& vertices,
         const std::optional<std::string>& materialName);
 };
 
 inline double
-EarClipper::area(const Vector<4>& v0, const Vector<4>& v1, const Vector<4>& v2)
+EarClipper::area(const glm::vec4& v0, const glm::vec4& v1, const glm::vec4& v2)
 {
     const auto vec1 = v1 - v0;
     const auto vec2 = v2 - v0;
 
-    const auto crossProduct = vec1.vectorMultiply(vec2);
+    const auto crossProduct = vec1 * vec2;
     const auto sin
-        = crossProduct.getLength() / (vec1.getLength() * vec2.getLength());
+        = glm::length(crossProduct) / (glm::length(vec1) * glm::length(vec2));
 
     return std::fabs(
-        triangleToParallelogramRatio * vec1.getLength() * vec2.getLength()
+        triangleToParallelogramRatio * glm::length(vec1) * glm::length(vec2)
         * sin);
-
-    //    return std::fabs((
-    //                             v1.cGetX() * (v2.cGetY() - v3.cGetY()) +
-    //                             v2.cGetX() * (v3.cGetY() - v1.cGetY()) +
-    //                             v3.cGetX() * (v1.cGetY() - v2.cGetY()))
-    //                             / 2.0);
 }

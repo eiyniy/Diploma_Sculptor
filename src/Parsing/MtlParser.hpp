@@ -3,8 +3,9 @@
 #include <BaseTextParser.hpp>
 #include <Enums.hpp>
 #include <Material.hpp>
-#include <Matrix.hpp>
 #include <OldTexture.hpp>
+
+#include <vec4.hpp>
 
 #include <map>
 #include <memory>
@@ -24,9 +25,9 @@ private:
         materials;
 
     std::string name;
-    std::optional<Vector<4>> ambient;
-    std::optional<Vector<4>> diffuse;
-    std::optional<Vector<4>> specular;
+    std::optional<glm::vec4> ambient;
+    std::optional<glm::vec4> diffuse;
+    std::optional<glm::vec4> specular;
     std::optional<double> specularExp;
     std::unique_ptr<const OldTexture> diffuseMap;
     std::unique_ptr<const OldTexture> emissiveMap;
@@ -39,7 +40,7 @@ private:
 
     void resetMaterial();
 
-    static Vector<4> parseCoeff(const std::string& line);
+    static glm::vec4 parseCoeff(const std::string& line);
     static std::unique_ptr<const OldTexture> parseTexture(
         const std::string& line,
         const std::string& pathToFile,

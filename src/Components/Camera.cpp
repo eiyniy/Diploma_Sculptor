@@ -4,13 +4,12 @@
 #include <Settings.hpp>
 
 #include <geometric.hpp>
+#include <mat4x4.hpp>
 #include <matrix_transform.hpp>
 #include <qualifier.hpp>
 #include <trigonometric.hpp>
-#include <type_mat4x4.hpp>
-#include <type_vec3.hpp>
-#include <type_vec4.hpp>
-#include <vector_float3.hpp>
+#include <vec3.hpp>
+#include <vec4.hpp>
 
 #include <cmath>
 
@@ -76,39 +75,3 @@ void Camera::updateFront()
 
     updateViewMat();
 }
-
-/*
-void Camera::move(const Vector<4> &transition)
-{
-    target += transition;
-    position += transition;
-}
-
-void Camera::rotateAround(
-    const AxisName axisName,
-    const Direction direction,
-    const double step)
-{
-    auto cameraRelative = position - target;
-    auto spherical = Math::decartToSpherical(cameraRelative);
-
-    bool isReversed = false;
-    spherical.move(axisName, direction, step, isReversed);
-
-    if (isReversed)
-        up.getY() *= -1;
-
-    cameraRelative = Math::sphericalToDecart(spherical);
-    position = cameraRelative + target;
-}
-
-void Camera::setResolution(const std::pair<int, int> &newResolution)
-{
-    resolution = newResolution;
-}
-
-void Camera::setTarget(const Vector<4> &newTarget)
-{
-    target = newTarget;
-}
-*/

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Matrix.hpp>
 #include <OldTexture.hpp>
+
+#include <vec4.hpp>
 
 #include <memory>
 #include <optional>
@@ -11,9 +12,9 @@ class Material {
 public:
     Material(
         std::string _name,
-        const std::optional<Vector<4>>& _ambient,
-        const std::optional<Vector<4>>& _diffuse,
-        const std::optional<Vector<4>>& _specular,
+        const std::optional<glm::vec4>& _ambient,
+        const std::optional<glm::vec4>& _diffuse,
+        const std::optional<glm::vec4>& _specular,
         const std::optional<double>& _specularExp,
         std::shared_ptr<const OldTexture> _diffuseMap,
         std::shared_ptr<const OldTexture> _emissiveMap,
@@ -26,16 +27,16 @@ public:
     std::shared_ptr<const OldTexture> cGetMRAOMap() const;
 
     const std::string& cGetName() const;
-    std::optional<Vector<4>> cGetDiffuseCoeff() const;
-    std::optional<Vector<4>> cGetAmbientCoeff() const;
-    std::optional<Vector<4>> cGetSpecularCoeff() const;
+    std::optional<glm::vec4> cGetDiffuseCoeff() const;
+    std::optional<glm::vec4> cGetAmbientCoeff() const;
+    std::optional<glm::vec4> cGetSpecularCoeff() const;
     std::optional<double> cGetSpecularExp() const;
 
 private:
     std::string name;
-    std::optional<Vector<4>> ambient;
-    std::optional<Vector<4>> diffuse;
-    std::optional<Vector<4>> specular;
+    std::optional<glm::vec4> ambient;
+    std::optional<glm::vec4> diffuse;
+    std::optional<glm::vec4> specular;
     std::optional<double> specularExp;
     std::shared_ptr<const OldTexture> diffuseMap;
     std::shared_ptr<const OldTexture> emissiveMap;
@@ -65,17 +66,17 @@ inline std::shared_ptr<const OldTexture> Material::cGetMRAOMap() const
 
 inline const std::string& Material::cGetName() const { return name; }
 
-inline std::optional<Vector<4>> Material::cGetDiffuseCoeff() const
+inline std::optional<glm::vec4> Material::cGetDiffuseCoeff() const
 {
     return diffuse;
 }
 
-inline std::optional<Vector<4>> Material::cGetAmbientCoeff() const
+inline std::optional<glm::vec4> Material::cGetAmbientCoeff() const
 {
     return ambient;
 }
 
-inline std::optional<Vector<4>> Material::cGetSpecularCoeff() const
+inline std::optional<glm::vec4> Material::cGetSpecularCoeff() const
 {
     return specular;
 }

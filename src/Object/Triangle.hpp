@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Matrix.hpp>
+#include <vec4.hpp>
 
 #include <array>
 #include <optional>
@@ -50,17 +50,17 @@ public:
 
     static std::vector<Triangle> parseAndTriangulate(
         const std::string& line,
-        const std::vector<Vector<4>>& vertices,
+        const std::vector<glm::vec4>& vertices,
         const std::optional<std::string>& materialName);
 
-    const Vector<4>& getFlatNormal(const std::vector<Vector<4>>& vertices);
-    Vector<4> getPhongNormal(
-        const std::vector<Vector<4>>& nVertices,
-        double b0,
-        double b1,
-        double b2) const;
+    const glm::vec4& getFlatNormal(const std::vector<glm::vec4>& vertices);
+    [[nodiscard]] glm::vec4 getPhongNormal(
+        const std::vector<glm::vec4>& nVertices,
+        float b0,
+        float b1,
+        float b2) const;
 
-    const Vector<4>& getCenter(const std::vector<Vector<4>>& vertices);
+    const glm::vec4& getCenter(const std::vector<glm::vec4>& vertices);
 
     [[nodiscard]] const std::optional<std::string>& cGetMaterialName() const;
 
@@ -76,8 +76,8 @@ private:
     std::optional<std::string> materialName;
     // TODO: use static default material with grey color and etc.
 
-    std::optional<Vector<4>> normal;
-    std::optional<Vector<4>> center;
+    std::optional<glm::vec4> normal;
+    std::optional<glm::vec4> center;
 
     static std::vector<VertexIds> parseInner(const std::string& line);
 };

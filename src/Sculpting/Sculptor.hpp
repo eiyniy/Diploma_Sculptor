@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Graph.hpp>
-#include <Matrix.hpp>
+
+#include <vec4.hpp>
 
 #include <utility>
 #include <vector>
@@ -21,9 +22,9 @@ public:
     void createGraph(OldObject* object);
 
     void pull(
-        std::vector<Vector<4>>& vertices,
+        std::vector<glm::vec4>& vertices,
         std::pair<int, int> mousePos,
-        const Vector<4>& direction);
+        const glm::vec4& direction);
 
     static void
     pull(OldObject* object, int triangleId, std::pair<int, int> mousePos);

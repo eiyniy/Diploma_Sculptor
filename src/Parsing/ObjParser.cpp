@@ -3,13 +3,13 @@
 #include <BaseTextParser.hpp>
 #include <Enums.hpp>
 #include <Globals.hpp>
-#include <Matrix.hpp>
 #include <MtlParser.hpp>
 #include <OldObject.hpp>
 #include <Triangle.hpp>
 
-#include <bits/chrono.h>
+#include <vec4.hpp>
 
+#include <chrono>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
@@ -172,19 +172,19 @@ ObjParser::parseAcc(const std::string& line)
     return accumulator;
 }
 
-Vector<4>
+glm::vec4
 ObjParser::parseVertex(const std::array<std::optional<double>, 4>& acc)
 {
     return { *acc[0], *acc[1], *acc[2], acc[3].value_or(1) };
 }
 
-Vector<4>
+glm::vec4
 ObjParser::parseNVertex(const std::array<std::optional<double>, 4>& acc)
 {
     return { *acc[0], *acc[1], *acc[2], 0 };
 }
 
-Vector<4>
+glm::vec4
 ObjParser::parseTVertex(const std::array<std::optional<double>, 4>& acc)
 {
     return { *acc[0], acc[1].value_or(0), acc[2].value_or(0), 1 };

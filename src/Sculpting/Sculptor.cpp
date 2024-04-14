@@ -1,9 +1,10 @@
 #include <Sculptor.hpp>
 
 #include <Graph.hpp>
-#include <Matrix.hpp>
 #include <OldObject.hpp>
 #include <Triangle.hpp>
+
+#include <vec4.hpp>
 
 #include <memory>
 #include <utility>
@@ -20,9 +21,9 @@ void Sculptor::createGraph(OldObject* object)
 }
 
 void Sculptor::pull(
-    std::vector<Vector<4>>& vertices,
+    std::vector<glm::vec4>& vertices,
     const std::pair<int, int> mousePos,
-    const Vector<4>& direction)
+    const glm::vec4& direction)
 {
     const auto affectedVerticesIds
         = graph.getAffectedVerticesIds(mousePos, radius);

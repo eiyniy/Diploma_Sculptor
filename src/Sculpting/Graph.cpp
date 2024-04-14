@@ -1,7 +1,8 @@
 #include <Graph.hpp>
 
-#include <Matrix.hpp>
 #include <Triangle.hpp>
+
+#include <vec4.hpp>
 
 #include <array>
 #include <cmath>
@@ -13,7 +14,7 @@
 Graph::Graph() = default;
 
 Graph::Graph(
-    const std::vector<Vector<4>>& drawableVertices,
+    const std::vector<glm::vec4>& drawableVertices,
     const std::vector<Triangle>& polygons)
 {
     const auto size = drawableVertices.size();
@@ -53,8 +54,8 @@ int Graph::findNearestVertexId(const std::pair<int, int> pos) const
     double distance = INFINITY;
 
     for (int i = 0; i < nodes.size(); ++i) {
-        const std::pair<int, int> nodePos { (int)nodes[i]->cGetX(),
-                                            (int)nodes[i]->cGetY() };
+        const std::pair<int, int> nodePos { (int)nodes[i]->x,
+                                            (int)nodes[i]->y };
         const auto newDistance = findDistance(pos, nodePos);
 
         if (newDistance < distance) {
@@ -81,8 +82,7 @@ std::unique_ptr<std::vector<int>> Graph::getAffectedVerticesIds(
     used[nearestVertexId] = true;
 
     const std::pair<int, int> nearestVertexPos {
-        (int)nodes[nearestVertexId]->cGetX(),
-        (int)nodes[nearestVertexId]->cGetY()
+        (int)nodes[nearestVertexId]->x, (int)nodes[nearestVertexId]->y
     };
 
     // std::cout << "Nearest vertex pos: " << nearestVertexPos.first << ' '
@@ -92,8 +92,8 @@ std::unique_ptr<std::vector<int>> Graph::getAffectedVerticesIds(
         int id = idsQueue.front();
         idsQueue.pop();
 
-        const std::pair<int, int> nodePos { (int)nodes[id]->cGetX(),
-                                            (int)nodes[id]->cGetY() };
+        const std::pair<int, int> nodePos { (int)nodes[id]->x,
+                                            (int)nodes[id]->y };
         const auto distance = findDistance(mousePos, nodePos);
 
         if (distance > radius) {

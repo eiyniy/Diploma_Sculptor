@@ -3,8 +3,10 @@
 #include <EarClipper.hpp>
 #include <Enums.hpp>
 #include <Math.hpp>
-#include <Matrix.hpp>
 #include <ObjParser.hpp>
+
+#include <geometric.hpp>
+#include <vec4.hpp>
 
 #include <array>
 #include <optional>
@@ -66,14 +68,14 @@ const VertexIds& Triangle::cGetVertexIds(const int i) const
 
 std::vector<Triangle> Triangle::parseAndTriangulate(
     const std::string& line,
-    const std::vector<Vector<4>>& vertices,
+    const std::vector<glm::vec4>& vertices,
     const std::optional<std::string>& materialName)
 {
     const auto accumulator = parseInner(line);
     return EarClipper::triangulate(accumulator, vertices, materialName);
 }
 
-const Vector<4>& Triangle::getFlatNormal(const std::vector<Vector<4>>& vertices)
+const glm::vec4& Triangle::getFlatNormal(const std::vector<glm::vec4>& vertices)
 {
     if (!normal.has_value()) {
         const auto& a = vertices.at(cGetVertexIds(0).cGetVertexId() - 1);
@@ -83,20 +85,20 @@ const Vector<4>& Triangle::getFlatNormal(const std::vector<Vector<4>>& vertices)
         const auto v0 = b - a;
         const auto v1 = c - a;
 
-        normal = v0.vectorMultiply(v1);
-        normal->normalize();
+        normal = v0 * v1;
+        normal = glm::normalize(*normal);
     }
 
     return *normal;
 }
 
-Vector<4> Triangle::getPhongNormal(
-    const std::vector<Vector<4>>& nVertices,
-    const double b0,
-    const double b1,
-    const double b2) const
+glm::vec4 Triangle::getPhongNormal(
+    const std::vector<glm::vec4>& nVertices,
+    const float b0,
+    const float b1,
+    const float b2) const
 {
-    Vector<4> phongNormal;
+    glm::vec4 phongNormal;
 
     const auto nId0 = cGetVertexIds(0).cGetNormalVertexId();
     const auto nId1 = cGetVertexIds(1).cGetNormalVertexId();
@@ -111,12 +113,12 @@ Vector<4> Triangle::getPhongNormal(
     const auto& cNormal = nVertices.at(*nId2 - 1);
 
     phongNormal = aNormal * b0 + bNormal * b1 + cNormal * b2;
-    phongNormal.normalize();
+    phongNormal = glm::normalize(phongNormal);
 
     return phongNormal;
 }
 
-const Vector<4>& Triangle::getCenter(const std::vector<Vector<4>>& vertices)
+const glm::vec4& Triangle::getCenter(const std::vector<glm::vec4>& vertices)
 {
     // if (!center.has_value())
     // {
@@ -125,9 +127,7 @@ const Vector<4>& Triangle::getCenter(const std::vector<Vector<4>>& vertices)
     const auto& c = vertices.at(cGetVertexIds(2).cGetVertexId() - 1);
 
     center = {
-        (a.cGetX() + b.cGetX() + c.cGetX()) / 3,
-        (a.cGetY() + b.cGetY() + c.cGetY()) / 3,
-        (a.cGetZ() + b.cGetZ() + c.cGetZ()) / 3,
+        (a.x + b.x + c.x) / 3, (a.y + b.y + c.y) / 3, (a.z + b.z + c.z) / 3, 1.F
     };
     // }
 

@@ -1,7 +1,9 @@
 #include <EarClipper.hpp>
 
-#include <Matrix.hpp>
 #include <Triangle.hpp>
+
+#include <geometric.hpp>
+#include <vec4.hpp>
 
 #include <optional>
 #include <stdexcept>
@@ -10,10 +12,10 @@
 
 std::vector<Triangle> EarClipper::triangulate(
     const std::vector<VertexIds>& indexes,
-    const std::vector<Vector<4>>& vertices,
+    const std::vector<glm::vec4>& vertices,
     const std::optional<std::string>& materialName)
 {
-    std::vector<std::pair<Vector<4>, VertexIds>> polygonVertices;
+    std::vector<std::pair<glm::vec4, VertexIds>> polygonVertices;
 
     const int polygonSize = (int)indexes.size();
     for (int i = 0; i != polygonSize; ++i) {
@@ -24,7 +26,7 @@ std::vector<Triangle> EarClipper::triangulate(
 }
 
 std::vector<Triangle> EarClipper::triangulate(
-    std::vector<std::pair<Vector<4>, VertexIds>>& polygonVertices,
+    std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices,
     const std::optional<std::string>& materialName)
 {
     std::vector<Triangle> result;
@@ -37,22 +39,22 @@ std::vector<Triangle> EarClipper::triangulate(
 }
 
 bool EarClipper::isConvexVertex(
-    const Vector<4>& vertex,
-    const Vector<4>& prevVertex,
-    const Vector<4>& nextVertex)
+    const glm::vec4& vertex,
+    const glm::vec4& prevVertex,
+    const glm::vec4& nextVertex)
 {
     const auto v1 = prevVertex - vertex;
     const auto v2 = nextVertex - vertex;
 
-    const auto crossProduct = v1.vectorMultiply(v2);
+    const auto crossProduct = v1 * v2;
     const auto sin
-        = crossProduct.getLength() / (v1.getLength() * v2.getLength());
+        = glm::length(crossProduct) / (glm::length(v1) * glm::length(v2));
 
     return sin > 0;
 }
 
 Triangle EarClipper::clipEar(
-    std::vector<std::pair<Vector<4>, VertexIds>>& polygonVertices,
+    std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices,
     const std::optional<std::string>& materialName)
 {
     int i = 0;
@@ -96,10 +98,10 @@ Triangle EarClipper::clipEar(
 }
 
 bool EarClipper::isPointsInside(
-    const std::pair<Vector<4>, VertexIds>& v0,
-    const std::pair<Vector<4>, VertexIds>& v1,
-    const std::pair<Vector<4>, VertexIds>& v2,
-    const std::vector<std::pair<Vector<4>, VertexIds>>& polygonVertices)
+    const std::pair<glm::vec4, VertexIds>& v0,
+    const std::pair<glm::vec4, VertexIds>& v1,
+    const std::pair<glm::vec4, VertexIds>& v2,
+    const std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices)
 {
     bool result = false;
 

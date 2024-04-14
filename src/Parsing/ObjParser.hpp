@@ -2,8 +2,9 @@
 
 #include <BaseTextParser.hpp>
 #include <Enums.hpp>
-#include <Matrix.hpp>
 #include <Triangle.hpp>
+
+#include <vec4.hpp>
 
 #include <array>
 #include <map>
@@ -25,9 +26,9 @@ public:
     static std::optional<ObjEntryType> getEntryType(const std::string& line);
 
 private:
-    std::vector<Vector<4>> vertices;
-    std::vector<Vector<4>> nVertices;
-    std::vector<Vector<4>> tVertices;
+    std::vector<glm::vec4> vertices;
+    std::vector<glm::vec4> nVertices;
+    std::vector<glm::vec4> tVertices;
     std::vector<Triangle> polygons;
     std::vector<std::pair<std::string, std::optional<std::string>>>
         polygonsStringAndMaterial;
@@ -44,12 +45,12 @@ private:
     static std::array<std::optional<double>, 4>
     parseAcc(const std::string& line);
 
-    static Vector<4>
+    static glm::vec4
     parseVertex(const std::array<std::optional<double>, 4>& acc);
 
-    static Vector<4>
+    static glm::vec4
     parseNVertex(const std::array<std::optional<double>, 4>& acc);
 
-    static Vector<4>
+    static glm::vec4
     parseTVertex(const std::array<std::optional<double>, 4>& acc);
 };

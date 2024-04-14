@@ -4,8 +4,9 @@
 #include <Enums.hpp>
 #include <ImageParser.hpp>
 #include <Material.hpp>
-#include <Matrix.hpp>
 #include <OldTexture.hpp>
+
+#include <vec4.hpp>
 
 #include <array>
 #include <map>
@@ -183,7 +184,7 @@ void MtlParser::resetMaterial()
     mraoMap = nullptr;
 }
 
-Vector<4> MtlParser::parseCoeff(const std::string& line)
+glm::vec4 MtlParser::parseCoeff(const std::string& line)
 {
     const auto entryType = MtlParser::getEntryType(line);
     if (entryType != MtlEntryType::Ambient && entryType != MtlEntryType::Diffuse
@@ -207,7 +208,7 @@ Vector<4> MtlParser::parseCoeff(const std::string& line)
     // if (i != 3)
     // throw std::logic_error("MtlParser. Can't parse value.");
 
-    return { accumulator[0], accumulator[1], accumulator[2] };
+    return { accumulator[0], accumulator[1], accumulator[2], 1.F };
 }
 
 std::unique_ptr<const OldTexture> MtlParser::parseTexture(

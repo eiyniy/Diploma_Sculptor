@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Matrix.hpp>
+#include <vec4.hpp>
 
 #include <cmath>
 #include <memory>
@@ -12,7 +12,7 @@ class Triangle;
 class Graph {
 private:
     std::vector<std::vector<bool>> adjacencyMatrix;
-    std::vector<const Vector<4>*> nodes;
+    std::vector<const glm::vec4*> nodes;
 
     [[nodiscard]] int findNearestVertexId(std::pair<int, int> pos) const;
 
@@ -22,7 +22,7 @@ public:
     Graph();
 
     Graph(
-        const std::vector<Vector<4>>& drawableVertices,
+        const std::vector<glm::vec4>& drawableVertices,
         const std::vector<Triangle>& polygons);
 
     [[nodiscard]] std::unique_ptr<std::vector<int>>

@@ -1,6 +1,6 @@
 #include <Material.hpp>
 
-#include <Matrix.hpp>
+#include <vec4.hpp>
 
 #include <memory>
 #include <optional>
@@ -11,9 +11,9 @@ class OldTexture;
 
 Material::Material(
     std::string _name,
-    const std::optional<Vector<4>>& _ambient,
-    const std::optional<Vector<4>>& _diffuse,
-    const std::optional<Vector<4>>& _specular,
+    const std::optional<glm::vec4>& _ambient,
+    const std::optional<glm::vec4>& _diffuse,
+    const std::optional<glm::vec4>& _specular,
     const std::optional<double>& _specularExp,
     std::shared_ptr<const OldTexture> _diffuseMap,
     std::shared_ptr<const OldTexture> _emissiveMap,
