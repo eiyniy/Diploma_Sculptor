@@ -170,6 +170,10 @@ void Engine::start()
     object->addTexture(std::move(containerTexture));
     object->addTexture(std::move(faceTexture));
 
+    object->enableShader();
+    object->bindTextures();
+    object->disableShader();
+
     object->setupVAO();
 
     scene.addObject("OBJECT", object);
@@ -229,7 +233,6 @@ void Engine::draw()
 
     for (auto&& object : objects) {
         object.second->enableShader();
-        object.second->bindTextures();
         object.second->loadTransformMatrices(modelMat, viewMat, projectionMat);
         object.second->draw();
         object.second->disableShader();
