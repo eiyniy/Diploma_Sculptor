@@ -7,6 +7,7 @@
 // #include <glm/glm.hpp>
 
 #include <matrix_float4x4.hpp>
+#include <memory>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 
@@ -38,8 +39,8 @@ private:
     std::size_t indicesUnionSize;
 
     // TODO: Remove optional's from class fields
-    // TODO: Move texture name to its fields
-    std::optional<std::map<std::string_view, Texture>> textures;
+    std::optional<std::map<std::string_view, std::unique_ptr<Texture>>>
+        textures;
 
     [[nodiscard]] GLint findUniform(std::string_view uniformName) const;
 
@@ -63,7 +64,7 @@ public:
     [[nodiscard]] bool hasColor() const;
     [[nodiscard]] bool hasTexture() const;
 
-    void addTexture(const Texture& texture);
+    void addTexture(std::unique_ptr<Texture> texture);
 
     void bindTexture(std::string_view name);
 

@@ -150,33 +150,25 @@ void Engine::start()
     auto object = std::make_shared<Object>(
         objectVertices, std::nullopt, objectTextureVertices, std::nullopt);
 
-    // TODO: Remove {} - onle for ownership test
-    {
+    auto containerTexture = std::make_unique<Texture>(
+        "containerTexture", GL_TEXTURE0, GL_TEXTURE_2D);
+    auto faceTexture
+        = std::make_unique<Texture>("faceTexture", GL_TEXTURE1, GL_TEXTURE_2D);
 
-        // auto containerTexture = std::make_unique<Texture>(
-        // "containerTexture", GL_TEXTURE0, GL_TEXTURE_2D);
-        Texture containerTexture { "containerTexture",
-                                   GL_TEXTURE0,
-                                   GL_TEXTURE_2D };
-        Texture faceTexture { "faceTexture", GL_TEXTURE1, GL_TEXTURE_2D };
+    containerTexture->bind();
+    containerTexture->setDefaults();
+    containerTexture->load("C:/Users/Natallia/Documents/Labs/Diploma/"
+                           "Diploma_Sculptor/resources/textures/container.jpg");
+    containerTexture->unbind();
 
-        containerTexture.bind();
-        containerTexture.setDefaults();
-        containerTexture.load(
-            "C:/Users/Natallia/Documents/Labs/Diploma/"
-            "Diploma_Sculptor/resources/textures/container.jpg");
-        containerTexture.unbind();
+    faceTexture->bind();
+    faceTexture->setDefaults();
+    faceTexture->load("C:/Users/Natallia/Documents/Labs/Diploma/"
+                      "Diploma_Sculptor/resources/textures/awesomeface.png");
+    faceTexture->unbind();
 
-        faceTexture.bind();
-        faceTexture.setDefaults();
-        faceTexture.load("C:/Users/Natallia/Documents/Labs/Diploma/"
-                         "Diploma_Sculptor/resources/textures/awesomeface.png");
-        faceTexture.unbind();
-
-        // TODO: make Texture unique_ptr
-        object->addTexture(containerTexture);
-        object->addTexture(faceTexture);
-    }
+    object->addTexture(std::move(containerTexture));
+    object->addTexture(std::move(faceTexture));
 
     object->setupVAO();
 

@@ -16,7 +16,6 @@ private:
 
     [[nodiscard]] int findNearestVertexId(std::pair<int, int> pos) const;
 
-    // TODO: Move this shit from here
     static double findDistance(std::pair<int, int> v1, std::pair<int, int> v2);
 
 public:

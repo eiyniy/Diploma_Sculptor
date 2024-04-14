@@ -4,6 +4,7 @@
 #include <Texture.hpp>
 
 #include <matrix_float4x4.hpp>
+#include <memory>
 #include <type_mat4x4.hpp>
 #include <type_ptr.hpp>
 #include <type_vec2.hpp>
@@ -172,25 +173,24 @@ void Object::loadTransformMatrices(
         projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));
 }
 
-void Object::addTexture(const Texture& texture)
+void Object::addTexture(std::unique_ptr<Texture> texture)
 {
-    // TODO: Fix texture name ownership. mb relace with std::string
     if (!textures.has_value()) {
-        textures = std::map<std::string_view, Texture>();
+        textures = std::map<std::string_view, std::unique_ptr<Texture>>();
     }
 
-    textures->emplace(texture.getName(), texture);
+    textures->insert(std::make_pair(texture->getName(), std::move(texture)));
 }
 
 void Object::bindTexture(const std::string_view name)
 {
     throwIfShaderNotUsed("bindTexture");
 
-    textures->at(name).bind();
+    textures->at(name)->bind();
 
     const auto location = findUniform(name);
 
-    glUniform1i(location, textures->at(name).getTextureBlock() - GL_TEXTURE0);
+    glUniform1i(location, textures->at(name)->getTextureBlock() - GL_TEXTURE0);
 }
 
 void Object::bindTextures()
@@ -232,6 +232,7 @@ void Object::setupVAO()
     }
 
     // TODO: Replace this magic numbers with constants
+    // TODO: Extract object attribute as separate entity (as Texture f.e)
     glVertexAttribPointer(
         0,
         3,
