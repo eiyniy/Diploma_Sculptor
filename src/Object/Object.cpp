@@ -194,7 +194,7 @@ void Object::bindTextures()
     }
 }
 
-void Object::addShader(std::unique_ptr<ShaderProgram> shaderProgram)
+void Object::addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram)
 {
     shaderPrograms.insert(
         std::make_pair(shaderProgram->getName(), std::move(shaderProgram)));
@@ -228,6 +228,12 @@ void Object::disableCurrentShader()
 
 void Object::setupVAO()
 {
+    // TODO: It's not necessary for any shaderProgramm to be enabled to setupVAO
+    if (!_isAnyShaderEnabled) {
+        throw std::logic_error(
+            "Can't setup VAO. No one of shader programs is enabled");
+    }
+
     // Bind the Vertex Array Object first, then bind and set vertex buffer(s)
     // and attribute pointer(s).
     glBindVertexArray(VAO);
@@ -248,43 +254,7 @@ void Object::setupVAO()
             GL_STATIC_DRAW);
     }
 
-    // TODO: Replace this magic numbers with constants
-    // TODO: Extract object attribute as separate entity (as Texture f.e.)
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        static_cast<GLsizei>(verticesUnionStep * sizeof(GLfloat)),
-        (GLvoid*)nullptr);
-    glEnableVertexAttribArray(0);
-
-    auto offset = 3;
-    if (hasColor()) {
-        glVertexAttribPointer(
-            1,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            static_cast<GLsizei>(verticesUnionStep * sizeof(GLfloat)),
-            reinterpret_cast<GLvoid*>(offset * sizeof(GLfloat))); // NOLINT
-        glEnableVertexAttribArray(1);
-
-        offset += 3;
-    }
-
-    if (hasTexture()) {
-        glVertexAttribPointer(
-            2,
-            2,
-            GL_FLOAT,
-            GL_FALSE,
-            static_cast<GLsizei>(verticesUnionStep * sizeof(GLfloat)),
-            reinterpret_cast<GLvoid*>(offset * sizeof(GLfloat))); // NOLINT
-        glEnableVertexAttribArray(2);
-
-        offset += 2;
-    }
+    shaderPrograms.at(currentShaderProgramName)->setupAttributes();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ShaderAttribute.hpp"
 #include <GL/glew.h>
 
 #include <array>
@@ -23,6 +24,10 @@ private:
 
     std::vector<GLuint> shaders;
 
+    std::vector<ShaderAttribute> attributes;
+
+    GLsizei attributesStride;
+
     bool _isUsed;
 
 public:
@@ -33,6 +38,10 @@ public:
     ShaderProgram(std::string_view _name);
 
     void addShader(std::string sourcePath, GLenum shaderType);
+
+    void addAttribute(const ShaderAttribute& attribute);
+
+    void setupAttributes();
 
     void link();
 

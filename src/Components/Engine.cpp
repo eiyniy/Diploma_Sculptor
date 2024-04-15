@@ -1,3 +1,4 @@
+#include "ShaderAttribute.hpp"
 #include <Engine.hpp>
 
 #include <Camera.hpp>
@@ -179,6 +180,7 @@ void Engine::start()
     };
     // NOLINTEND
 
+    // TODO: Add ShaderProgramBuilder
     auto shaderProgram = std::make_unique<ShaderProgram>(shaderProgramName);
     shaderProgram->addShader(
         R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
@@ -189,14 +191,14 @@ void Engine::start()
 
     shaderProgram->link();
 
-    auto object = std::make_shared<Object>(
-        objectVertices,
-        objectColorVertices,
-        objectTextureVertices,
-        std::nullopt);
+    shaderProgram->addAttribute(
+        { "position", 0, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
+    shaderProgram->addAttribute(
+        { "color", 1, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
+    shaderProgram->addAttribute(
+        { "texCoord", 2, 2, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
 
-    object->addShader(std::move(shaderProgram));
-
+    // TODO: Add TextureBuilder
     auto containerTexture = std::make_unique<Texture>(
         "containerTexture", GL_TEXTURE0, GL_TEXTURE_2D);
     auto faceTexture
@@ -214,14 +216,24 @@ void Engine::start()
                       "Diploma_Sculptor/resources/textures/awesomeface.png");
     faceTexture->unbind();
 
+    // TODO: Add ObjectBuilder
+    auto object = std::make_shared<Object>(
+        objectVertices,
+        objectColorVertices,
+        objectTextureVertices,
+        std::nullopt);
+
+    object->addShaderProgram(std::move(shaderProgram));
+
     object->addTexture(std::move(containerTexture));
     object->addTexture(std::move(faceTexture));
 
     object->enableShader(shaderProgramName);
-    object->bindTextures();
-    object->disableCurrentShader();
 
+    object->bindTextures();
     object->setupVAO();
+
+    object->disableCurrentShader();
 
     scene.addObject("OBJECT", object);
 

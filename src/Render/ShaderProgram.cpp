@@ -20,6 +20,7 @@ ShaderProgram::ShaderProgram(const std::string_view _name)
     , infoLog()
     , _isUsed(false)
     , name(_name)
+    , attributesStride(0)
 {
 }
 
@@ -34,7 +35,6 @@ void ShaderProgram::addShader(std::string sourcePath, GLenum shaderType)
     glShaderSource(shader, 1, &source, NULL);
     glCompileShader(shader);
 
-    // Check for compile time errors
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (success == 0) {
         glGetShaderInfoLog(shader, infoLogSize, nullptr, infoLog.data());
@@ -43,6 +43,26 @@ void ShaderProgram::addShader(std::string sourcePath, GLenum shaderType)
     }
 
     shaders.push_back(shader);
+}
+
+void ShaderProgram::addAttribute(const ShaderAttribute& attribute)
+{
+    attributes.push_back(attribute);
+    attributesStride += static_cast<GLsizei>(
+        attribute.getElementsCount() * attribute.getSizeofElement());
+}
+
+void ShaderProgram::setupAttributes()
+{
+    auto offset = 0;
+    for (auto&& attribute : attributes) {
+        attribute.enable(
+            attributesStride,
+            // NOLINTNEXTLINE
+            reinterpret_cast<GLvoid*>(offset * attribute.getSizeofElement()));
+
+        offset += attribute.getElementsCount();
+    }
 }
 
 void ShaderProgram::link()

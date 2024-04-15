@@ -24,6 +24,7 @@ private:
     std::map<const std::string_view, std::unique_ptr<ShaderProgram>>
         shaderPrograms;
 
+    // TODO: Replace with getCurrentShader func
     std::string_view currentShaderProgramName;
 
     bool _isAnyShaderEnabled;
@@ -75,7 +76,7 @@ public:
 
     void bindTextures();
 
-    void addShader(std::unique_ptr<ShaderProgram> shaderProgram);
+    void addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram);
 
     void enableShader(std::string_view name);
 
