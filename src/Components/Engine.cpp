@@ -25,7 +25,7 @@
 #include <utility>
 #include <vector>
 
-// TODO: Replace with smth normal
+// TODO: Move to settings
 const auto* const shaderProgramName = "base";
 
 Engine::Engine(
@@ -225,15 +225,17 @@ void Engine::start()
 
     object->addShaderProgram(std::move(shaderProgram));
 
+    object->selectShader(shaderProgramName);
+
     object->addTexture(std::move(containerTexture));
     object->addTexture(std::move(faceTexture));
 
-    object->enableShader(shaderProgramName);
+    object->enableShader();
 
     object->bindTextures();
     object->setupVAO();
 
-    object->disableCurrentShader();
+    object->disableShader();
 
     scene.addObject("OBJECT", object);
 
@@ -290,10 +292,10 @@ void Engine::draw()
     auto& objects = scene.getAllObjects();
 
     for (auto&& object : objects) {
-        object.second->enableShader(shaderProgramName);
+        object.second->enableShader();
         object.second->loadTransformMatrices(modelMat, viewMat, projectionMat);
         object.second->draw();
-        object.second->disableCurrentShader();
+        object.second->disableShader();
     }
 
     mainWindow->swapBuffers();

@@ -24,8 +24,7 @@ private:
     std::map<const std::string_view, std::unique_ptr<ShaderProgram>>
         shaderPrograms;
 
-    // TODO: Replace with getCurrentShader func
-    std::string_view currentShaderProgramName;
+    std::string currentShaderProgramName;
 
     bool _isAnyShaderEnabled;
 
@@ -46,7 +45,9 @@ private:
 
     [[nodiscard]] GLint findUniform(std::string_view uniformName) const;
 
-    void throwIfShaderNotUsed(const std::string& message) const;
+    void throwIfShaderNotEnabled(const std::string& message) const;
+
+    void throwIfShaderNotSelected(const std::string& message) const;
 
 public:
     Object(const Object&) = default;
@@ -78,9 +79,11 @@ public:
 
     void addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram);
 
-    void enableShader(std::string_view name);
+    void selectShader(std::string_view name);
 
-    void disableCurrentShader();
+    void enableShader();
+
+    void disableShader();
 
     void setupVAO();
 

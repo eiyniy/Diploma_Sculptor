@@ -121,7 +121,7 @@ Object::~Object()
 
 GLint Object::findUniform(const std::string_view uniformName) const
 {
-    throwIfShaderNotUsed("findUniform");
+    throwIfShaderNotEnabled("findUniform");
 
     const auto& shaderProgram = shaderPrograms.at(currentShaderProgramName);
 
@@ -141,11 +141,18 @@ GLint Object::findUniform(const std::string_view uniformName) const
     return uniformLocation;
 }
 
-void Object::throwIfShaderNotUsed(
+void Object::throwIfShaderNotEnabled(
     const std::string& message = std::string()) const
 {
-    if (!_isAnyShaderEnabled) {
+    if (!isAnyShaderEnabled()) {
         throw std::logic_error("No one shader is enabled. " + message);
+    }
+}
+
+void Object::throwIfShaderNotSelected(const std::string& message) const
+{
+    if (currentShaderProgramName.empty()) {
+        throw std::logic_error("No one shader is selected. " + message);
     }
 }
 
@@ -172,7 +179,7 @@ void Object::addTexture(std::unique_ptr<Texture> texture)
 
 void Object::bindTexture(const std::string_view name)
 {
-    throwIfShaderNotUsed("bindTexture");
+    throwIfShaderNotEnabled("bindTexture");
 
     textures.at(name)->bind();
 
@@ -183,7 +190,7 @@ void Object::bindTexture(const std::string_view name)
 
 void Object::bindTextures()
 {
-    throwIfShaderNotUsed("bindTextures");
+    throwIfShaderNotEnabled("bindTextures");
 
     if (!hasTexture()) {
         throw std::logic_error("Can't bind Textures. Object doesn't has them");
@@ -200,14 +207,21 @@ void Object::addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram)
         std::make_pair(shaderProgram->getName(), std::move(shaderProgram)));
 }
 
-void Object::enableShader(const std::string_view name)
+void Object::selectShader(const std::string_view name)
 {
-    if (_isAnyShaderEnabled) {
+    currentShaderProgramName = name;
+}
+
+void Object::enableShader()
+{
+    if (isAnyShaderEnabled()) {
         throw std::logic_error("Can't enable shader program. There is another "
                                "one enabled already");
     }
 
-    auto& shaderProgram = shaderPrograms.at(name);
+    throwIfShaderNotSelected("Can't enable shader program.");
+
+    auto& shaderProgram = shaderPrograms.at(currentShaderProgramName);
 
     shaderProgram->enable();
 
@@ -215,9 +229,9 @@ void Object::enableShader(const std::string_view name)
     _isAnyShaderEnabled = true;
 }
 
-void Object::disableCurrentShader()
+void Object::disableShader()
 {
-    if (!_isAnyShaderEnabled) {
+    if (!isAnyShaderEnabled()) {
         throw std::logic_error(
             "Can't disable shader program. No one of them is enabled");
     }
@@ -228,14 +242,8 @@ void Object::disableCurrentShader()
 
 void Object::setupVAO()
 {
-    // TODO: It's not necessary for any shaderProgramm to be enabled to setupVAO
-    if (!_isAnyShaderEnabled) {
-        throw std::logic_error(
-            "Can't setup VAO. No one of shader programs is enabled");
-    }
+    throwIfShaderNotSelected("Can't setup VAO.");
 
-    // Bind the Vertex Array Object first, then bind and set vertex buffer(s)
-    // and attribute pointer(s).
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -262,7 +270,7 @@ void Object::setupVAO()
 
 void Object::draw() const
 {
-    throwIfShaderNotUsed("draw");
+    throwIfShaderNotEnabled("draw");
 
     glBindVertexArray(VAO);
 
