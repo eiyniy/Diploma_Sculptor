@@ -17,11 +17,11 @@ const std::string ShaderProgram::defaultProjectionUniformName = "projection";
 ShaderProgram::ShaderProgram(const std::string_view _name)
     : shaderProgram(glCreateProgram())
     , success(0)
-    , infoLog()
     , _isUsed(false)
     , name(_name)
     , attributesStride(0)
 {
+    infoLog.resize(infoLogSize);
 }
 
 void ShaderProgram::addShader(std::string sourcePath, GLenum shaderType)

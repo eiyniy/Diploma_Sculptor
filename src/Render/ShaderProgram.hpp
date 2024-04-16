@@ -3,7 +3,6 @@
 #include "ShaderAttribute.hpp"
 #include <GL/glew.h>
 
-#include <array>
 #include <cstddef>
 #include <string>
 #include <string_view>
@@ -19,8 +18,7 @@ private:
 
     GLint success;
 
-    // TODO: Replace with dynamic array
-    std::array<GLchar, infoLogSize> infoLog;
+    std::vector<GLchar> infoLog;
 
     std::vector<GLuint> shaders;
 
