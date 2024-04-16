@@ -1,6 +1,8 @@
 #pragma once
 
-#include "ShaderAttribute.hpp"
+#include <ShaderAttribute.hpp>
+#include <ShaderProgramBuilder.hpp>
+
 #include <GL/glew.h>
 
 #include <cstddef>
@@ -11,8 +13,11 @@
 const size_t infoLogSize = 512;
 
 class ShaderProgram {
+
+    friend class ShaderProgramBuilder;
+
 private:
-    GLuint shaderProgram;
+    GLuint program;
 
     std::string name;
 
@@ -22,6 +27,7 @@ private:
 
     std::vector<GLuint> shaders;
 
+    // TODO: Replace with interface IShaderAttribute to get rid of #include
     std::vector<ShaderAttribute> attributes;
 
     GLsizei attributesStride;
@@ -35,13 +41,7 @@ public:
 
     ShaderProgram(std::string_view _name);
 
-    void addShader(std::string sourcePath, GLenum shaderType);
-
-    void addAttribute(const ShaderAttribute& attribute);
-
-    void setupAttributes();
-
-    void link();
+    void enableAttributes();
 
     void enable();
 
@@ -54,7 +54,7 @@ public:
     [[nodiscard]] inline bool isEnabled() const;
 };
 
-inline GLuint ShaderProgram::get() const { return shaderProgram; }
+inline GLuint ShaderProgram::get() const { return program; }
 
 inline std::string_view ShaderProgram::getName() const { return name; }
 

@@ -40,7 +40,6 @@ private:
     std::vector<GLuint> indicesUnion;
     std::size_t indicesUnionSize;
 
-    // TODO: Remove optional's from class fields
     std::map<const std::string_view, std::unique_ptr<Texture>> textures;
 
     [[nodiscard]] GLint findUniform(std::string_view uniformName) const;

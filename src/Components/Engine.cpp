@@ -8,6 +8,7 @@
 #include <Settings.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
+#include <ShaderProgramBuilder.hpp>
 #include <Texture.hpp>
 
 #include <mat4x4.hpp>
@@ -183,21 +184,23 @@ void Engine::start()
     // NOLINTEND
 
     // TODO: Add ShaderProgramBuilder
-    auto shaderProgram = std::make_unique<ShaderProgram>(shaderProgramName);
-    shaderProgram->addShader(
+    ShaderProgramBuilder shaderProgramBuilder {};
+    shaderProgramBuilder.create(shaderProgramName);
+
+    shaderProgramBuilder.addShader(
         R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
         GL_VERTEX_SHADER);
-    shaderProgram->addShader(
+    shaderProgramBuilder.addShader(
         R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.frag)",
         GL_FRAGMENT_SHADER);
 
-    shaderProgram->link();
+    shaderProgramBuilder.link();
 
-    shaderProgram->addAttribute(
+    shaderProgramBuilder.addAttribute(
         { "position", 0, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
-    shaderProgram->addAttribute(
+    shaderProgramBuilder.addAttribute(
         { "color", 1, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
-    shaderProgram->addAttribute(
+    shaderProgramBuilder.addAttribute(
         { "texCoord", 2, 2, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
 
     // TODO: Add TextureBuilder
@@ -225,7 +228,7 @@ void Engine::start()
         objectTextureVertices,
         std::nullopt);
 
-    object->addShaderProgram(std::move(shaderProgram));
+    object->addShaderProgram(std::move(shaderProgramBuilder.build()));
 
     object->selectShader(shaderProgramName);
 

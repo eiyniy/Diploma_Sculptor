@@ -34,10 +34,13 @@ public:
 
 private:
     std::string name;
+
+    // TODO: Remove optional's from class fields
     std::optional<glm::vec4> ambient;
     std::optional<glm::vec4> diffuse;
     std::optional<glm::vec4> specular;
     std::optional<double> specularExp;
+
     std::shared_ptr<const OldTexture> diffuseMap;
     std::shared_ptr<const OldTexture> emissiveMap;
     std::shared_ptr<const OldTexture> normalMap;

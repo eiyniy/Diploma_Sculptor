@@ -262,7 +262,7 @@ void Object::setupVAO()
             GL_STATIC_DRAW);
     }
 
-    shaderPrograms.at(currentShaderProgramName)->setupAttributes();
+    shaderPrograms.at(currentShaderProgramName)->enableAttributes();
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
