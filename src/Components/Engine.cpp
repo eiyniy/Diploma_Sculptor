@@ -1,4 +1,3 @@
-#include "ShaderAttribute.hpp"
 #include <Engine.hpp>
 
 #include <Camera.hpp>
@@ -7,6 +6,7 @@
 #include <Object.hpp>
 #include <Scene.hpp>
 #include <Settings.hpp>
+#include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
@@ -29,10 +29,12 @@
 const auto* const shaderProgramName = "base";
 
 Engine::Engine(
-    Scene _scene, std::unique_ptr<MainWindow> _mainWindow, Camera _camera)
+    std::unique_ptr<Scene> _scene,
+    std::unique_ptr<MainWindow> _mainWindow,
+    std::unique_ptr<Camera> _camera)
     : scene(std::move(_scene))
     , mainWindow(std::move(_mainWindow))
-    , camera(_camera)
+    , camera(std::move(_camera))
     , moveAxis(AxisName::X)
     , moveDirection(Direction::Forward)
     , deltaTime(0.F)
@@ -42,7 +44,7 @@ Engine::Engine(
     , projectionMat(1)
 {
     projectionMat = glm::perspective(
-        camera.cGetFOV(),
+        camera->cGetFOV(),
         mainWindow->getAspect(),
         Settings::get()->getZNear(),
         Settings::get()->getZFar());
@@ -237,7 +239,7 @@ void Engine::start()
 
     object->disableShader();
 
-    scene.addObject("OBJECT", object);
+    scene->addObject("OBJECT", object);
 
     while (!mainWindow->shouldClose()) {
         auto currentFrame = static_cast<GLfloat>(glfwGetTime());
@@ -262,34 +264,34 @@ void Engine::update()
     }
 
     if (keys[GLFW_KEY_W]) {
-        camera.move(AxisName::Z, Direction::Forward, deltaTime);
+        camera->move(AxisName::Z, Direction::Forward, deltaTime);
     }
     if (keys[GLFW_KEY_S]) {
-        camera.move(AxisName::Z, Direction::Backward, deltaTime);
+        camera->move(AxisName::Z, Direction::Backward, deltaTime);
     }
     if (keys[GLFW_KEY_D]) {
-        camera.move(AxisName::X, Direction::Forward, deltaTime);
+        camera->move(AxisName::X, Direction::Forward, deltaTime);
     }
     if (keys[GLFW_KEY_A]) {
-        camera.move(AxisName::X, Direction::Backward, deltaTime);
+        camera->move(AxisName::X, Direction::Backward, deltaTime);
     }
     if (keys[GLFW_KEY_SPACE]) {
-        camera.move(AxisName::Y, Direction::Forward, deltaTime);
+        camera->move(AxisName::Y, Direction::Forward, deltaTime);
     }
     if (keys[GLFW_KEY_LEFT_SHIFT]) {
-        camera.move(AxisName::Y, Direction::Backward, deltaTime);
+        camera->move(AxisName::Y, Direction::Backward, deltaTime);
     }
 
-    camera.rotate(coordOffset);
+    camera->rotate(coordOffset);
 }
 
 void Engine::draw()
 {
     MainWindow::clear();
 
-    viewMat = camera.cGetViewMat();
+    viewMat = camera->cGetViewMat();
 
-    auto& objects = scene.getAllObjects();
+    auto& objects = scene->getAllObjects();
 
     for (auto&& object : objects) {
         object.second->enableShader();

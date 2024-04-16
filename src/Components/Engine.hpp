@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Camera.hpp>
-#include <Scene.hpp>
-
 #include <mat4x4.hpp>
 #include <qualifier.hpp>
 
@@ -10,7 +7,9 @@
 
 #include <memory>
 
+class Scene;
 class MainWindow;
+class Camera;
 
 enum class AxisName;
 enum class Direction;
@@ -23,16 +22,18 @@ public:
     Engine& operator=(Engine&&) = delete;
 
     Engine(
-        Scene _scene, std::unique_ptr<MainWindow> _mainWindow, Camera _camera);
+        std::unique_ptr<Scene> _scene,
+        std::unique_ptr<MainWindow> _mainWindow,
+        std::unique_ptr<Camera> _camera);
 
     ~Engine();
 
     void start();
 
 private:
-    Scene scene;
+    std::unique_ptr<Scene> scene;
     std::unique_ptr<MainWindow> mainWindow;
-    Camera camera;
+    std::unique_ptr<Camera> camera;
 
     AxisName moveAxis;
     Direction moveDirection;

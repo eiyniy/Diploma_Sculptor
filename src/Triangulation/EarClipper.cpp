@@ -3,7 +3,6 @@
 #include <Triangle.hpp>
 
 #include <geometric.hpp>
-#include <vec4.hpp>
 
 #include <optional>
 #include <stdexcept>

@@ -7,6 +7,7 @@
 #include <OldObject.hpp>
 #include <Triangle.hpp>
 
+#include <qualifier.hpp>
 #include <vec4.hpp>
 
 #include <chrono>

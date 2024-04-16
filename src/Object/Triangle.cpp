@@ -6,6 +6,7 @@
 #include <ObjParser.hpp>
 
 #include <geometric.hpp>
+#include <qualifier.hpp>
 #include <vec4.hpp>
 
 #include <array>

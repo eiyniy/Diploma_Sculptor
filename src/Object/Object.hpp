@@ -1,8 +1,5 @@
 #pragma once
 
-#include <ShaderProgram.hpp>
-#include <Texture.hpp>
-
 #include <mat4x4.hpp>
 #include <memory>
 #include <vec2.hpp>
@@ -16,6 +13,9 @@
 #include <string>
 #include <string_view>
 #include <vector>
+
+class Texture;
+class ShaderProgram;
 
 class Object {
 private:

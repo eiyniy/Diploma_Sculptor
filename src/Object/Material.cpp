@@ -1,7 +1,5 @@
 #include <Material.hpp>
 
-#include <vec4.hpp>
-
 #include <memory>
 #include <optional>
 #include <string>

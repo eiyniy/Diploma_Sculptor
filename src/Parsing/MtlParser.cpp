@@ -6,6 +6,7 @@
 #include <Material.hpp>
 #include <OldTexture.hpp>
 
+#include <qualifier.hpp>
 #include <vec4.hpp>
 
 #include <array>

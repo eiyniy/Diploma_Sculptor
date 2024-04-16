@@ -22,12 +22,14 @@ int main(int argc, char** argv)
     auto mainWindow = std::make_unique<MainWindow>(startupResolution);
     glfwSetInputMode(mainWindow->get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    Camera camera { Settings::get()->getCameraSpeed(),
-                    Settings::get()->getCameraFoV() };
+    auto camera = std::make_unique<Camera>(
+        Settings::get()->getCameraSpeed(), Settings::get()->getCameraFoV());
 
-    Scene scene {};
+    auto scene = std::make_unique<Scene>();
 
-    Engine engine { scene, std::move(mainWindow), camera };
+    Engine engine { std::move(scene),
+                    std::move(mainWindow),
+                    std::move(camera) };
 
     glfwSwapInterval(static_cast<int>(Settings::get()->isVSyncEnabled()));
 
