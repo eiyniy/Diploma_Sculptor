@@ -2,7 +2,7 @@
 
 #include <Graph.hpp>
 
-#include <vec4.hpp>
+#include <vector_float4.hpp>
 
 #include <utility>
 #include <vector>

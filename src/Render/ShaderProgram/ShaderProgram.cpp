@@ -1,6 +1,7 @@
 #include <ShaderProgram.hpp>
 
-#include <BaseTextParser.hpp>
+#include <IBuilder.hpp>
+#include <ShaderAttribute.hpp>
 
 #include <GL/glew.h>
 
@@ -10,15 +11,16 @@ const std::string ShaderProgram::defaultModelUniformName = "model";
 const std::string ShaderProgram::defaultViewUniformName = "view";
 const std::string ShaderProgram::defaultProjectionUniformName = "projection";
 
-ShaderProgram::ShaderProgram(const std::string_view _name)
+ShaderProgram::ShaderProgram(ConstructorPasskey<ShaderProgram>&& passkey)
     : program(glCreateProgram())
     , success(0)
     , _isUsed(false)
-    , name(_name)
     , attributesStride(0)
 {
     infoLog.resize(infoLogSize);
 }
+
+void ShaderProgram::init(std::string_view _name) { name = _name; }
 
 void ShaderProgram::enableAttributes()
 {

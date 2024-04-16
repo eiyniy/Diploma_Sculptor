@@ -1,21 +1,21 @@
 #pragma once
 
-#include <mat4x4.hpp>
-#include <memory>
-#include <vec2.hpp>
-#include <vec3.hpp>
+#include <ShaderProgram.hpp>
+#include <Texture.hpp>
+
+#include <matrix_float4x4.hpp>
+#include <vector_float2.hpp>
+#include <vector_float3.hpp>
 
 #include <GL/glew.h>
 
 #include <cstddef>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
-
-class Texture;
-class ShaderProgram;
 
 class Object {
 private:

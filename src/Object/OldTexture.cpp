@@ -1,5 +1,7 @@
 #include <OldTexture.hpp>
 
+#include <vector_float4.hpp>
+
 #include <vector>
 
 OldTexture::OldTexture(

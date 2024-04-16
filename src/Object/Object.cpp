@@ -3,10 +3,13 @@
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
-#include <mat4x4.hpp>
+#include <matrix_float4x4.hpp>
+#include <type_mat4x4.hpp>
 #include <type_ptr.hpp>
-#include <vec2.hpp>
-#include <vec3.hpp>
+#include <type_vec2.hpp>
+#include <type_vec3.hpp>
+#include <vector_float2.hpp>
+#include <vector_float3.hpp>
 
 #include <memory>
 #include <stdexcept>

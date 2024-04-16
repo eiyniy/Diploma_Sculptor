@@ -10,13 +10,16 @@
 #include <ShaderProgram.hpp>
 #include <ShaderProgramBuilder.hpp>
 #include <Texture.hpp>
+#include <TextureBuilder.hpp>
 
-#include <mat4x4.hpp>
 #include <matrix_clip_space.hpp>
 #include <qualifier.hpp>
-#include <vec2.hpp>
-#include <vec3.hpp>
-#include <vec4.hpp>
+#include <type_mat4x4.hpp>
+#include <type_vec2.hpp>
+#include <type_vec3.hpp>
+#include <type_vec4.hpp>
+#include <vector_float2.hpp>
+#include <vector_float3.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -183,9 +186,10 @@ void Engine::start()
     };
     // NOLINTEND
 
-    // TODO: Add ShaderProgramBuilder
     ShaderProgramBuilder shaderProgramBuilder {};
-    shaderProgramBuilder.create(shaderProgramName);
+
+    shaderProgramBuilder.create();
+    shaderProgramBuilder.init(shaderProgramName);
 
     shaderProgramBuilder.addShader(
         R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
@@ -203,23 +207,29 @@ void Engine::start()
     shaderProgramBuilder.addAttribute(
         { "texCoord", 2, 2, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
 
-    // TODO: Add TextureBuilder
-    auto containerTexture = std::make_unique<Texture>(
-        "containerTexture", GL_TEXTURE0, GL_TEXTURE_2D);
-    auto faceTexture
-        = std::make_unique<Texture>("faceTexture", GL_TEXTURE1, GL_TEXTURE_2D);
+    TextureBuilder textureBuilder {};
 
-    containerTexture->bind();
-    containerTexture->setDefaults();
-    containerTexture->load("C:/Users/Natallia/Documents/Labs/Diploma/"
-                           "Diploma_Sculptor/resources/textures/container.jpg");
-    containerTexture->unbind();
+    textureBuilder.create();
+    textureBuilder.init("containerTexture", GL_TEXTURE0, GL_TEXTURE_2D);
 
-    faceTexture->bind();
-    faceTexture->setDefaults();
-    faceTexture->load("C:/Users/Natallia/Documents/Labs/Diploma/"
-                      "Diploma_Sculptor/resources/textures/awesomeface.png");
-    faceTexture->unbind();
+    textureBuilder.bind();
+    textureBuilder.setDefaults();
+    textureBuilder.load("C:/Users/Natallia/Documents/Labs/Diploma/"
+                        "Diploma_Sculptor/resources/textures/container.jpg");
+    textureBuilder.unbind();
+
+    auto containerTexture = textureBuilder.build();
+
+    textureBuilder.create();
+    textureBuilder.init("faceTexture", GL_TEXTURE1, GL_TEXTURE_2D);
+
+    textureBuilder.bind();
+    textureBuilder.setDefaults();
+    textureBuilder.load("C:/Users/Natallia/Documents/Labs/Diploma/"
+                        "Diploma_Sculptor/resources/textures/awesomeface.png");
+    textureBuilder.unbind();
+
+    auto faceTexture = textureBuilder.build();
 
     // TODO: Add ObjectBuilder
     auto object = std::make_shared<Object>(

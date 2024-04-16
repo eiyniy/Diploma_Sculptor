@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ShaderAttribute.hpp>
-#include <ShaderProgramBuilder.hpp>
 
 #include <GL/glew.h>
 
@@ -10,6 +9,8 @@
 #include <string_view>
 #include <vector>
 
+template <class T> class ConstructorPasskey;
+
 const size_t infoLogSize = 512;
 
 class ShaderProgram {
@@ -17,6 +18,8 @@ class ShaderProgram {
     friend class ShaderProgramBuilder;
 
 private:
+    void init(std::string_view _name);
+
     GLuint program;
 
     std::string name;
@@ -39,7 +42,7 @@ public:
     static const std::string defaultViewUniformName;
     static const std::string defaultProjectionUniformName;
 
-    ShaderProgram(std::string_view _name);
+    ShaderProgram(ConstructorPasskey<ShaderProgram>&& passkey);
 
     void enableAttributes();
 

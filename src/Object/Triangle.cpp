@@ -7,7 +7,8 @@
 
 #include <geometric.hpp>
 #include <qualifier.hpp>
-#include <vec4.hpp>
+#include <type_vec4.hpp>
+#include <vector_float4.hpp>
 
 #include <array>
 #include <optional>

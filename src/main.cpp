@@ -14,6 +14,8 @@
 const std::pair<int, int> startupResolution { 1280, 720 };
 
 // TODO: Make libraries auto downloadable
+// FIXME: Fix issue with app termination and permission denied. Maybe
+// glfwTerminate on try..finally
 
 int main(int argc, char** argv)
 {

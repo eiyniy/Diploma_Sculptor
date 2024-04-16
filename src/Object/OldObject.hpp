@@ -3,7 +3,7 @@
 #include <Material.hpp>
 #include <Triangle.hpp>
 
-#include <vec4.hpp>
+#include <vector_float4.hpp>
 
 #include <map>
 #include <memory>

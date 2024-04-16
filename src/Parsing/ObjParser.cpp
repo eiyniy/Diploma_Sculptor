@@ -8,7 +8,8 @@
 #include <Triangle.hpp>
 
 #include <qualifier.hpp>
-#include <vec4.hpp>
+#include <type_vec4.hpp>
+#include <vector_float4.hpp>
 
 #include <chrono>
 #include <iostream>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vec4.hpp>
+#include <vector_float4.hpp>
 
 #include <array>
 #include <optional>

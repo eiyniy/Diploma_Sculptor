@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mat4x4.hpp>
+#include <matrix_float4x4.hpp>
 #include <qualifier.hpp>
 
 #include <GL/glew.h>

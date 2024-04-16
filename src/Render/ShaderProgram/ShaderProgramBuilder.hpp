@@ -1,17 +1,19 @@
 #pragma once
 
+#include <IBuilder.hpp>
+#include <ShaderProgram.hpp>
+
 #include <GL/glew.h>
 
-#include <memory>
 #include <set>
+#include <string>
 #include <string_view>
 
-class ShaderProgram;
 class ShaderAttribute;
 
-class ShaderProgramBuilder {
+class ShaderProgramBuilder : public IBuilder<ShaderProgram> {
 private:
-    std::unique_ptr<ShaderProgram> shaderProgram;
+    bool isInited;
 
     bool isLinked;
 
@@ -19,7 +21,9 @@ private:
 
     std::set<GLenum> addedShadersTypes;
 
-    void reset();
+    void reset() override;
+
+    [[nodiscard]] bool isFinished() const override;
 
     [[nodiscard]] bool isAttributesFinished() const;
 
@@ -28,9 +32,15 @@ private:
 public:
     ShaderProgramBuilder();
 
-    void create(std::string_view name);
+    ShaderProgramBuilder(const ShaderProgramBuilder& shaderProgramBuilder)
+        = delete;
+    ShaderProgramBuilder(ShaderProgramBuilder&& shaderProgramBuilder) = delete;
+    ShaderProgramBuilder& operator=(const ShaderProgramBuilder&) = delete;
+    ShaderProgramBuilder& operator=(ShaderProgramBuilder&&) = delete;
 
-    std::unique_ptr<ShaderProgram> build();
+    virtual ~ShaderProgramBuilder() = default;
+
+    void init(std::string_view name);
 
     void addShader(std::string sourcePath, GLenum shaderType);
 

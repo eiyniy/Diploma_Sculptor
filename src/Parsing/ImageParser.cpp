@@ -6,13 +6,15 @@
 
 #include <geometric.hpp>
 #include <qualifier.hpp>
-#include <vec4.hpp>
+#include <type_vec4.hpp>
+#include <vector_float4.hpp>
 
 #include <CImg.h>
 
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 const auto chanelMaxValue = 255.F;
 

@@ -1,6 +1,7 @@
 #include <ShaderProgramBuilder.hpp>
 
 #include <BaseTextParser.hpp>
+#include <IBuilder.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
 
@@ -8,9 +9,10 @@
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 ShaderProgramBuilder::ShaderProgramBuilder()
-    : shaderProgram(nullptr)
+    : isInited(false)
     , isLinked(false)
     , addedAttributesCount(0)
 {
@@ -18,15 +20,19 @@ ShaderProgramBuilder::ShaderProgramBuilder()
 
 void ShaderProgramBuilder::reset()
 {
-    if (shaderProgram != nullptr) {
-        throw std::logic_error(
-            "Can't reset ShaderProgramBuilder. There is unfinished build.");
-    }
+    IBuilder<ShaderProgram>::reset();
 
     isLinked = false;
+    isInited = false;
 
     addedAttributesCount = 0;
     addedShadersTypes.clear();
+}
+
+bool ShaderProgramBuilder::isFinished() const
+{
+    return IBuilder<ShaderProgram>::isFinished() && isShadersFinished()
+        && isAttributesFinished() && isLinked && isInited;
 }
 
 bool ShaderProgramBuilder::isAttributesFinished() const
@@ -40,35 +46,20 @@ bool ShaderProgramBuilder::isShadersFinished() const
         && addedShadersTypes.contains(GL_FRAGMENT_SHADER);
 }
 
-void ShaderProgramBuilder::create(std::string_view name)
+void ShaderProgramBuilder::init(std::string_view name)
 {
-    if (shaderProgram != nullptr) {
-        throw std::logic_error("Can't create new ShaderProgram. Previous build "
-                               "haven't been finished.");
-    }
-
-    shaderProgram = std::make_unique<ShaderProgram>(name);
-}
-
-std::unique_ptr<ShaderProgram> ShaderProgramBuilder::build()
-{
-    if (shaderProgram == nullptr || !isShadersFinished()
-        || !isAttributesFinished() || !isLinked) {
-        throw std::logic_error(
-            "Can't build ShaderProgram. Build steps haven't been completed.");
-    }
-
-    auto result = std::move(shaderProgram);
-
-    shaderProgram = nullptr;
-    reset();
-
-    return std::move(result);
+    instance->init(name);
+    isInited = true;
 }
 
 void ShaderProgramBuilder::addShader(
     std::string sourcePath, const GLenum shaderType)
 {
+    if (isLinked) {
+        throw std::logic_error(
+            "Can't add shader to programm builder. It's already linked");
+    }
+
     BaseTextParser parser { std::move(sourcePath) };
 
     const std::string sourceStr = parser.readFile();
@@ -78,23 +69,23 @@ void ShaderProgramBuilder::addShader(
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
 
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderProgram->success);
-    if (shaderProgram->success == 0) {
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &instance->success);
+    if (instance->success == 0) {
         glGetShaderInfoLog(
-            shader, infoLogSize, nullptr, shaderProgram->infoLog.data());
-        std::cout << shaderProgram->infoLog.data() << std::endl;
+            shader, infoLogSize, nullptr, instance->infoLog.data());
+        std::cout << instance->infoLog.data() << std::endl;
         throw std::runtime_error("ERROR::SHADER::COMPILATION_FAILED");
     }
 
-    shaderProgram->shaders.push_back(shader);
+    instance->shaders.push_back(shader);
 
     addedShadersTypes.insert(shaderType);
 }
 
 void ShaderProgramBuilder::addAttribute(const ShaderAttribute& attribute)
 {
-    shaderProgram->attributes.push_back(attribute);
-    shaderProgram->attributesStride += static_cast<GLsizei>(
+    instance->attributes.push_back(attribute);
+    instance->attributesStride += static_cast<GLsizei>(
         attribute.getElementsCount() * attribute.getSizeofElement());
 
     addedAttributesCount++;
@@ -102,25 +93,26 @@ void ShaderProgramBuilder::addAttribute(const ShaderAttribute& attribute)
 
 void ShaderProgramBuilder::link()
 {
-    for (auto&& shader : shaderProgram->shaders) {
-        glAttachShader(shaderProgram->program, shader);
+    if (!isShadersFinished()) {
+        throw std::logic_error(
+            "Can't link shader program. Not enought shaders");
     }
 
-    glLinkProgram(shaderProgram->program);
+    for (auto&& shader : instance->shaders) {
+        glAttachShader(instance->program, shader);
+    }
 
-    glGetProgramiv(
-        shaderProgram->program, GL_LINK_STATUS, &shaderProgram->success);
-    if (shaderProgram->success == 0) {
+    glLinkProgram(instance->program);
+
+    glGetProgramiv(instance->program, GL_LINK_STATUS, &instance->success);
+    if (instance->success == 0) {
         glGetProgramInfoLog(
-            shaderProgram->program,
-            infoLogSize,
-            nullptr,
-            shaderProgram->infoLog.data());
-        std::cout << shaderProgram->infoLog.data() << std::endl;
+            instance->program, infoLogSize, nullptr, instance->infoLog.data());
+        std::cout << instance->infoLog.data() << std::endl;
         throw std::runtime_error("ERROR::SHADER::PROGRAM::LINKING_FAILED");
     }
 
-    for (auto&& shader : shaderProgram->shaders) {
+    for (auto&& shader : instance->shaders) {
         glDeleteShader(shader);
     }
 

@@ -2,7 +2,7 @@
 
 #include <OldTexture.hpp>
 
-#include <vec4.hpp>
+#include <vector_float4.hpp>
 
 #include <memory>
 #include <optional>

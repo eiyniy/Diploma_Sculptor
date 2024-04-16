@@ -5,11 +5,17 @@
 #include <string>
 #include <string_view>
 
+template <class T> class ConstructorPasskey;
+
 class Texture {
+
+    friend class TextureBuilder;
+
 private:
     GLuint texture;
 
     int textureBlock;
+
     int dimensionality;
 
     bool isBinded;
@@ -18,21 +24,16 @@ private:
 
     std::string name;
 
+    void init(std::string_view _name, int _textureBlock, int _dimensionality);
+
     void throwIfNotBinded(const std::string& message) const;
 
 public:
-    Texture(std::string_view _name, int _textureBlock, int _dimensionality);
+    Texture(ConstructorPasskey<Texture>&& passkey);
 
     void bind();
+
     void unbind();
-
-    void setWrapping(int axis, int method);
-
-    void setFiltering(int filter, int method);
-
-    void setDefaults();
-
-    void load(const std::string& path);
 
     [[nodiscard]] int getTextureBlock() const;
 

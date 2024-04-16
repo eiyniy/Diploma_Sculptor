@@ -3,9 +3,11 @@
 #include <Material.hpp>
 #include <Triangle.hpp>
 
-#include <mat4x4.hpp>
+#include <matrix_float4x4.hpp>
 #include <qualifier.hpp>
-#include <vec4.hpp>
+#include <type_mat4x4.hpp>
+#include <type_vec4.hpp>
+#include <vector_float4.hpp>
 
 #include <memory>
 #include <utility>
