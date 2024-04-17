@@ -17,8 +17,6 @@ private:
 
     bool isLinked;
 
-    unsigned addedAttributesCount;
-
     std::set<GLenum> addedShadersTypes;
 
     void reset() override;

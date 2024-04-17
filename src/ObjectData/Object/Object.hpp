@@ -4,20 +4,22 @@
 #include <Texture.hpp>
 
 #include <matrix_float4x4.hpp>
-#include <vector_float2.hpp>
-#include <vector_float3.hpp>
 
 #include <GL/glew.h>
 
 #include <cstddef>
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+template <class T> class ConstructorPasskey;
+
 class Object {
+
+    friend class ObjectBuilder;
+
 private:
     GLuint VBO, VAO, EBO;
 
@@ -49,16 +51,12 @@ private:
     void throwIfShaderNotSelected(const std::string& message) const;
 
 public:
+    Object(ConstructorPasskey<Object>&& passkey);
+
     Object(const Object&) = default;
     Object(Object&&) = delete;
     Object& operator=(const Object&) = delete;
     Object& operator=(Object&&) = delete;
-
-    Object(
-        const std::vector<glm::vec3>& _vertices,
-        const std::optional<std::vector<glm::vec3>>& _colorVertices,
-        const std::optional<std::vector<glm::vec2>>& _textureVertices,
-        const std::optional<std::vector<glm::vec<3, GLuint>>>& _indices);
 
     ~Object();
 
@@ -70,21 +68,15 @@ public:
 
     [[nodiscard]] bool isAnyShaderEnabled() const;
 
-    void addTexture(std::unique_ptr<Texture> texture);
-
     void bindTexture(std::string_view name);
 
     void bindTextures();
 
-    void addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram);
-
-    void selectShader(std::string_view name);
+    void selectShaderProgram(std::string_view name);
 
     void enableShader();
 
     void disableShader();
-
-    void setupVAO();
 
     void loadTransformMatrices(
         const glm::mat4& modelMat,

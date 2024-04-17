@@ -14,7 +14,6 @@
 ShaderProgramBuilder::ShaderProgramBuilder()
     : isInited(false)
     , isLinked(false)
-    , addedAttributesCount(0)
 {
 }
 
@@ -25,7 +24,6 @@ void ShaderProgramBuilder::reset()
     isLinked = false;
     isInited = false;
 
-    addedAttributesCount = 0;
     addedShadersTypes.clear();
 }
 
@@ -37,7 +35,7 @@ bool ShaderProgramBuilder::isFinished() const
 
 bool ShaderProgramBuilder::isAttributesFinished() const
 {
-    return addedAttributesCount != 0;
+    return !instance->attributes.empty();
 }
 
 bool ShaderProgramBuilder::isShadersFinished() const
@@ -87,8 +85,6 @@ void ShaderProgramBuilder::addAttribute(const ShaderAttribute& attribute)
     instance->attributes.push_back(attribute);
     instance->attributesStride += static_cast<GLsizei>(
         attribute.getElementsCount() * attribute.getSizeofElement());
-
-    addedAttributesCount++;
 }
 
 void ShaderProgramBuilder::link()

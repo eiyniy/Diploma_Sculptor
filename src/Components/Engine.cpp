@@ -4,6 +4,7 @@
 #include <Enums.hpp>
 #include <MainWindow.hpp>
 #include <Object.hpp>
+#include <ObjectBuilder.hpp>
 #include <Scene.hpp>
 #include <Settings.hpp>
 #include <ShaderAttribute.hpp>
@@ -25,7 +26,6 @@
 
 #include <array>
 #include <memory>
-#include <optional>
 #include <utility>
 #include <vector>
 
@@ -231,28 +231,31 @@ void Engine::start()
 
     auto faceTexture = textureBuilder.build();
 
-    // TODO: Add ObjectBuilder
-    auto object = std::make_shared<Object>(
-        objectVertices,
-        objectColorVertices,
-        objectTextureVertices,
-        std::nullopt);
+    ObjectBuilder objectBuilder {};
 
-    object->addShaderProgram(std::move(shaderProgramBuilder.build()));
+    objectBuilder.create();
+    objectBuilder.init(objectVertices);
 
-    object->selectShader(shaderProgramName);
+    objectBuilder.addColors(objectColorVertices);
+    objectBuilder.addTextureCoords(objectTextureVertices);
 
-    object->addTexture(std::move(containerTexture));
-    object->addTexture(std::move(faceTexture));
+    objectBuilder.addTexture(std::move(containerTexture));
+    objectBuilder.addTexture(std::move(faceTexture));
+
+    objectBuilder.addShaderProgram(std::move(shaderProgramBuilder.build()));
+    objectBuilder.selectShaderProgram(shaderProgramName);
+
+    objectBuilder.merge();
+
+    objectBuilder.setupVAO();
+
+    std::shared_ptr<Object> object = std::move(objectBuilder.build());
 
     object->enableShader();
-
     object->bindTextures();
-    object->setupVAO();
-
     object->disableShader();
 
-    scene->addObject("OBJECT", object);
+    scene->addObject("OBJECT", std::move(object));
 
     while (!mainWindow->shouldClose()) {
         auto currentFrame = static_cast<GLfloat>(glfwGetTime());
