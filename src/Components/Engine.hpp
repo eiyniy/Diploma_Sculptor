@@ -3,13 +3,16 @@
 #include <InputEngine.hpp>
 #include <RenderEngine.hpp>
 
-#include <GL/glew.h> // IWYU pragma: keep
+#include <Gl/glew.h>
 
 #include <memory>
+#include <string>
 
 class Scene;
 class MainWindow;
 class Camera;
+
+class Object;
 
 enum class AxisName;
 enum class Direction;
@@ -47,4 +50,6 @@ public:
     ~Engine();
 
     void start();
+
+    void addObject(const std::string& name, std::unique_ptr<Object> object);
 };

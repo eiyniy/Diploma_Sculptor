@@ -7,6 +7,7 @@
 #include <ShaderProgram.hpp>
 
 #include <matrix_clip_space.hpp>
+#include <qualifier.hpp>
 #include <type_mat4x4.hpp>
 #include <type_ptr.hpp>
 #include <type_vec4.hpp>
