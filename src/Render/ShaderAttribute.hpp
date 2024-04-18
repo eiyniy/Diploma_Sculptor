@@ -38,12 +38,3 @@ public:
 
     [[nodiscard]] unsigned getSizeofElement() const;
 };
-
-inline std::string_view ShaderAttribute::getName() const { return name; }
-
-inline GLint ShaderAttribute::getElementsCount() const { return elementsCount; }
-
-inline unsigned ShaderAttribute::getSizeofElement() const
-{
-    return sizeofElement;
-}

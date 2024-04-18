@@ -76,3 +76,7 @@ void Camera::updateFront()
 
     updateViewMat();
 }
+
+GLfloat Camera::cGetFOV() const { return fov; }
+
+const glm::mat4& Camera::cGetViewMat() const { return view; }

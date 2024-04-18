@@ -46,3 +46,9 @@ void ShaderProgram::disable()
     _isUsed = false;
     glUseProgram(0);
 }
+
+GLuint ShaderProgram::get() const { return program; }
+
+std::string_view ShaderProgram::getName() const { return name; }
+
+bool ShaderProgram::isEnabled() const { return _isUsed; }

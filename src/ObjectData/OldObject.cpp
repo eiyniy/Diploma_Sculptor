@@ -171,3 +171,47 @@ glm::vec4 convertVertex(
 
     return vertexCopy;
 }
+
+const std::vector<glm::vec4>& OldObject::cGetDrawable() const
+{
+    return drawable;
+}
+
+const std::vector<glm::vec4>& OldObject::cGetVertices() const
+{
+    return vertices;
+}
+
+const std::vector<glm::vec4>& OldObject::cGetTVertices() const
+{
+    return tVertices;
+}
+
+const std::vector<glm::vec4>& OldObject::cGetNVertices() const
+{
+    return nVertices;
+}
+
+const std::vector<Triangle>& OldObject::cGetPolygons() const
+{
+    return polygons;
+}
+
+std::shared_ptr<const Material>
+OldObject::cGetMaterial(const std::string& name) const
+{
+    if (!materials->contains(name)) {
+        throw std::runtime_error("Can't get material");
+    }
+
+    return materials->at(name);
+}
+
+std::shared_ptr<const Material> OldObject::getDefaultMaterial()
+{
+    return defaultMaterial;
+}
+
+std::vector<glm::vec4>& OldObject::getVertices() { return vertices; }
+
+std::vector<Triangle>& OldObject::getPolygons() { return polygons; }

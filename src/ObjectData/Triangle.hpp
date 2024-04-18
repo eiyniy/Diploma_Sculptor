@@ -30,18 +30,6 @@ private:
     std::optional<int> nVertexId;
 };
 
-inline int VertexIds::cGetVertexId() const { return vertexId; }
-
-inline std::optional<int> VertexIds::cGetNormalVertexId() const
-{
-    return nVertexId;
-}
-
-inline std::optional<int> VertexIds::cGetTextureVertexId() const
-{
-    return tVertexId;
-}
-
 class Triangle {
 public:
     Triangle(
@@ -81,8 +69,3 @@ private:
 
     static std::vector<VertexIds> parseInner(const std::string& line);
 };
-
-inline const std::optional<std::string>& Triangle::cGetMaterialName() const
-{
-    return materialName;
-}

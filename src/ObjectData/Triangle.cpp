@@ -157,3 +157,14 @@ std::vector<VertexIds> Triangle::parseInner(const std::string& line)
 
     return accumulator;
 }
+
+int VertexIds::cGetVertexId() const { return vertexId; }
+
+std::optional<int> VertexIds::cGetNormalVertexId() const { return nVertexId; }
+
+std::optional<int> VertexIds::cGetTextureVertexId() const { return tVertexId; }
+
+const std::optional<std::string>& Triangle::cGetMaterialName() const
+{
+    return materialName;
+}

@@ -82,3 +82,5 @@ std::string BaseTextParser::readFile()
 
     return buffer;
 }
+
+std::string BaseTextParser::getPathToFile() const { return pathToFile; }

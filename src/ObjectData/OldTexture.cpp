@@ -11,3 +11,9 @@ OldTexture::OldTexture(
     , data(_data)
 {
 }
+
+int OldTexture::cGetWidth() const { return width; }
+
+int OldTexture::cGetHeight() const { return height; }
+
+const std::vector<glm::vec4>& OldTexture::cGetData() const { return data; }

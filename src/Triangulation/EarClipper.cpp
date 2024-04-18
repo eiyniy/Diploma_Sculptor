@@ -128,3 +128,18 @@ bool EarClipper::isPointsInside(
 
     return result;
 }
+
+double
+EarClipper::area(const glm::vec4& v0, const glm::vec4& v1, const glm::vec4& v2)
+{
+    const auto vec1 = v1 - v0;
+    const auto vec2 = v2 - v0;
+
+    const auto crossProduct = vec1 * vec2;
+    const auto sin
+        = glm::length(crossProduct) / (glm::length(vec1) * glm::length(vec2));
+
+    return std::fabs(
+        triangleToParallelogramRatio * glm::length(vec1) * glm::length(vec2)
+        * sin);
+}

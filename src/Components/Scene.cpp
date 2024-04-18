@@ -11,40 +11,12 @@ void Scene::addObject(const std::string& key, std::shared_ptr<Object> object)
     objects.emplace(key, object);
 }
 
-/*
-Scene::~Scene()
+std::shared_ptr<Object> Scene::getObject(const std::string& key)
 {
-    for (const auto &pair : objects)
-        delete pair.second;
+    return objects.at(key);
 }
 
-void Scene::addObject(const std::string &key, OldObject *object)
+std::map<std::string, std::shared_ptr<Object>>& Scene::getAllObjects()
 {
-    if (key == floorObjectName)
-        throw std::invalid_argument("This object name is reserved!");
-
-    selectedObjectName = key;
-
-    objects[key] = object;
+    return objects;
 }
-
-std::vector<std::string> Scene::cGetAllObjectNames() const
-{
-    auto res = std::vector<std::string>();
-
-    for (const auto &pair : objects)
-        res.emplace_back(pair.first);
-
-    return res;
-}
-
-const std::string &Scene::cGetSelectedObjectName() const
-{
-    return selectedObjectName;
-}
-
-const BaseLightSource *Scene::cGetLightSource() const
-{
-    return lightSource;
-}
-*/

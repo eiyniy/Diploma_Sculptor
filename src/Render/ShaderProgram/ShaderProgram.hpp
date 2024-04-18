@@ -59,11 +59,11 @@ public:
 
     void disable();
 
-    [[nodiscard]] inline GLuint get() const;
+    [[nodiscard]] GLuint get() const;
 
-    [[nodiscard]] inline std::string_view getName() const;
+    [[nodiscard]] std::string_view getName() const;
 
-    [[nodiscard]] inline bool isEnabled() const;
+    [[nodiscard]] bool isEnabled() const;
 };
 
 template <class T>
@@ -80,9 +80,3 @@ void ShaderProgram::loadUniform(
 
     uniforms.at(name)->load(value);
 }
-
-inline GLuint ShaderProgram::get() const { return program; }
-
-inline std::string_view ShaderProgram::getName() const { return name; }
-
-inline bool ShaderProgram::isEnabled() const { return _isUsed; }

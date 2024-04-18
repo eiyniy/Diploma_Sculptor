@@ -38,3 +38,26 @@ Settings* Settings::get()
 
     return instance;
 }
+
+GLfloat Settings::getCameraSpeed() const { return cameraSpeed; }
+
+GLfloat Settings::getCameraFoV() const { return cameraFoV; }
+
+GLfloat Settings::getCameraMouseSens() const { return cameraMouseSens; }
+
+float Settings::getZNear() const { return zNear; }
+
+float Settings::getZFar() const { return zFar; }
+
+glm::vec<4, GLclampf> Settings::getWindowClearColor() const
+{
+    return windowClearColor;
+}
+
+bool Settings::isVSyncEnabled() const { return vSyncEnabled; }
+
+bool Settings::isDepthBufferEnabled() const { return depthBufferEnabled; }
+
+bool Settings::isResizeEnabled() const { return resizeEnabled; }
+
+const std::string& Settings::getWindowName() { return windowName; }

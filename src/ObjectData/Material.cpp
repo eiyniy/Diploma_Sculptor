@@ -30,3 +30,36 @@ Material::Material(
     , mraoMap(std::move(_mraoMap))
 {
 }
+
+std::shared_ptr<const OldTexture> Material::cGetDiffuseMap() const
+{
+    return diffuseMap;
+}
+
+std::shared_ptr<const OldTexture> Material::cGetEmissiveMap() const
+{
+    return emissiveMap;
+}
+
+std::shared_ptr<const OldTexture> Material::cGetNormalMap() const
+{
+    return normalMap;
+}
+
+std::shared_ptr<const OldTexture> Material::cGetMRAOMap() const
+{
+    return mraoMap;
+}
+
+const std::string& Material::cGetName() const { return name; }
+
+std::optional<glm::vec4> Material::cGetDiffuseCoeff() const { return diffuse; }
+
+std::optional<glm::vec4> Material::cGetAmbientCoeff() const { return ambient; }
+
+std::optional<glm::vec4> Material::cGetSpecularCoeff() const
+{
+    return specular;
+}
+
+std::optional<double> Material::cGetSpecularExp() const { return specularExp; }

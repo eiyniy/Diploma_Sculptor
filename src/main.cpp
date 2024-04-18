@@ -15,7 +15,6 @@
 const std::pair<int, int> startupResolution { 1280, 720 };
 
 // TODO: Make libraries auto downloadable
-// TODO: Remove inline getters and setters
 
 int main(int argc, char** argv)
 {

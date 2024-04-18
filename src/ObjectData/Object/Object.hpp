@@ -75,10 +75,6 @@ public:
     void draw() const;
 };
 
-inline bool Object::hasIndices() const { return _hasIndices; }
-
-inline bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
-
 template <class T>
     requires IsUniformType<T>
 void Object::loadUniform(const std::string_view name, const T& value) const

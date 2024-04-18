@@ -26,5 +26,3 @@ private:
     std::string pathToFile;
     std::ifstream readStream;
 };
-
-inline std::string BaseTextParser::getPathToFile() const { return pathToFile; }

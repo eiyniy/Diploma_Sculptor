@@ -128,3 +128,26 @@ void MainWindow::mouseCallbackInner(const double xpos, const double ypos)
 
     lastCoord = { xpos, ypos };
 }
+
+std::pair<int, int> MainWindow::getActiveResolution() const
+{
+    return activeResolution;
+}
+
+bool MainWindow::shouldClose() const
+{
+    return glfwWindowShouldClose(window) != 0;
+}
+
+GLfloat MainWindow::getAspect() const
+{
+    return static_cast<GLfloat>(activeResolution.first)
+        / static_cast<GLfloat>(activeResolution.second);
+}
+
+const std::array<bool, keysLength>& MainWindow::cGetKeys() const
+{
+    return keys;
+}
+
+GLFWwindow* MainWindow::get() { return window; }

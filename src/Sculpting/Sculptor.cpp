@@ -60,3 +60,5 @@ void Sculptor::pull(
 
     // std::cout << vertices[vId0].cGetX() << std::endl;
 }
+
+int Sculptor::cGetRadius() const { return radius; }

@@ -55,29 +55,3 @@ public:
 
     const std::string& getWindowName();
 };
-
-inline GLfloat Settings::getCameraSpeed() const { return cameraSpeed; }
-
-inline GLfloat Settings::getCameraFoV() const { return cameraFoV; }
-
-inline GLfloat Settings::getCameraMouseSens() const { return cameraMouseSens; }
-
-inline float Settings::getZNear() const { return zNear; }
-
-inline float Settings::getZFar() const { return zFar; }
-
-inline glm::vec<4, GLclampf> Settings::getWindowClearColor() const
-{
-    return windowClearColor;
-}
-
-inline bool Settings::isVSyncEnabled() const { return vSyncEnabled; }
-
-inline bool Settings::isDepthBufferEnabled() const
-{
-    return depthBufferEnabled;
-}
-
-inline bool Settings::isResizeEnabled() const { return resizeEnabled; }
-
-inline const std::string& Settings::getWindowName() { return windowName; }

@@ -31,3 +31,9 @@ void ShaderAttribute::enable(const GLsizei stride, GLvoid* const offset)
 
     isEnabled = true;
 }
+
+std::string_view ShaderAttribute::getName() const { return name; }
+
+GLint ShaderAttribute::getElementsCount() const { return elementsCount; }
+
+unsigned ShaderAttribute::getSizeofElement() const { return sizeofElement; }

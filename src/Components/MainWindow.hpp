@@ -57,26 +57,3 @@ private:
 
     void mouseCallbackInner(double xpos, double ypos);
 };
-
-inline std::pair<int, int> MainWindow::getActiveResolution() const
-{
-    return activeResolution;
-}
-
-inline bool MainWindow::shouldClose() const
-{
-    return glfwWindowShouldClose(window) != 0;
-}
-
-inline GLfloat MainWindow::getAspect() const
-{
-    return static_cast<GLfloat>(activeResolution.first)
-        / static_cast<GLfloat>(activeResolution.second);
-}
-
-inline const std::array<bool, keysLength>& MainWindow::cGetKeys() const
-{
-    return keys;
-}
-
-inline GLFWwindow* MainWindow::get() { return window; }

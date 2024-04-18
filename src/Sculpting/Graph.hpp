@@ -28,12 +28,3 @@ public:
     [[nodiscard]] std::unique_ptr<std::vector<int>>
     getAffectedVerticesIds(std::pair<int, int> mousePos, int radius) const;
 };
-
-// TODO: Move to Point
-inline double
-Graph::findDistance(const std::pair<int, int> v1, const std::pair<int, int> v2)
-{
-    return std::sqrt(
-        std::pow(std::fabs(v2.first - v1.first), 2)
-        + std::pow(std::fabs(v2.second - v1.second), 2));
-}

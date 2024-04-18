@@ -53,7 +53,3 @@ public:
 
     [[nodiscard]] GLfloat cGetFOV() const;
 };
-
-inline GLfloat Camera::cGetFOV() const { return fov; }
-
-inline const glm::mat4& Camera::cGetViewMat() const { return view; }

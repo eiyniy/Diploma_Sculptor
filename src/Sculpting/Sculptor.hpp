@@ -17,7 +17,7 @@ private:
 public:
     Sculptor(int _radius);
 
-    [[nodiscard]] inline int cGetRadius() const;
+    [[nodiscard]] int cGetRadius() const;
 
     void createGraph(OldObject* object);
 
@@ -29,5 +29,3 @@ public:
     static void
     pull(OldObject* object, int triangleId, std::pair<int, int> mousePos);
 };
-
-inline int Sculptor::cGetRadius() const { return radius; }

@@ -114,3 +114,7 @@ void Object::draw() const
 
     glBindVertexArray(0);
 }
+
+bool Object::hasIndices() const { return _hasIndices; }
+
+bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
