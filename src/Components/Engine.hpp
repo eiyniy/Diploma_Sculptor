@@ -1,9 +1,9 @@
 #pragma once
 
-#include <matrix_float4x4.hpp>
-#include <qualifier.hpp>
+#include <InputEngine.hpp>
+#include <RenderEngine.hpp>
 
-#include <GL/glew.h>
+#include <GL/glew.h> // IWYU pragma: keep
 
 #include <memory>
 
@@ -15,25 +15,13 @@ enum class AxisName;
 enum class Direction;
 
 class Engine {
-public:
-    Engine(const Engine&) = delete;
-    Engine(Engine&&) = delete;
-    Engine& operator=(const Engine&) = delete;
-    Engine& operator=(Engine&&) = delete;
-
-    Engine(
-        std::unique_ptr<Scene> _scene,
-        std::unique_ptr<MainWindow> _mainWindow,
-        std::unique_ptr<Camera> _camera);
-
-    ~Engine();
-
-    void start();
-
 private:
     std::unique_ptr<Scene> scene;
-    std::unique_ptr<MainWindow> mainWindow;
-    std::unique_ptr<Camera> camera;
+    std::shared_ptr<MainWindow> mainWindow;
+    std::shared_ptr<Camera> camera;
+
+    RenderEngine renderEngine;
+    InputEngine inputEngine;
 
     AxisName moveAxis;
     Direction moveDirection;
@@ -41,11 +29,22 @@ private:
     GLfloat deltaTime;
     GLfloat lastFrameTime;
 
-    glm::mat4 modelMat;
-    glm::mat4 viewMat;
-    glm::mat4 projectionMat;
-
     void update();
 
     void draw();
+
+public:
+    Engine(
+        std::unique_ptr<Scene> _scene,
+        std::shared_ptr<MainWindow> _mainWindow,
+        std::shared_ptr<Camera> _camera);
+
+    Engine(const Engine&) = delete;
+    Engine(Engine&&) = delete;
+    Engine& operator=(const Engine&) = delete;
+    Engine& operator=(Engine&&) = delete;
+
+    ~Engine();
+
+    void start();
 };

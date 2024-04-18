@@ -1,30 +1,24 @@
 #include <Engine.hpp>
 
-#include <Camera.hpp>
 #include <Enums.hpp>
-#include <MainWindow.hpp>
+#include <InputEngine.hpp>
 #include <Object.hpp>
 #include <ObjectBuilder.hpp>
+#include <RenderEngine.hpp>
 #include <Scene.hpp>
-#include <Settings.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
 #include <ShaderProgramBuilder.hpp>
 #include <Texture.hpp>
 #include <TextureBuilder.hpp>
 
-#include <matrix_clip_space.hpp>
-#include <qualifier.hpp>
-#include <type_mat4x4.hpp>
 #include <type_vec2.hpp>
 #include <type_vec3.hpp>
-#include <type_vec4.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 
 #include <GLFW/glfw3.h>
 
-#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -35,8 +29,8 @@ const auto* const shaderProgramName = "base";
 
 Engine::Engine(
     std::unique_ptr<Scene> _scene,
-    std::unique_ptr<MainWindow> _mainWindow,
-    std::unique_ptr<Camera> _camera)
+    std::shared_ptr<MainWindow> _mainWindow,
+    std::shared_ptr<Camera> _camera)
     : scene(std::move(_scene))
     , mainWindow(std::move(_mainWindow))
     , camera(std::move(_camera))
@@ -44,15 +38,9 @@ Engine::Engine(
     , moveDirection(Direction::Forward)
     , deltaTime(0.F)
     , lastFrameTime(0.F)
-    , modelMat(1)
-    , viewMat(1)
-    , projectionMat(1)
+    , renderEngine { mainWindow, camera }
+    , inputEngine(mainWindow, camera)
 {
-    projectionMat = glm::perspective(
-        camera->cGetFOV(),
-        mainWindow->getAspect(),
-        Settings::get()->getZNear(),
-        Settings::get()->getZFar());
 }
 
 Engine::~Engine() { glfwTerminate(); }
@@ -247,6 +235,8 @@ void Engine::start()
     shaderProgramBuilder.addNewUniform(
         faceTexture->getName(), shaderProgramBuilder.instance->get());
 
+    auto shaderProgram = shaderProgramBuilder.build();
+
     ObjectBuilder objectBuilder {};
 
     objectBuilder.create();
@@ -258,7 +248,7 @@ void Engine::start()
     objectBuilder.addTexture(std::move(containerTexture));
     objectBuilder.addTexture(std::move(faceTexture));
 
-    objectBuilder.addShaderProgram(std::move(shaderProgramBuilder.build()));
+    objectBuilder.addShaderProgram(std::move(shaderProgram));
     objectBuilder.selectShaderProgram(shaderProgramName);
 
     objectBuilder.merge();
@@ -273,7 +263,7 @@ void Engine::start()
 
     scene->addObject("OBJECT", std::move(object));
 
-    while (!mainWindow->shouldClose()) {
+    while (!renderEngine.shouldClose()) {
         auto currentFrame = static_cast<GLfloat>(glfwGetTime());
         deltaTime = currentFrame - lastFrameTime;
         lastFrameTime = currentFrame;
@@ -286,58 +276,11 @@ void Engine::start()
     }
 }
 
-void Engine::update()
-{
-    const auto keys = mainWindow->cGetKeys();
-    const auto coordOffset = mainWindow->resetCoordOffset();
-
-    if (keys[GLFW_KEY_ESCAPE]) {
-        mainWindow->close();
-    }
-
-    if (keys[GLFW_KEY_W]) {
-        camera->move(AxisName::Z, Direction::Forward, deltaTime);
-    }
-    if (keys[GLFW_KEY_S]) {
-        camera->move(AxisName::Z, Direction::Backward, deltaTime);
-    }
-    if (keys[GLFW_KEY_D]) {
-        camera->move(AxisName::X, Direction::Forward, deltaTime);
-    }
-    if (keys[GLFW_KEY_A]) {
-        camera->move(AxisName::X, Direction::Backward, deltaTime);
-    }
-    if (keys[GLFW_KEY_SPACE]) {
-        camera->move(AxisName::Y, Direction::Forward, deltaTime);
-    }
-    if (keys[GLFW_KEY_LEFT_SHIFT]) {
-        camera->move(AxisName::Y, Direction::Backward, deltaTime);
-    }
-
-    camera->rotate(coordOffset);
-}
+void Engine::update() { inputEngine.update(deltaTime); }
 
 void Engine::draw()
 {
-    MainWindow::clear();
-
-    viewMat = camera->cGetViewMat();
-
     auto& objects = scene->getAllObjects();
 
-    for (auto&& object : objects) {
-        object.second->enableShader();
-
-        object.second->loadUniform(
-            ShaderProgram::defaultModelUniformName, modelMat);
-        object.second->loadUniform(
-            ShaderProgram::defaultViewUniformName, viewMat);
-        object.second->loadUniform(
-            ShaderProgram::defaultProjectionUniformName, projectionMat);
-
-        object.second->draw();
-        object.second->disableShader();
-    }
-
-    mainWindow->swapBuffers();
+    renderEngine.draw(objects);
 }
