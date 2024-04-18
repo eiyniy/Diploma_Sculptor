@@ -29,8 +29,6 @@ private:
 
     bool _isAnyShaderEnabled;
 
-    bool _hasColor;
-    bool _hasTexture;
     bool _hasIndices;
 
     std::vector<GLfloat> verticesUnion;
@@ -59,13 +57,7 @@ public:
 
     [[nodiscard]] bool hasIndices() const;
 
-    [[nodiscard]] bool hasColor() const;
-
-    [[nodiscard]] bool hasTexture() const;
-
     [[nodiscard]] bool isAnyShaderEnabled() const;
-
-    // void bindTexture(std::string_view name);
 
     void bindTextures();
 
@@ -84,13 +76,6 @@ public:
 };
 
 inline bool Object::hasIndices() const { return _hasIndices; }
-
-inline bool Object::hasColor() const { return _hasColor; }
-
-inline bool Object::hasTexture() const
-{
-    return _hasTexture && !textures.empty();
-}
 
 inline bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
 

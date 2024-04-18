@@ -16,9 +16,7 @@ Object::Object(ConstructorPasskey<Object>&& passkey)
     , VBO(0)
     , EBO(0)
     , _isAnyShaderEnabled(false)
-    , _hasColor(false)
     , _hasIndices(false)
-    , _hasTexture(false)
     , verticesSize(0)
     , verticesUnionStep(0)
 {
@@ -53,7 +51,7 @@ void Object::bindTextures()
 {
     throwIfShaderNotEnabled("bindTextures");
 
-    if (!hasTexture()) {
+    if (textures.empty()) {
         throw std::logic_error("Can't bind Textures. Object doesn't has them");
     }
 

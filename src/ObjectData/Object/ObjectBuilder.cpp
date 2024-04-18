@@ -41,8 +41,6 @@ void ObjectBuilder::generateBuffers()
     }
 }
 
-// TODO: Remove _hasColor & _hasTexture and work with ShaderAttributes
-
 void ObjectBuilder::calcVerticesUnionParams()
 {
     const auto vectorSize = vertices.size();
@@ -50,11 +48,11 @@ void ObjectBuilder::calcVerticesUnionParams()
     instance->verticesUnionSize = vectorSize * 3;
     instance->verticesUnionStep = 3;
 
-    if (instance->hasColor()) {
+    if (!colors.empty()) {
         instance->verticesUnionSize += vectorSize * 3;
         instance->verticesUnionStep += 3;
     }
-    if (instance->hasTexture()) {
+    if (!textureCoords.empty()) {
         instance->verticesUnionSize += vectorSize * 2;
         instance->verticesUnionStep += 2;
     }
@@ -76,7 +74,7 @@ void ObjectBuilder::mergeVertices()
 
         auto k = 3;
 
-        if (instance->hasColor()) {
+        if (!colors.empty()) {
             const auto& colorVertex = colors.at(i);
 
             instance->verticesUnion[j + k] = colorVertex.r;
@@ -86,7 +84,7 @@ void ObjectBuilder::mergeVertices()
             k += 3;
         }
 
-        if (instance->hasTexture()) {
+        if (!textureCoords.empty()) {
             const auto& textureVertex = textureCoords.at(i);
 
             instance->verticesUnion[j + k] = textureVertex.x;
@@ -142,7 +140,6 @@ void ObjectBuilder::addColors(const std::vector<glm::vec3>& _colors)
     }
 
     colors = _colors;
-    instance->_hasColor = true;
 }
 
 void ObjectBuilder::addTextureCoords(
@@ -155,7 +152,6 @@ void ObjectBuilder::addTextureCoords(
     }
 
     textureCoords = _textureCoords;
-    instance->_hasTexture = true;
 }
 
 void ObjectBuilder::addIndices(const std::vector<glm::vec<3, GLuint>>& _indices)
