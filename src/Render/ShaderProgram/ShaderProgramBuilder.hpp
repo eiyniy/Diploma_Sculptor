@@ -23,8 +23,6 @@ private:
 
     [[nodiscard]] bool isFinished() const override;
 
-    [[nodiscard]] bool isAttributesFinished() const;
-
     [[nodiscard]] bool isShadersFinished() const;
 
 public:
@@ -43,6 +41,8 @@ public:
     void addShader(std::string sourcePath, GLenum shaderType);
 
     void addAttribute(const ShaderAttribute& attribute);
+
+    void addNewUniform(std::string_view name, GLuint program);
 
     void link();
 };

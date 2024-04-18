@@ -1,10 +1,14 @@
 #pragma once
 
 #include <ShaderAttribute.hpp>
+#include <ShaderUniform.hpp>
 
 #include <GL/glew.h>
 
 #include <cstddef>
+#include <map>
+#include <memory>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -33,6 +37,8 @@ private:
     // TODO: Replace with interface IShaderAttribute to get rid of #include
     std::vector<ShaderAttribute> attributes;
 
+    std::map<const std::string_view, std::unique_ptr<ShaderUniform>> uniforms;
+
     GLsizei attributesStride;
 
     bool _isUsed;
@@ -46,6 +52,10 @@ public:
 
     void enableAttributes();
 
+    template <class T>
+        requires IsUniformType<T>
+    void loadUniform(std::string_view name, const T& value) const;
+
     void enable();
 
     void disable();
@@ -56,6 +66,21 @@ public:
 
     [[nodiscard]] inline bool isEnabled() const;
 };
+
+template <class T>
+    requires IsUniformType<T>
+void ShaderProgram::loadUniform(
+    const std::string_view name, const T& value) const
+{
+    if (!isEnabled()) {
+        const std::string error = "Can't load uniform \"" + std::string(name)
+            + "\". Shader program is disabled.";
+
+        throw std::logic_error(error);
+    }
+
+    uniforms.at(name)->load(value);
+}
 
 inline GLuint ShaderProgram::get() const { return program; }
 

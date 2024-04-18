@@ -3,10 +3,6 @@
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
-#include <matrix_float4x4.hpp>
-#include <type_mat4x4.hpp>
-#include <type_ptr.hpp>
-
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -38,25 +34,6 @@ Object::~Object()
     }
 }
 
-GLint Object::findUniform(const std::string_view uniformName) const
-{
-    throwIfShaderNotEnabled("findUniform");
-
-    const auto& shaderProgram = shaderPrograms.at(currentShaderProgramName);
-
-    const auto uniformLocation
-        = glGetUniformLocation(shaderProgram->get(), uniformName.data());
-
-    if (uniformLocation == -1) {
-        std::string message { "Can't find uniform location. Uniform name - " };
-        message += uniformName;
-
-        throw std::logic_error(message);
-    }
-
-    return uniformLocation;
-}
-
 void Object::throwIfShaderNotEnabled(
     const std::string& message = std::string()) const
 {
@@ -72,34 +49,6 @@ void Object::throwIfShaderNotSelected(const std::string& message) const
     }
 }
 
-// TODO: Remove this and work with ShaderAttributes
-void Object::loadTransformMatrices(
-    const glm::mat4& modelMat,
-    const glm::mat4& viewMat,
-    const glm::mat4& projectionMat) const
-{
-    const auto modelLoc = findUniform(ShaderProgram::defaultModelUniformName);
-    const auto viewLoc = findUniform(ShaderProgram::defaultViewUniformName);
-    const auto projectionLoc
-        = findUniform(ShaderProgram::defaultProjectionUniformName);
-
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMat));
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMat));
-    glUniformMatrix4fv(
-        projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));
-}
-
-void Object::bindTexture(const std::string_view name)
-{
-    throwIfShaderNotEnabled("bindTexture");
-
-    textures.at(name)->bind();
-
-    const auto location = findUniform(name);
-
-    glUniform1i(location, textures.at(name)->getTextureBlock() - GL_TEXTURE0);
-}
-
 void Object::bindTextures()
 {
     throwIfShaderNotEnabled("bindTextures");
@@ -109,7 +58,10 @@ void Object::bindTextures()
     }
 
     for (auto&& texture : textures) {
-        bindTexture(texture.first);
+        texture.second->bind();
+
+        loadUniform(
+            texture.first, texture.second->getTextureBlock() - GL_TEXTURE0);
     }
 }
 

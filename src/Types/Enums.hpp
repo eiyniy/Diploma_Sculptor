@@ -15,7 +15,6 @@ enum class MtlEntryType {
     Diffuse,
     Specular,
     SpecularExp,
-    // AmbientMap,
     DiffuseMap,
     EmissiveMap,
     NormalMap,

@@ -26,6 +26,7 @@
 
 #include <array>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -186,27 +187,6 @@ void Engine::start()
     };
     // NOLINTEND
 
-    ShaderProgramBuilder shaderProgramBuilder {};
-
-    shaderProgramBuilder.create();
-    shaderProgramBuilder.init(shaderProgramName);
-
-    shaderProgramBuilder.addShader(
-        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
-        GL_VERTEX_SHADER);
-    shaderProgramBuilder.addShader(
-        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.frag)",
-        GL_FRAGMENT_SHADER);
-
-    shaderProgramBuilder.link();
-
-    shaderProgramBuilder.addAttribute(
-        { "position", 0, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
-    shaderProgramBuilder.addAttribute(
-        { "color", 1, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
-    shaderProgramBuilder.addAttribute(
-        { "texCoord", 2, 2, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
-
     TextureBuilder textureBuilder {};
 
     textureBuilder.create();
@@ -230,6 +210,42 @@ void Engine::start()
     textureBuilder.unbind();
 
     auto faceTexture = textureBuilder.build();
+
+    ShaderProgramBuilder shaderProgramBuilder {};
+
+    shaderProgramBuilder.create();
+    shaderProgramBuilder.init(shaderProgramName);
+
+    shaderProgramBuilder.addShader(
+        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
+        GL_VERTEX_SHADER);
+    shaderProgramBuilder.addShader(
+        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.frag)",
+        GL_FRAGMENT_SHADER);
+
+    shaderProgramBuilder.link();
+
+    shaderProgramBuilder.addAttribute(
+        { "position", 0, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
+    shaderProgramBuilder.addAttribute(
+        { "color", 1, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
+    shaderProgramBuilder.addAttribute(
+        { "texCoord", 2, 2, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
+
+    shaderProgramBuilder.addNewUniform(
+        ShaderProgram::defaultModelUniformName,
+        shaderProgramBuilder.instance->get());
+    shaderProgramBuilder.addNewUniform(
+        ShaderProgram::defaultViewUniformName,
+        shaderProgramBuilder.instance->get());
+    shaderProgramBuilder.addNewUniform(
+        ShaderProgram::defaultProjectionUniformName,
+        shaderProgramBuilder.instance->get());
+
+    shaderProgramBuilder.addNewUniform(
+        containerTexture->getName(), shaderProgramBuilder.instance->get());
+    shaderProgramBuilder.addNewUniform(
+        faceTexture->getName(), shaderProgramBuilder.instance->get());
 
     ObjectBuilder objectBuilder {};
 
@@ -311,7 +327,14 @@ void Engine::draw()
 
     for (auto&& object : objects) {
         object.second->enableShader();
-        object.second->loadTransformMatrices(modelMat, viewMat, projectionMat);
+
+        object.second->loadUniform(
+            ShaderProgram::defaultModelUniformName, modelMat);
+        object.second->loadUniform(
+            ShaderProgram::defaultViewUniformName, viewMat);
+        object.second->loadUniform(
+            ShaderProgram::defaultProjectionUniformName, projectionMat);
+
         object.second->draw();
         object.second->disableShader();
     }

@@ -4,8 +4,10 @@
 #include <IBuilder.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
+#include <ShaderUniform.hpp>
 
 #include <iostream>
+#include <map>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -30,12 +32,7 @@ void ShaderProgramBuilder::reset()
 bool ShaderProgramBuilder::isFinished() const
 {
     return IBuilder<ShaderProgram>::isFinished() && isShadersFinished()
-        && isAttributesFinished() && isLinked && isInited;
-}
-
-bool ShaderProgramBuilder::isAttributesFinished() const
-{
-    return !instance->attributes.empty();
+        && isLinked && isInited;
 }
 
 bool ShaderProgramBuilder::isShadersFinished() const
@@ -85,6 +82,15 @@ void ShaderProgramBuilder::addAttribute(const ShaderAttribute& attribute)
     instance->attributes.push_back(attribute);
     instance->attributesStride += static_cast<GLsizei>(
         attribute.getElementsCount() * attribute.getSizeofElement());
+}
+
+void ShaderProgramBuilder::addNewUniform(
+    const std::string_view name, const GLuint program)
+{
+    auto uniform = std::make_unique<ShaderUniform>(name, program);
+
+    instance->uniforms.insert(
+        std::make_pair(uniform->getName(), std::move(uniform)));
 }
 
 void ShaderProgramBuilder::link()

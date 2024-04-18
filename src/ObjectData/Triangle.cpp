@@ -16,8 +16,6 @@
 #include <string>
 #include <vector>
 
-// VertexIds::VertexIds() = default;
-
 VertexIds::VertexIds(
     const int _vertexId,
     const std::optional<int>& _tVertexId,

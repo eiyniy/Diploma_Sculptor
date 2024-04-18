@@ -1,9 +1,8 @@
 #pragma once
 
 #include <ShaderProgram.hpp>
+#include <ShaderUniform.hpp>
 #include <Texture.hpp>
-
-#include <matrix_float4x4.hpp>
 
 #include <GL/glew.h>
 
@@ -44,8 +43,6 @@ private:
 
     std::map<const std::string_view, std::unique_ptr<Texture>> textures;
 
-    [[nodiscard]] GLint findUniform(std::string_view uniformName) const;
-
     void throwIfShaderNotEnabled(const std::string& message) const;
 
     void throwIfShaderNotSelected(const std::string& message) const;
@@ -68,7 +65,7 @@ public:
 
     [[nodiscard]] bool isAnyShaderEnabled() const;
 
-    void bindTexture(std::string_view name);
+    // void bindTexture(std::string_view name);
 
     void bindTextures();
 
@@ -78,10 +75,10 @@ public:
 
     void disableShader();
 
-    void loadTransformMatrices(
-        const glm::mat4& modelMat,
-        const glm::mat4& viewMat,
-        const glm::mat4& projectionMat) const;
+    // TODO: Get rid of this chain of calls to loadUniform()
+    template <class T>
+        requires IsUniformType<T>
+    void loadUniform(std::string_view name, const T& value) const;
 
     void draw() const;
 };
@@ -96,3 +93,12 @@ inline bool Object::hasTexture() const
 }
 
 inline bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
+
+template <class T>
+    requires IsUniformType<T>
+void Object::loadUniform(const std::string_view name, const T& value) const
+{
+    throwIfShaderNotEnabled("loadUniform");
+
+    shaderPrograms.at(currentShaderProgramName)->loadUniform(name, value);
+}
