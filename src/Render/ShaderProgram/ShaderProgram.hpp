@@ -34,7 +34,6 @@ private:
 
     std::vector<GLuint> shaders;
 
-    // TODO: Replace with interface IShaderAttribute to get rid of #include
     std::vector<ShaderAttribute> attributes;
 
     std::map<const std::string_view, std::unique_ptr<ShaderUniform>> uniforms;

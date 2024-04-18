@@ -131,9 +131,13 @@ void ObjectBuilder::init(const std::vector<glm::vec3>& _vertices)
     isInited = true;
 }
 
-// TODO: Add check to already existing of colors
 void ObjectBuilder::addColors(const std::vector<glm::vec3>& _colors)
 {
+    if (!colors.empty()) {
+        throw std::logic_error(
+            "Can't add colors to ObjectBuilder. They have been already added.");
+    }
+
     if (_colors.size() != vertices.size()) {
         throw std::logic_error(
             "Can't add colors to ObjectBuilder. They have incorrect size.");
@@ -145,6 +149,11 @@ void ObjectBuilder::addColors(const std::vector<glm::vec3>& _colors)
 void ObjectBuilder::addTextureCoords(
     const std::vector<glm::vec2>& _textureCoords)
 {
+    if (!textureCoords.empty()) {
+        throw std::logic_error("Can't add texture coords to ObjectBuilder. "
+                               "They have been already added.");
+    }
+
     if (_textureCoords.size() != vertices.size()) {
         throw std::logic_error(
             "Can't add texture coords to ObjectBuilder. They "
