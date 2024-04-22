@@ -1,3 +1,4 @@
+#include "ObjParser.hpp"
 #include <Camera.hpp>
 #include <Engine.hpp>
 #include <MainWindow.hpp>
@@ -226,9 +227,9 @@ int main(int argc, char** argv)
     shaderProgramBuilder.link();
 
     shaderProgramBuilder.addAttribute(
-        { "position", 0, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
-    shaderProgramBuilder.addAttribute(
-        { "color", 1, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
+        { "position", 0, 4, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
+    // shaderProgramBuilder.addAttribute(
+    // { "color", 1, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
     shaderProgramBuilder.addAttribute(
         { "texCoord", 2, 2, GL_FLOAT, sizeof(GLfloat), GL_FALSE });
 
@@ -249,13 +250,23 @@ int main(int argc, char** argv)
 
     auto shaderProgram = shaderProgramBuilder.build();
 
+    // const auto* const path =
+    // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\models\sphere\sphere.obj)";
+    const auto* const path
+        = R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\models\sphereTriangulated\sphereTriangulated.obj)";
+
+    ObjParser parser { path };
+
+    auto parseResult = parser.parse();
+
     ObjectBuilder objectBuilder {};
 
     objectBuilder.create();
-    objectBuilder.init(objectVertices);
+    objectBuilder.init(std::move(parseResult.getVertices()));
 
-    objectBuilder.addColors(objectColorVertices);
-    objectBuilder.addTextureCoords(objectTextureVertices);
+    objectBuilder.addTriangles(std::move(parseResult.getTriangles()));
+    // objectBuilder.addColors(objectColorVertices);
+    objectBuilder.addTextureCoords(std::move(parseResult.getTVertices()));
 
     objectBuilder.addTexture(std::move(containerTexture));
     objectBuilder.addTexture(std::move(faceTexture));

@@ -4,12 +4,9 @@
 
 #include <geometric.hpp>
 #include <qualifier.hpp>
-#include <type_vec4.hpp>
-#include <vector_float4.hpp>
+#include <vector_float3.hpp>
 
 #include <cmath>
-#include <optional>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -26,9 +23,8 @@ private:
         const std::pair<glm::vec4, VertexIds>& v2,
         const std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices);
 
-    static Triangle clipEar(
-        std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices,
-        const std::optional<std::string>& materialName);
+    static Triangle
+    clipEar(std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices);
 
     static bool isConvexVertex(
         const glm::vec4& vertex,
@@ -36,12 +32,6 @@ private:
         const glm::vec4& nextVertex);
 
 public:
-    static std::vector<Triangle> triangulate(
-        std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices,
-        const std::optional<std::string>& materialName);
-
-    static std::vector<Triangle> triangulate(
-        const std::vector<VertexIds>& indexes,
-        const std::vector<glm::vec4>& vertices,
-        const std::optional<std::string>& materialName);
+    static std::vector<Triangle>
+    triangulate(std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices);
 };

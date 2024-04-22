@@ -2,6 +2,7 @@
 
 #include <IBuilder.hpp>
 #include <Object.hpp>
+#include <Triangle.hpp>
 
 #include <type_vec3.hpp>
 #include <vector_float2.hpp>
@@ -22,10 +23,14 @@ private:
     bool isMerged;
     bool isVAOSetup;
 
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec3> colors;
-    std::vector<glm::vec2> textureCoords;
-    std::vector<glm::vec<3, GLuint>> indices;
+    std::unique_ptr<std::vector<glm::vec4>> vertices;
+    std::unique_ptr<std::vector<glm::vec3>> colors;
+    std::unique_ptr<std::vector<glm::vec2>> textureCoords;
+    std::unique_ptr<std::vector<Triangle>> triangles;
+    std::unique_ptr<std::vector<glm::vec<3, GLuint>>> indices;
+
+    // TODO: Move this to IBuilder
+    void throwIfNotInited(const std::string& message) const;
 
     void reset() override;
 
@@ -33,9 +38,7 @@ private:
 
     void calcVerticesUnionParams();
 
-    void mergeVertices();
-
-    void mergeIndices();
+    void mergeTriangles();
 
     [[nodiscard]] bool isShaderProgramFinished() const;
 
@@ -51,13 +54,14 @@ public:
 
     virtual ~ObjectBuilder() = default;
 
-    void init(const std::vector<glm::vec3>& _vertices);
+    void init(std::unique_ptr<std::vector<glm::vec4>> _vertices);
 
-    void addColors(const std::vector<glm::vec3>& _colors);
+    void addTriangles(std::unique_ptr<std::vector<Triangle>> _triangles);
 
-    void addTextureCoords(const std::vector<glm::vec2>& _textureCoords);
+    void addColors(std::unique_ptr<std::vector<glm::vec3>> _colors);
 
-    void addIndices(const std::vector<glm::vec<3, GLuint>>& _indices);
+    void
+    addTextureCoords(std::unique_ptr<std::vector<glm::vec2>> _textureCoords);
 
     void addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram);
 

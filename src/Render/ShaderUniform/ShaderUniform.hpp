@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Concepts.hpp>
+
 #include <matrix_float4x4.hpp>
 #include <type_ptr.hpp> // IWYU pragma: keep
 #include <vector_float2.hpp>
@@ -8,17 +10,9 @@
 
 #include <GL/glew.h>
 
-#include <concepts>
 #include <stdexcept>
 #include <string>
 #include <string_view>
-
-template <typename T, typename... U>
-concept IsAnyOf = (std::same_as<T, U> || ...);
-
-template <class T>
-concept IsUniformType
-    = IsAnyOf<T, glm::vec2, glm::vec3, glm::vec4, glm::mat4x4, int>;
 
 class ShaderUniform {
 private:

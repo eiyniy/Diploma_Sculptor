@@ -4,36 +4,18 @@
 
 #include <qualifier.hpp>
 #include <type_vec4.hpp>
-#include <vector_float4.hpp>
+#include <vector_float3.hpp>
 
-#include <optional>
 #include <stdexcept>
-#include <string>
 #include <vector>
 
 std::vector<Triangle> EarClipper::triangulate(
-    const std::vector<VertexIds>& indexes,
-    const std::vector<glm::vec4>& vertices,
-    const std::optional<std::string>& materialName)
-{
-    std::vector<std::pair<glm::vec4, VertexIds>> polygonVertices;
-
-    const int polygonSize = (int)indexes.size();
-    for (int i = 0; i != polygonSize; ++i) {
-        polygonVertices.emplace_back(vertices.at(i), indexes.at(i));
-    }
-
-    return triangulate(polygonVertices, materialName);
-}
-
-std::vector<Triangle> EarClipper::triangulate(
-    std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices,
-    const std::optional<std::string>& materialName)
+    std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices)
 {
     std::vector<Triangle> result;
 
     while (polygonVertices.size() >= 3) {
-        result.emplace_back(clipEar(polygonVertices, materialName));
+        result.emplace_back(clipEar(polygonVertices));
     }
 
     return result;
@@ -55,8 +37,7 @@ bool EarClipper::isConvexVertex(
 }
 
 Triangle EarClipper::clipEar(
-    std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices,
-    const std::optional<std::string>& materialName)
+    std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices)
 {
     int i = 0;
     const int size = (int)polygonVertices.size();
@@ -86,8 +67,7 @@ Triangle EarClipper::clipEar(
         }
 
         const Triangle result {
-            { it->second, itNext->second, itPrev->second },
-            materialName
+            { it->second, itNext->second, itPrev->second }
         };
 
         polygonVertices.erase(it);
