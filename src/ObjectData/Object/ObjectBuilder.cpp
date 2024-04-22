@@ -99,6 +99,8 @@ void ObjectBuilder::transform()
 
             instance->indices[indicesPos++] = vertexId;
 
+            // FIXME: Fix tVertices order
+            // https://gamedev.stackexchange.com/questions/102389/how-to-implement-index-buffer-object-ibos-with-texture-coordinates-in-opengl
             /*
             auto tVertexId = vertexIds.cGetTextureVertexId();
             if (tVertices != nullptr && tVertexId.has_value()) {
@@ -112,8 +114,6 @@ void ObjectBuilder::transform()
             // */
         }
     }
-
-    int a = 0;
 }
 
 bool ObjectBuilder::isShaderProgramFinished() const

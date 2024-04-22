@@ -65,6 +65,14 @@ ObjParseResult ObjParser::parse()
         parseEntry(line);
     }
 
+    const auto timeVertices = std::chrono::high_resolution_clock::now();
+    auto verticeParseTime
+        = std::chrono::duration_cast<std::chrono::milliseconds>(
+              timeVertices - timeStart)
+              .count();
+    std::cout << "vertices parse time: " << verticeParseTime << " ms"
+              << std::endl;
+
     polygons->reserve(polygonStrings.size());
 
     for (const auto& string : polygonStrings) {
@@ -74,9 +82,15 @@ ObjParseResult ObjParser::parse()
     }
 
     const auto timeEnd = std::chrono::high_resolution_clock::now();
+    auto trianglesParseTime
+        = std::chrono::duration_cast<std::chrono::milliseconds>(
+              timeEnd - timeVertices)
+              .count();
     auto parseTime = std::chrono::duration_cast<std::chrono::milliseconds>(
                          timeEnd - timeStart)
                          .count();
+    std::cout << "Triangles parse time: " << trianglesParseTime << " ms"
+              << std::endl;
     std::cout << "Parse time: " << parseTime << " ms" << std::endl;
 
     return { std::move(vertices),

@@ -69,23 +69,23 @@ int main(int argc, char** argv)
         textureBuilder.bind();
         textureBuilder.setDefaults();
         textureBuilder.load(
-            "C:/Users/Natallia/Documents/Labs/Diploma/"
-            "Diploma_Sculptor/resources/textures/container.jpg");
+            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\textures\container.jpg)");
         textureBuilder.unbind();
 
         auto containerTexture = textureBuilder.build();
 
+        /*
         textureBuilder.create();
         textureBuilder.init("faceTexture", GL_TEXTURE1, GL_TEXTURE_2D);
 
         textureBuilder.bind();
         textureBuilder.setDefaults();
         textureBuilder.load(
-            "C:/Users/Natallia/Documents/Labs/Diploma/"
-            "Diploma_Sculptor/resources/textures/awesomeface.png");
+            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\textures\awesomeface.png)");
         textureBuilder.unbind();
 
         auto faceTexture = textureBuilder.build();
+        */
 
         ShaderProgramBuilder shaderProgramBuilder {};
 
@@ -128,20 +128,23 @@ int main(int argc, char** argv)
 
         shaderProgramBuilder.addNewUniform(
             containerTexture->getName(), shaderProgramBuilder.instance->get());
-        shaderProgramBuilder.addNewUniform(
-            faceTexture->getName(), shaderProgramBuilder.instance->get());
+        // shaderProgramBuilder.addNewUniform(
+        // faceTexture->getName(), shaderProgramBuilder.instance->get());
 
         auto shaderProgram = shaderProgramBuilder.build();
 
-        // const auto* const path =
-        // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\sphere\sphere.obj)";
-        // const auto* const path =
-        // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\models\sphereTriangulated\sphereTriangulated.obj)";
-        // const auto* const path
+        const auto* const path
+            = R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\cube\cube.obj)";
         // =
         // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\models\car\car.obj)";
-        const auto* const path
-            = R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\angel2.obj)";
+        // =
+        // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\sphere\sphere.obj)";
+        // =
+        // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\models\sphereTriangulated\sphereTriangulated.obj)";
+        // =
+        // R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\angel.obj)";
+        // =
+        // R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\woman1.obj)";
 
         ObjParser parser { path };
 
@@ -159,7 +162,7 @@ int main(int argc, char** argv)
         objectBuilder.addTVertices(std::move(parseResult.getTVertices()));
 
         objectBuilder.addTexture(std::move(containerTexture));
-        objectBuilder.addTexture(std::move(faceTexture));
+        // objectBuilder.addTexture(std::move(faceTexture));
 
         objectBuilder.addShaderProgram(std::move(shaderProgram));
         objectBuilder.selectShaderProgram(shaderProgramName);

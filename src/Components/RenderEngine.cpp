@@ -6,7 +6,6 @@
 #include <Settings.hpp>
 #include <ShaderProgram.hpp>
 
-#include <iostream>
 #include <matrix_clip_space.hpp>
 #include <qualifier.hpp>
 #include <type_mat4x4.hpp>
@@ -40,7 +39,7 @@ void RenderEngine::draw(
     for (auto&& object : objects) {
         object.second->enableShader();
 
-        std::cout << "draw shader enabled" << std::endl;
+        // std::cout << "draw shader enabled" << std::endl;
 
         object.second->loadUniform(
             ShaderProgram::defaultModelUniformName, modelMat);
@@ -49,17 +48,17 @@ void RenderEngine::draw(
         object.second->loadUniform(
             ShaderProgram::defaultProjectionUniformName, projectionMat);
 
-        std::cout << "draw uniforms loaded" << std::endl;
+        // std::cout << "draw uniforms loaded" << std::endl;
 
         object.second->draw();
         object.second->disableShader();
 
-        std::cout << "drawed" << std::endl;
+        // std::cout << "drawed" << std::endl;
     }
 
-    std::cout << "pre swaped" << std::endl;
+    // std::cout << "pre swaped" << std::endl;
     mainWindow->swapBuffers();
-    std::cout << "swaped" << std::endl;
+    // std::cout << "swaped" << std::endl;
 }
 
 bool RenderEngine::shouldClose() const { return mainWindow->shouldClose(); }
