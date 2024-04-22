@@ -11,28 +11,23 @@ const std::string ShaderProgram::defaultModelUniformName = "model";
 const std::string ShaderProgram::defaultViewUniformName = "view";
 const std::string ShaderProgram::defaultProjectionUniformName = "projection";
 
+const std::string ShaderProgram::defaultPositionAttributeName = "position";
+const std::string ShaderProgram::defaultTexCoordAttributeName = "texCoord";
+
 ShaderProgram::ShaderProgram(ConstructorPasskey<ShaderProgram>&& passkey)
     : program(glCreateProgram())
     , success(0)
     , _isUsed(false)
-    , attributesStride(0)
 {
     infoLog.resize(infoLogSize);
 }
 
 void ShaderProgram::init(std::string_view _name) { name = _name; }
 
-void ShaderProgram::enableAttributes()
+void ShaderProgram::enableAttribute(const std::string_view name)
 {
-    auto offset = 0;
-    for (auto&& attribute : attributes) {
-        attribute.enable(
-            attributesStride,
-            // NOLINTNEXTLINE
-            reinterpret_cast<GLvoid*>(offset * attribute.getSizeofElement()));
-
-        offset += attribute.getElementsCount();
-    }
+    auto& attribute = attributes.at(name);
+    attribute->enable(0, nullptr);
 }
 
 void ShaderProgram::enable()

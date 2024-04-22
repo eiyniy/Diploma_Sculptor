@@ -20,7 +20,11 @@ class Object {
     friend class ObjectBuilder;
 
 private:
-    GLuint VBO, VAO, EBO;
+    GLuint VAO;
+    GLuint EBO;
+
+    GLuint verticesVBO;
+    GLuint tVerticesVBO;
 
     std::map<const std::string_view, std::unique_ptr<ShaderProgram>>
         shaderPrograms;
@@ -29,15 +33,17 @@ private:
 
     bool _isAnyShaderEnabled;
 
-    bool _hasIndices;
+    // TODO: Rename (tr?)
+    std::vector<GLfloat> trVertices;
+    std::size_t trVerticesSize;
+    GLsizei trVerticesStep;
 
-    std::vector<GLfloat> verticesUnion;
-    std::size_t verticesSize;
-    std::size_t verticesUnionSize;
-    GLsizei verticesUnionStep;
+    std::vector<GLfloat> trTVertices;
+    std::size_t trTVerticesSize;
+    GLsizei trTVerticesStep;
 
-    std::vector<GLuint> indicesUnion;
-    std::size_t indicesUnionSize;
+    std::vector<GLuint> indices;
+    std::size_t indicesSize;
 
     std::map<const std::string_view, std::unique_ptr<Texture>> textures;
 
@@ -54,8 +60,6 @@ public:
     Object& operator=(Object&&) = delete;
 
     ~Object();
-
-    [[nodiscard]] bool hasIndices() const;
 
     [[nodiscard]] bool isAnyShaderEnabled() const;
 

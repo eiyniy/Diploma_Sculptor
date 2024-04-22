@@ -18,7 +18,7 @@ constexpr GLfloat startPitch = 0.F;
 constexpr GLfloat minPitch = -89.F;
 constexpr GLfloat maxPitch = 89.F;
 
-constexpr auto startPos = glm::vec3(0.F, 0.F, 5.F);
+constexpr auto startPos = glm::vec3(0.F, 50.F, 50.F);
 constexpr auto startFront = glm::vec3(0.F, 0.F, -1.F);
 
 constexpr auto startWorldUp = glm::vec3(0.F, 1.F, 0.F);

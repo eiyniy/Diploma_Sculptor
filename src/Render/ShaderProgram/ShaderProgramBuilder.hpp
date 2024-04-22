@@ -5,6 +5,7 @@
 
 #include <GL/glew.h>
 
+#include <memory>
 #include <set>
 #include <string>
 #include <string_view>
@@ -40,7 +41,7 @@ public:
 
     void addShader(std::string sourcePath, GLenum shaderType);
 
-    void addAttribute(const ShaderAttribute& attribute);
+    void addAttribute(std::unique_ptr<ShaderAttribute> attribute);
 
     void addNewUniform(std::string_view name, GLuint program);
 

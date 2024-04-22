@@ -34,11 +34,10 @@ private:
 
     std::vector<GLuint> shaders;
 
-    std::vector<ShaderAttribute> attributes;
+    std::map<const std::string_view, std::unique_ptr<ShaderAttribute>>
+        attributes;
 
     std::map<const std::string_view, std::unique_ptr<ShaderUniform>> uniforms;
-
-    GLsizei attributesStride;
 
     bool _isUsed;
 
@@ -47,9 +46,12 @@ public:
     static const std::string defaultViewUniformName;
     static const std::string defaultProjectionUniformName;
 
+    static const std::string defaultPositionAttributeName;
+    static const std::string defaultTexCoordAttributeName;
+
     ShaderProgram(ConstructorPasskey<ShaderProgram>&& passkey);
 
-    void enableAttributes();
+    void enableAttribute(std::string_view name);
 
     template <class T>
         requires IsUniformType<T>

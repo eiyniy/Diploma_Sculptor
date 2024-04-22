@@ -20,12 +20,11 @@ class Texture;
 class ObjectBuilder : public IBuilder<Object> {
 private:
     bool isInited;
-    bool isMerged;
+    bool isTransformed;
     bool isVAOSetup;
 
     std::unique_ptr<std::vector<glm::vec4>> vertices;
-    std::unique_ptr<std::vector<glm::vec3>> colors;
-    std::unique_ptr<std::vector<glm::vec2>> textureCoords;
+    std::unique_ptr<std::vector<glm::vec2>> tVertices;
     std::unique_ptr<std::vector<Triangle>> triangles;
     std::unique_ptr<std::vector<glm::vec<3, GLuint>>> indices;
 
@@ -38,7 +37,7 @@ private:
 
     void calcVerticesUnionParams();
 
-    void mergeTriangles();
+    void transform();
 
     [[nodiscard]] bool isShaderProgramFinished() const;
 
@@ -54,14 +53,11 @@ public:
 
     virtual ~ObjectBuilder() = default;
 
-    void init(std::unique_ptr<std::vector<glm::vec4>> _vertices);
+    void init(
+        std::unique_ptr<std::vector<glm::vec4>> _vertices,
+        std::unique_ptr<std::vector<Triangle>> _triangles);
 
-    void addTriangles(std::unique_ptr<std::vector<Triangle>> _triangles);
-
-    void addColors(std::unique_ptr<std::vector<glm::vec3>> _colors);
-
-    void
-    addTextureCoords(std::unique_ptr<std::vector<glm::vec2>> _textureCoords);
+    void addTVertices(std::unique_ptr<std::vector<glm::vec2>> _tVertices);
 
     void addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram);
 
@@ -69,6 +65,7 @@ public:
 
     void selectShaderProgram(std::string_view name);
 
+    // TODO: Rename
     void merge();
 
     void setupVAO();

@@ -6,11 +6,11 @@
 Settings* Settings::instance { nullptr };
 std::mutex Settings::mutex {};
 
-constexpr float defaultCameraSpeed = 3.F;
+constexpr float defaultCameraSpeed = 10.F;
 constexpr float defaultCameraFoV = glm::radians(45.F);
 constexpr float defaultCameraMouseSens = 0.05F;
 constexpr float defaultZNear = 0.1F;
-constexpr float defaultZFar = 100.F;
+constexpr float defaultZFar = 1000.F;
 constexpr glm::vec<4, GLclampf> defaultWindowClearColor {
     0.2F, 0.3F, 0.3F, 1.0F
 };
@@ -19,7 +19,7 @@ Settings::Settings()
     : cameraSpeed(defaultCameraSpeed)
     , cameraFoV(defaultCameraFoV)
     , cameraMouseSens(defaultCameraMouseSens)
-    , vSyncEnabled(true)
+    , vSyncEnabled(false)
     , depthBufferEnabled(true)
     , resizeEnabled(false)
     , windowName("Sculptor")

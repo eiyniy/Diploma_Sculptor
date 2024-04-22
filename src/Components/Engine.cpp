@@ -8,6 +8,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
@@ -32,6 +33,8 @@ Engine::~Engine() { glfwTerminate(); }
 
 void Engine::start()
 {
+    std::cout << "engine started" << std::endl;
+
     while (!renderEngine.shouldClose()) {
         auto currentFrame = static_cast<GLfloat>(glfwGetTime());
         deltaTime = currentFrame - lastFrameTime;

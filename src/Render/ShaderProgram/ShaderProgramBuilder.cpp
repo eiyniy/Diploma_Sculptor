@@ -77,11 +77,10 @@ void ShaderProgramBuilder::addShader(
     addedShadersTypes.insert(shaderType);
 }
 
-void ShaderProgramBuilder::addAttribute(const ShaderAttribute& attribute)
+void ShaderProgramBuilder::addAttribute(
+    std::unique_ptr<ShaderAttribute> attribute)
 {
-    instance->attributes.push_back(attribute);
-    instance->attributesStride += static_cast<GLsizei>(
-        attribute.getElementsCount() * attribute.getSizeofElement());
+    instance->attributes[attribute->getName()] = std::move(attribute);
 }
 
 void ShaderProgramBuilder::addNewUniform(

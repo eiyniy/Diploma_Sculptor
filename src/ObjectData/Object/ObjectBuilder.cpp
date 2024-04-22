@@ -19,7 +19,7 @@
 
 ObjectBuilder::ObjectBuilder()
     : isInited(false)
-    , isMerged(false)
+    , isTransformed(false)
     , isVAOSetup(false)
 {
 }
@@ -37,59 +37,56 @@ void ObjectBuilder::reset()
     IBuilder<Object>::reset();
 
     isInited = false;
-    isMerged = false;
+    isTransformed = false;
     isVAOSetup = false;
 }
 
 void ObjectBuilder::generateBuffers()
 {
     glGenVertexArrays(1, &instance->VAO);
-    glGenBuffers(1, &instance->VBO);
-    if (instance->hasIndices()) {
-        glGenBuffers(1, &instance->EBO);
-    }
+    glGenBuffers(1, &instance->verticesVBO);
+    glGenBuffers(1, &instance->tVerticesVBO);
+    glGenBuffers(1, &instance->EBO);
 }
 
 void ObjectBuilder::calcVerticesUnionParams()
 {
     throwIfNotInited("Can't calculate vertices union params. ");
 
-    const auto trianglesCount = triangles->size();
-    const auto verticesCount = vertices->size();
-
     // TODO: Get rid of magic numbers
-    instance->verticesUnionSize = verticesCount * 4;
-    instance->verticesUnionStep = 4;
+    instance->trVerticesSize = vertices->size() * 4;
+    instance->trVerticesStep = 4;
 
-    if (colors != nullptr) {
-        instance->verticesUnionSize += verticesCount * 3;
-        instance->verticesUnionStep += 3;
-    }
-    if (textureCoords != nullptr) {
-        instance->verticesUnionSize += verticesCount * 2;
-        instance->verticesUnionStep += 2;
+    instance->indicesSize = triangles->size() * 3;
+
+    if (tVertices != nullptr) {
+        instance->trTVerticesSize = tVertices->size() * 2;
+        instance->trTVerticesStep = 2;
     }
 }
 
-void ObjectBuilder::mergeTriangles()
+void ObjectBuilder::transform()
 {
     throwIfNotInited("Can't merge vertices. ");
 
-    instance->verticesUnion.resize(instance->verticesUnionSize);
+    instance->trVertices.resize(instance->trVerticesSize);
+    instance->trTVertices.resize(instance->trTVerticesSize);
+    instance->indices.resize(instance->indicesSize);
 
-    instance->indicesUnionSize = triangles->size() * 3;
-    instance->indicesUnion.resize(instance->indicesUnionSize);
-
-    size_t indicesUnionPos = 0;
-    size_t verticesUnionPos = 0;
+    size_t indicesPos = 0;
+    size_t verticesPos = 0;
+    size_t tVerticesPos = 0;
 
     for (auto&& vertex : *vertices) {
-        instance->verticesUnion[verticesUnionPos++] = vertex.x;
-        instance->verticesUnion[verticesUnionPos++] = vertex.y;
-        instance->verticesUnion[verticesUnionPos++] = vertex.z;
-        instance->verticesUnion[verticesUnionPos++] = vertex.w;
+        instance->trVertices[verticesPos++] = vertex.x;
+        instance->trVertices[verticesPos++] = vertex.y;
+        instance->trVertices[verticesPos++] = vertex.z;
+        instance->trVertices[verticesPos++] = vertex.w;
+    }
 
-        verticesUnionPos += instance->verticesUnionStep - 4;
+    for (auto&& tVertex : *tVertices) {
+        instance->trTVertices[tVerticesPos++] = tVertex.x;
+        instance->trTVertices[tVerticesPos++] = tVertex.y;
     }
 
     for (const auto& triangle : *triangles) {
@@ -100,32 +97,19 @@ void ObjectBuilder::mergeTriangles()
 
             const auto vertexId = vertexIds.cGetVertexId() - 1;
 
-            instance->indicesUnion[indicesUnionPos++] = vertexId;
+            instance->indices[indicesPos++] = vertexId;
 
             /*
-
-            // HACK: Color id must be the as vertx id.
-            // Their vectors must have the same size.
-            // TODO: Remove or remake color support
-            if (colors != nullptr) {
-                const auto colorId = vertexIds.cGetVertexId() - 1;
-                const auto& color = colors->at(colorId);
-
-                instance->verticesUnion[verticesUnionPos++] = color.r;
-                instance->verticesUnion[verticesUnionPos++] = color.g;
-                instance->verticesUnion[verticesUnionPos++] = color.b;
-            }
-
             auto tVertexId = vertexIds.cGetTextureVertexId();
-            if (textureCoords != nullptr && tVertexId.has_value()) {
+            if (tVertices != nullptr && tVertexId.has_value()) {
                 --*tVertexId;
 
-                const auto& tVertex = textureCoords->at(*tVertexId);
+                const auto& tVertex = tVertices->at(*tVertexId);
 
-                instance->verticesUnion[verticesUnionPos++] = tVertex.x;
-                instance->verticesUnion[verticesUnionPos++] = tVertex.y;
+                instance->trTVertices[tVerticesPos++] = tVertex.x;
+                instance->trTVertices[tVerticesPos++] = tVertex.y;
             }
-            */
+            // */
         }
     }
 
@@ -140,10 +124,12 @@ bool ObjectBuilder::isShaderProgramFinished() const
 bool ObjectBuilder::isFinished() const
 {
     return IBuilder<Object>::isFinished() && isInited
-        && isShaderProgramFinished() && isMerged && isVAOSetup;
+        && isShaderProgramFinished() && isTransformed && isVAOSetup;
 }
 
-void ObjectBuilder::init(std::unique_ptr<std::vector<glm::vec4>> _vertices)
+void ObjectBuilder::init(
+    std::unique_ptr<std::vector<glm::vec4>> _vertices,
+    std::unique_ptr<std::vector<Triangle>> _triangles)
 {
     if (isInited) {
         throw std::logic_error(
@@ -151,57 +137,23 @@ void ObjectBuilder::init(std::unique_ptr<std::vector<glm::vec4>> _vertices)
     }
 
     vertices = std::move(_vertices);
-
-    instance->verticesSize = vertices->size();
+    triangles = std::move(_triangles);
 
     isInited = true;
 }
 
-void ObjectBuilder::addTriangles(
-    std::unique_ptr<std::vector<Triangle>> _triangles)
-{
-    // TODO: Move next 5 lines to IBuilder::addBase(std::string error)
-    const std::string error = "Can't add triangles to ObjectBuilder. ";
-
-    throwIfNotInited(error);
-
-    if (triangles != nullptr) {
-        throw std::logic_error(error + "They have been already added.");
-    }
-
-    triangles = std::move(_triangles);
-    instance->_hasIndices = true;
-}
-
-void ObjectBuilder::addColors(std::unique_ptr<std::vector<glm::vec3>> _colors)
-{
-    const std::string error = "Can't add colors to ObjectBuilder. ";
-
-    throwIfNotInited(error);
-
-    if (colors != nullptr) {
-        throw std::logic_error(error + "They have been already added.");
-    }
-
-    if (_colors->size() != vertices->size()) {
-        throw std::logic_error(error + "They have incorrect size.");
-    }
-
-    colors = std::move(_colors);
-}
-
-void ObjectBuilder::addTextureCoords(
-    std::unique_ptr<std::vector<glm::vec2>> _textureCoords)
+void ObjectBuilder::addTVertices(
+    std::unique_ptr<std::vector<glm::vec2>> _tVertices)
 {
     const std::string error = "Can't add texture coords to ObjectBuilder. ";
 
     throwIfNotInited(error);
 
-    if (textureCoords != nullptr) {
+    if (tVertices != nullptr) {
         throw std::logic_error(error + "They have been already added.");
     }
 
-    textureCoords = std::move(_textureCoords);
+    tVertices = std::move(_tVertices);
 }
 
 void ObjectBuilder::addShaderProgram(
@@ -228,14 +180,14 @@ void ObjectBuilder::merge()
 
     calcVerticesUnionParams();
 
-    mergeTriangles();
+    transform();
 
-    isMerged = true;
+    isTransformed = true;
 }
 
 void ObjectBuilder::setupVAO()
 {
-    if (!isMerged) {
+    if (!isTransformed) {
         throw std::logic_error(
             "Can't setup VAO. ObjectBuilder haven't been merged.");
     }
@@ -246,27 +198,34 @@ void ObjectBuilder::setupVAO()
 
     // TODO: Add separate buffers for vertices, colors, tVertices
     // DO NOT use union
-    glBindBuffer(GL_ARRAY_BUFFER, instance->VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instance->verticesVBO);
     glBufferData(
         GL_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(instance->verticesUnionSize * sizeof(GLfloat)),
-        instance->verticesUnion.data(),
+        static_cast<GLsizeiptr>(instance->trVerticesSize * sizeof(GLfloat)),
+        instance->trVertices.data(),
+        GL_STATIC_DRAW);
+    instance->shaderPrograms.at(instance->currentShaderProgramName)
+        ->enableAttribute(ShaderProgram::defaultPositionAttributeName);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // TODO: tVerticesVBO
+    glBindBuffer(GL_ARRAY_BUFFER, instance->tVerticesVBO);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(instance->trTVerticesSize * sizeof(GLfloat)),
+        instance->trTVertices.data(),
+        GL_STATIC_DRAW);
+    instance->shaderPrograms.at(instance->currentShaderProgramName)
+        ->enableAttribute(ShaderProgram::defaultTexCoordAttributeName);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance->EBO);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(instance->indicesSize * sizeof(GLuint)),
+        instance->indices.data(),
         GL_STATIC_DRAW);
 
-    if (instance->hasIndices()) {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance->EBO);
-        glBufferData(
-            GL_ELEMENT_ARRAY_BUFFER,
-            static_cast<GLsizeiptr>(
-                instance->indicesUnionSize * sizeof(GLuint)),
-            instance->indicesUnion.data(),
-            GL_STATIC_DRAW);
-    }
-
-    instance->shaderPrograms.at(instance->currentShaderProgramName)
-        ->enableAttributes();
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     isVAOSetup = true;

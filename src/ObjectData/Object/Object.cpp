@@ -10,26 +10,25 @@
 #include <utility>
 
 Object::Object(ConstructorPasskey<Object>&& passkey)
-    : verticesUnionSize(0)
-    , indicesUnionSize(0)
+    : trVerticesSize(0)
+    , trVerticesStep(0)
+    , trTVerticesSize(0)
+    , trTVerticesStep(0)
+    , indicesSize(0)
     , VAO(0)
-    , VBO(0)
+    , verticesVBO(0)
+    , tVerticesVBO(0)
     , EBO(0)
     , _isAnyShaderEnabled(false)
-    , _hasIndices(false)
-    , verticesSize(0)
-    , verticesUnionStep(0)
 {
 }
 
 Object::~Object()
 {
     glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-
-    if (hasIndices()) {
-        glDeleteBuffers(1, &EBO);
-    }
+    glDeleteBuffers(1, &verticesVBO);
+    glDeleteBuffers(1, &tVerticesVBO);
+    glDeleteBuffers(1, &EBO);
 }
 
 void Object::throwIfShaderNotEnabled(
@@ -102,19 +101,13 @@ void Object::draw() const
 
     glBindVertexArray(VAO);
 
-    if (hasIndices()) {
-        glDrawElements(
-            GL_TRIANGLES,
-            static_cast<GLsizei>(indicesUnionSize),
-            GL_UNSIGNED_INT,
-            nullptr);
-    } else {
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(verticesSize));
-    }
+    glDrawElements(
+        GL_TRIANGLES,
+        static_cast<GLsizei>(indicesSize),
+        GL_UNSIGNED_INT,
+        nullptr);
 
     glBindVertexArray(0);
 }
-
-bool Object::hasIndices() const { return _hasIndices; }
 
 bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
