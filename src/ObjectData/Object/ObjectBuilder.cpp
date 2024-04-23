@@ -5,9 +5,13 @@
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
+#include <algorithm>
+#include <functional>
 #include <memory>
+#include <optional>
 #include <type_vec2.hpp>
 #include <type_vec3.hpp>
+#include <vector>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 
@@ -16,6 +20,43 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+
+Entry::Entry()
+    : vertex() {};
+
+Entry::Entry(const glm::vec4& _vertex, const std::optional<glm::vec2>& _tVertex)
+    : vertex(_vertex)
+    , tVertex(_tVertex)
+{
+}
+
+bool Entry::operator==(const Entry& entry) const
+{
+    return vertex == entry.vertex && tVertex == entry.tVertex;
+}
+
+[[nodiscard]] size_t Entry::hash() const
+{
+    size_t hash {};
+    auto shift = 0;
+
+    hash ^= std::hash<float>()(vertex.x) << shift++;
+    hash ^= std::hash<float>()(vertex.y) << shift++;
+    hash ^= std::hash<float>()(vertex.z) << shift++;
+    hash ^= std::hash<float>()(vertex.w) << shift++;
+
+    if (tVertex.has_value()) {
+        hash ^= std::hash<float>()(tVertex->x) << shift++;
+        hash ^= std::hash<float>()(tVertex->y) << shift++;
+    }
+
+    return hash;
+}
+
+size_t Entry::HashFunction::operator()(const Entry& entry) const
+{
+    return entry.hash();
+}
 
 ObjectBuilder::ObjectBuilder()
     : isInited(false)
@@ -49,45 +90,18 @@ void ObjectBuilder::generateBuffers()
     glGenBuffers(1, &instance->EBO);
 }
 
-void ObjectBuilder::calcVerticesUnionParams()
-{
-    throwIfNotInited("Can't calculate vertices union params. ");
-
-    // TODO: Get rid of magic numbers
-    instance->trVerticesSize = vertices->size() * 4;
-    instance->trVerticesStep = 4;
-
-    instance->indicesSize = triangles->size() * 3;
-
-    if (tVertices != nullptr) {
-        instance->trTVerticesSize = tVertices->size() * 2;
-        instance->trTVerticesStep = 2;
-    }
-}
-
 void ObjectBuilder::transform()
 {
     throwIfNotInited("Can't merge vertices. ");
 
-    instance->trVertices.resize(instance->trVerticesSize);
-    instance->trTVertices.resize(instance->trTVerticesSize);
+    std::map<size_t, size_t> entriesHashId;
+    std::vector<Entry> entries;
+
+    instance->indicesSize = triangles->size() * 3;
     instance->indices.resize(instance->indicesSize);
 
     size_t indicesPos = 0;
-    size_t verticesPos = 0;
-    size_t tVerticesPos = 0;
-
-    for (auto&& vertex : *vertices) {
-        instance->trVertices[verticesPos++] = vertex.x;
-        instance->trVertices[verticesPos++] = vertex.y;
-        instance->trVertices[verticesPos++] = vertex.z;
-        instance->trVertices[verticesPos++] = vertex.w;
-    }
-
-    for (auto&& tVertex : *tVertices) {
-        instance->trTVertices[tVerticesPos++] = tVertex.x;
-        instance->trTVertices[tVerticesPos++] = tVertex.y;
-    }
+    size_t entriesPos = 0;
 
     for (const auto& triangle : *triangles) {
         const auto vertexIdsCount = triangle.cGetVertexIdsCount();
@@ -96,22 +110,53 @@ void ObjectBuilder::transform()
             const auto vertexIds = triangle.cGetVertexIds(i);
 
             const auto vertexId = vertexIds.cGetVertexId() - 1;
-
-            instance->indices[indicesPos++] = vertexId;
-
-            // FIXME: Fix tVertices order
-            // https://gamedev.stackexchange.com/questions/102389/how-to-implement-index-buffer-object-ibos-with-texture-coordinates-in-opengl
-            /*
             auto tVertexId = vertexIds.cGetTextureVertexId();
-            if (tVertices != nullptr && tVertexId.has_value()) {
-                --*tVertexId;
 
-                const auto& tVertex = tVertices->at(*tVertexId);
+            const auto vertex = vertices->at(vertexId);
 
-                instance->trTVertices[tVerticesPos++] = tVertex.x;
-                instance->trTVertices[tVerticesPos++] = tVertex.y;
+            std::optional<glm::vec2> tVertex {};
+            if (tVertexId.has_value() && tVertices != nullptr) {
+                tVertex = tVertices->at(--*tVertexId);
             }
-            // */
+
+            const Entry entry { vertex, tVertex };
+
+            const auto hash = entry.hash();
+            if (!entriesHashId.contains(hash)) {
+                entriesHashId[hash] = entriesPos;
+                entries.push_back(entry);
+
+                instance->indices[indicesPos++] = entriesPos++;
+            } else {
+                instance->indices[indicesPos++] = entriesHashId.at(hash);
+                /*
+                const auto index
+                    = std::find(entries.begin(), entries.end(), entry)
+                    - entries.begin();
+                instance->indices[indicesPos++] = index;
+                */
+            }
+        }
+    }
+
+    instance->trVerticesSize = entries.size() * 4;
+    instance->trVertices.resize(instance->trVerticesSize);
+
+    instance->trTVerticesSize = entries.size() * 2;
+    instance->trTVertices.resize(instance->trTVerticesSize);
+
+    size_t verticesPos = 0;
+    size_t tVerticesPos = 0;
+
+    for (auto&& entry : entries) {
+        instance->trVertices[verticesPos++] = entry.vertex.x;
+        instance->trVertices[verticesPos++] = entry.vertex.y;
+        instance->trVertices[verticesPos++] = entry.vertex.z;
+        instance->trVertices[verticesPos++] = entry.vertex.w;
+
+        if (entry.tVertex.has_value()) {
+            instance->trTVertices[tVerticesPos++] = entry.tVertex->x;
+            instance->trTVertices[tVerticesPos++] = entry.tVertex->y;
         }
     }
 }
@@ -177,8 +222,6 @@ void ObjectBuilder::selectShaderProgram(std::string_view name)
 void ObjectBuilder::merge()
 {
     generateBuffers();
-
-    calcVerticesUnionParams();
 
     transform();
 

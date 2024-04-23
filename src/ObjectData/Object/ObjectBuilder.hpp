@@ -1,9 +1,12 @@
 #pragma once
 
+#include "vector_float4.hpp"
 #include <IBuilder.hpp>
 #include <Object.hpp>
 #include <Triangle.hpp>
 
+#include <cstddef>
+#include <optional>
 #include <type_vec3.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
@@ -16,6 +19,24 @@
 
 class ShaderProgram;
 class Texture;
+
+struct Entry {
+    glm::vec4 vertex;
+    std::optional<glm::vec2> tVertex;
+
+    Entry();
+    Entry(
+        const glm::vec4& _vertex,
+        const std::optional<glm::vec2>& _tVertex = std::nullopt);
+
+    [[nodiscard]] size_t hash() const;
+
+    bool operator==(const Entry& entry) const;
+
+    struct HashFunction {
+        size_t operator()(const Entry& entry) const;
+    };
+};
 
 class ObjectBuilder : public IBuilder<Object> {
 private:
@@ -34,8 +55,6 @@ private:
     void reset() override;
 
     void generateBuffers();
-
-    void calcVerticesUnionParams();
 
     void transform();
 
