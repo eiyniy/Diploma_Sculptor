@@ -55,8 +55,10 @@ void ShaderUniform::load(T value) const
         glUniform3fv(location, 1, glm::value_ptr(value));
     } else if constexpr (std::same_as<T, glm::vec4>) {
         glUniform4fv(location, 1, glm::value_ptr(value));
-    } else if constexpr (std::same_as<T, int>) {
+    } else if constexpr (IsAnyOf<T, int, bool>) {
         glUniform1i(location, value);
+    } else if constexpr (std::same_as<T, float>) {
+        glUniform1f(location, value);
     } else {
         const std::string error
             = "Can't load uniform \"" + name + "\". It has incompatible type.";

@@ -43,6 +43,9 @@ void InputEngine::update(const GLfloat dt)
     if (keys[GLFW_KEY_LEFT_SHIFT]) {
         camera->move(AxisName::Y, Direction::Backward, dt);
     }
+    if (keys[GLFW_KEY_LEFT_CONTROL] && keys[GLFW_KEY_M]) {
+        mainWindow->switchInputMode();
+    }
 
     camera->rotate(coordOffset);
 }

@@ -83,10 +83,9 @@ void ShaderProgramBuilder::addAttribute(
     instance->attributes[attribute->getName()] = std::move(attribute);
 }
 
-void ShaderProgramBuilder::addNewUniform(
-    const std::string_view name, const GLuint program)
+void ShaderProgramBuilder::addNewUniform(const std::string_view name)
 {
-    auto uniform = std::make_unique<ShaderUniform>(name, program);
+    auto uniform = std::make_unique<ShaderUniform>(name, instance->get());
 
     instance->uniforms.insert(
         std::make_pair(uniform->getName(), std::move(uniform)));

@@ -43,7 +43,7 @@ public:
 
     void addAttribute(std::unique_ptr<ShaderAttribute> attribute);
 
-    void addNewUniform(std::string_view name, GLuint program);
+    void addNewUniform(std::string_view name);
 
     void link();
 };

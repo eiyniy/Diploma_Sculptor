@@ -22,11 +22,13 @@ class Texture;
 
 struct Entry {
     glm::vec4 vertex;
+    std::optional<glm::vec3> nVertex;
     std::optional<glm::vec2> tVertex;
 
     Entry();
     Entry(
         const glm::vec4& _vertex,
+        const std::optional<glm::vec3>& _nVertex = std::nullopt,
         const std::optional<glm::vec2>& _tVertex = std::nullopt);
 
     [[nodiscard]] size_t hash() const;
@@ -45,6 +47,7 @@ private:
     bool isVAOSetup;
 
     std::unique_ptr<std::vector<glm::vec4>> vertices;
+    std::unique_ptr<std::vector<glm::vec3>> nVertices;
     std::unique_ptr<std::vector<glm::vec2>> tVertices;
     std::unique_ptr<std::vector<Triangle>> triangles;
     std::unique_ptr<std::vector<glm::vec<3, GLuint>>> indices;
@@ -77,6 +80,8 @@ public:
         std::unique_ptr<std::vector<Triangle>> _triangles);
 
     void addTVertices(std::unique_ptr<std::vector<glm::vec2>> _tVertices);
+
+    void addNVertices(std::unique_ptr<std::vector<glm::vec3>> _nVertices);
 
     void addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram);
 

@@ -24,15 +24,20 @@
 Entry::Entry()
     : vertex() {};
 
-Entry::Entry(const glm::vec4& _vertex, const std::optional<glm::vec2>& _tVertex)
+Entry::Entry(
+    const glm::vec4& _vertex,
+    const std::optional<glm::vec3>& _nVertex,
+    const std::optional<glm::vec2>& _tVertex)
     : vertex(_vertex)
+    , nVertex(_nVertex)
     , tVertex(_tVertex)
 {
 }
 
 bool Entry::operator==(const Entry& entry) const
 {
-    return vertex == entry.vertex && tVertex == entry.tVertex;
+    return vertex == entry.vertex && tVertex == entry.tVertex
+        && nVertex == entry.nVertex;
 }
 
 [[nodiscard]] size_t Entry::hash() const
@@ -48,6 +53,12 @@ bool Entry::operator==(const Entry& entry) const
     if (tVertex.has_value()) {
         hash ^= std::hash<float>()(tVertex->x) << shift++;
         hash ^= std::hash<float>()(tVertex->y) << shift++;
+    }
+
+    if (nVertex.has_value()) {
+        hash ^= std::hash<float>()(nVertex->x) << shift++;
+        hash ^= std::hash<float>()(nVertex->y) << shift++;
+        hash ^= std::hash<float>()(nVertex->z) << shift++;
     }
 
     return hash;
@@ -87,6 +98,7 @@ void ObjectBuilder::generateBuffers()
     glGenVertexArrays(1, &instance->VAO);
     glGenBuffers(1, &instance->verticesVBO);
     glGenBuffers(1, &instance->tVerticesVBO);
+    glGenBuffers(1, &instance->nVerticesVBO);
     glGenBuffers(1, &instance->EBO);
 }
 
@@ -110,16 +122,16 @@ void ObjectBuilder::transform()
             const auto vertexIds = triangle.cGetVertexIds(i);
 
             const auto vertexId = vertexIds.cGetVertexId() - 1;
-            auto tVertexId = vertexIds.cGetTextureVertexId();
+            auto nVertexId = vertexIds.cGetNormalVertexId();
 
             const auto vertex = vertices->at(vertexId);
 
-            std::optional<glm::vec2> tVertex {};
-            if (tVertexId.has_value() && tVertices != nullptr) {
-                tVertex = tVertices->at(--*tVertexId);
+            std::optional<glm::vec3> nVertex {};
+            if (nVertexId.has_value() && nVertices != nullptr) {
+                nVertex = nVertices->at(--*nVertexId);
             }
 
-            const Entry entry { vertex, tVertex };
+            const Entry entry { vertex, nVertex };
 
             const auto hash = entry.hash();
             if (!entriesHashId.contains(hash)) {
@@ -129,12 +141,6 @@ void ObjectBuilder::transform()
                 instance->indices[indicesPos++] = entriesPos++;
             } else {
                 instance->indices[indicesPos++] = entriesHashId.at(hash);
-                /*
-                const auto index
-                    = std::find(entries.begin(), entries.end(), entry)
-                    - entries.begin();
-                instance->indices[indicesPos++] = index;
-                */
             }
         }
     }
@@ -145,8 +151,12 @@ void ObjectBuilder::transform()
     instance->trTVerticesSize = entries.size() * 2;
     instance->trTVertices.resize(instance->trTVerticesSize);
 
+    instance->trNVerticesSize = entries.size() * 3;
+    instance->trNVertices.resize(instance->trNVerticesSize);
+
     size_t verticesPos = 0;
     size_t tVerticesPos = 0;
+    size_t nVerticesPos = 0;
 
     for (auto&& entry : entries) {
         instance->trVertices[verticesPos++] = entry.vertex.x;
@@ -157,6 +167,12 @@ void ObjectBuilder::transform()
         if (entry.tVertex.has_value()) {
             instance->trTVertices[tVerticesPos++] = entry.tVertex->x;
             instance->trTVertices[tVerticesPos++] = entry.tVertex->y;
+        }
+
+        if (entry.nVertex.has_value()) {
+            instance->trNVertices[nVerticesPos++] = entry.nVertex->x;
+            instance->trNVertices[nVerticesPos++] = entry.nVertex->y;
+            instance->trNVertices[nVerticesPos++] = entry.nVertex->z;
         }
     }
 }
@@ -201,6 +217,20 @@ void ObjectBuilder::addTVertices(
     tVertices = std::move(_tVertices);
 }
 
+void ObjectBuilder::addNVertices(
+    std::unique_ptr<std::vector<glm::vec3>> _nVertices)
+{
+    const std::string error = "Can't add normals to ObjectBuilder. ";
+
+    throwIfNotInited(error);
+
+    if (nVertices != nullptr) {
+        throw std::logic_error(error + "They have been already added.");
+    }
+
+    nVertices = std::move(_nVertices);
+}
+
 void ObjectBuilder::addShaderProgram(
     std::unique_ptr<ShaderProgram> shaderProgram)
 {
@@ -239,8 +269,6 @@ void ObjectBuilder::setupVAO()
 
     glBindVertexArray(instance->VAO);
 
-    // TODO: Add separate buffers for vertices, colors, tVertices
-    // DO NOT use union
     glBindBuffer(GL_ARRAY_BUFFER, instance->verticesVBO);
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -248,19 +276,34 @@ void ObjectBuilder::setupVAO()
         instance->trVertices.data(),
         GL_STATIC_DRAW);
     instance->shaderPrograms.at(instance->currentShaderProgramName)
-        ->enableAttribute(ShaderProgram::defaultPositionAttributeName);
+        ->enableAttribute(ShaderProgram::positionAName);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // TODO: tVerticesVBO
-    glBindBuffer(GL_ARRAY_BUFFER, instance->tVerticesVBO);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(instance->trTVerticesSize * sizeof(GLfloat)),
-        instance->trTVertices.data(),
-        GL_STATIC_DRAW);
-    instance->shaderPrograms.at(instance->currentShaderProgramName)
-        ->enableAttribute(ShaderProgram::defaultTexCoordAttributeName);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    if (tVertices != nullptr) {
+        glBindBuffer(GL_ARRAY_BUFFER, instance->tVerticesVBO);
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            static_cast<GLsizeiptr>(
+                instance->trTVerticesSize * sizeof(GLfloat)),
+            instance->trTVertices.data(),
+            GL_STATIC_DRAW);
+        instance->shaderPrograms.at(instance->currentShaderProgramName)
+            ->enableAttribute(ShaderProgram::texCoordAName);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    if (nVertices != nullptr) {
+        glBindBuffer(GL_ARRAY_BUFFER, instance->nVerticesVBO);
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            static_cast<GLsizeiptr>(
+                instance->trNVerticesSize * sizeof(GLfloat)),
+            instance->trNVertices.data(),
+            GL_STATIC_DRAW);
+        instance->shaderPrograms.at(instance->currentShaderProgramName)
+            ->enableAttribute(ShaderProgram::normalAName);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance->EBO);
     glBufferData(

@@ -39,7 +39,6 @@ int main(int argc, char** argv)
         std::cout << "Hello world!" << std::endl;
 
         auto mainWindow = std::make_unique<MainWindow>(startupResolution);
-        glfwSetInputMode(mainWindow->get(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         auto camera = std::make_unique<Camera>(
             Settings::get()->getCameraSpeed(), Settings::get()->getCameraFoV());
@@ -58,34 +57,10 @@ int main(int argc, char** argv)
             glDisable(GL_DEPTH_TEST);
         }
 
+        // glShadeModel(GL_FLAT);
+
         // Uncommenting this call will result in wireframe polygons.
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        TextureBuilder textureBuilder {};
-
-        textureBuilder.create();
-        textureBuilder.init("containerTexture", GL_TEXTURE0, GL_TEXTURE_2D);
-
-        textureBuilder.bind();
-        textureBuilder.setDefaults();
-        textureBuilder.load(
-            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\textures\container.jpg)");
-        textureBuilder.unbind();
-
-        auto containerTexture = textureBuilder.build();
-
-        /*
-        textureBuilder.create();
-        textureBuilder.init("faceTexture", GL_TEXTURE1, GL_TEXTURE_2D);
-
-        textureBuilder.bind();
-        textureBuilder.setDefaults();
-        textureBuilder.load(
-            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\textures\awesomeface.png)");
-        textureBuilder.unbind();
-
-        auto faceTexture = textureBuilder.build();
-        */
 
         ShaderProgramBuilder shaderProgramBuilder {};
 
@@ -93,54 +68,50 @@ int main(int argc, char** argv)
         shaderProgramBuilder.init(shaderProgramName);
 
         shaderProgramBuilder.addShader(
-            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
+            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\flat\flat.vert)",
             GL_VERTEX_SHADER);
         shaderProgramBuilder.addShader(
-            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.frag)",
+            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\flat\flat.frag)",
             GL_FRAGMENT_SHADER);
 
         shaderProgramBuilder.link();
 
         shaderProgramBuilder.addAttribute(std::make_unique<ShaderAttribute>(
-            ShaderProgram::defaultPositionAttributeName,
+            ShaderProgram::positionAName,
             0,
             4,
             GL_FLOAT,
             sizeof(GLfloat),
             GL_FALSE));
         shaderProgramBuilder.addAttribute(std::make_unique<ShaderAttribute>(
-            ShaderProgram::defaultTexCoordAttributeName,
-            2,
-            2,
+            ShaderProgram::normalAName,
+            1,
+            3,
             GL_FLOAT,
             sizeof(GLfloat),
             GL_FALSE));
 
-        shaderProgramBuilder.addNewUniform(
-            ShaderProgram::defaultModelUniformName,
-            shaderProgramBuilder.instance->get());
-        shaderProgramBuilder.addNewUniform(
-            ShaderProgram::defaultViewUniformName,
-            shaderProgramBuilder.instance->get());
-        shaderProgramBuilder.addNewUniform(
-            ShaderProgram::defaultProjectionUniformName,
-            shaderProgramBuilder.instance->get());
+        shaderProgramBuilder.addNewUniform(ShaderProgram::modelUName);
+        shaderProgramBuilder.addNewUniform(ShaderProgram::viewUName);
+        shaderProgramBuilder.addNewUniform(ShaderProgram::projectionUName);
 
-        shaderProgramBuilder.addNewUniform(
-            containerTexture->getName(), shaderProgramBuilder.instance->get());
-        // shaderProgramBuilder.addNewUniform(
-        // faceTexture->getName(), shaderProgramBuilder.instance->get());
+        shaderProgramBuilder.addNewUniform(ShaderProgram::cameraPosUName);
+
+        shaderProgramBuilder.addNewUniform(ShaderProgram::lightColorUName);
+
+        shaderProgramBuilder.addNewUniform(ShaderProgram::dimmingFactorUName);
+        shaderProgramBuilder.addNewUniform(ShaderProgram::isDistanceDimmingUName);
 
         auto shaderProgram = shaderProgramBuilder.build();
 
         const auto* const path
             // =
             // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\cube\cube.obj)";
-            // =
-            // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\models\car\car.obj)";
-            // =
-            // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\sphere\sphere.obj)";
-            = R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\angel.obj)";
+            = R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\models\car\car.obj)";
+        // =
+        // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\sphere\sphere.obj)";
+        // =
+        // R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\angel.obj)";
         // =
         // R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\woman1.obj)";
 
@@ -157,10 +128,7 @@ int main(int argc, char** argv)
             std::move(parseResult.getVertices()),
             std::move(parseResult.getTriangles()));
 
-        objectBuilder.addTVertices(std::move(parseResult.getTVertices()));
-
-        objectBuilder.addTexture(std::move(containerTexture));
-        // objectBuilder.addTexture(std::move(faceTexture));
+        objectBuilder.addNVertices(std::move(parseResult.getNVertices()));
 
         objectBuilder.addShaderProgram(std::move(shaderProgram));
         objectBuilder.selectShaderProgram(shaderProgramName);
@@ -172,12 +140,6 @@ int main(int argc, char** argv)
         auto object = std::move(objectBuilder.build());
 
         std::cout << "object builded" << std::endl;
-
-        object->enableShader();
-        object->bindTextures();
-        object->disableShader();
-
-        std::cout << "textures binded" << std::endl;
 
         engine.addObject("OBJECT", std::move(object));
 

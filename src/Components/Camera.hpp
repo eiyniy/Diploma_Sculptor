@@ -52,4 +52,6 @@ public:
     [[nodiscard]] const glm::mat4& cGetViewMat() const;
 
     [[nodiscard]] GLfloat cGetFOV() const;
+
+    [[nodiscard]] const glm::vec3& cGetPos() const;
 };

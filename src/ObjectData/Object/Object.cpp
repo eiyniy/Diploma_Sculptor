@@ -11,13 +11,13 @@
 
 Object::Object(ConstructorPasskey<Object>&& passkey)
     : trVerticesSize(0)
-    , trVerticesStep(0)
     , trTVerticesSize(0)
-    , trTVerticesStep(0)
+    , trNVerticesSize(0)
     , indicesSize(0)
     , VAO(0)
     , verticesVBO(0)
     , tVerticesVBO(0)
+    , nVerticesVBO(0)
     , EBO(0)
     , _isAnyShaderEnabled(false)
 {
@@ -28,6 +28,7 @@ Object::~Object()
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &verticesVBO);
     glDeleteBuffers(1, &tVerticesVBO);
+    glDeleteBuffers(1, &nVerticesVBO);
     glDeleteBuffers(1, &EBO);
 }
 

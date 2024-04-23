@@ -42,12 +42,21 @@ private:
     bool _isUsed;
 
 public:
-    static const std::string defaultModelUniformName;
-    static const std::string defaultViewUniformName;
-    static const std::string defaultProjectionUniformName;
+    static constexpr std::string_view modelUName = "model";
+    static constexpr std::string_view viewUName = "view";
+    static constexpr std::string_view projectionUName = "projection";
 
-    static const std::string defaultPositionAttributeName;
-    static const std::string defaultTexCoordAttributeName;
+    static constexpr std::string_view cameraPosUName = "cameraPos";
+
+    static constexpr std::string_view lightColorUName = "lightColor";
+
+    static constexpr std::string_view dimmingFactorUName = "dimmingFactor";
+    static constexpr std::string_view isDistanceDimmingUName
+        = "isDistanceDimming";
+
+    static constexpr std::string_view positionAName = "position";
+    static constexpr std::string_view texCoordAName = "texCoord";
+    static constexpr std::string_view normalAName = "normal";
 
     ShaderProgram(ConstructorPasskey<ShaderProgram>&& passkey);
 

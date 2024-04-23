@@ -80,3 +80,5 @@ void Camera::updateFront()
 GLfloat Camera::cGetFOV() const { return fov; }
 
 const glm::mat4& Camera::cGetViewMat() const { return view; }
+
+const glm::vec3& Camera::cGetPos() const { return pos; }

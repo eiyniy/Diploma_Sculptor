@@ -1,3 +1,4 @@
+#include "vector_float3.hpp"
 #include <RenderEngine.hpp>
 
 #include <Camera.hpp>
@@ -39,26 +40,25 @@ void RenderEngine::draw(
     for (auto&& object : objects) {
         object.second->enableShader();
 
-        // std::cout << "draw shader enabled" << std::endl;
+        object.second->loadUniform(ShaderProgram::modelUName, modelMat);
+        object.second->loadUniform(ShaderProgram::viewUName, viewMat);
+        object.second->loadUniform(
+            ShaderProgram::projectionUName, projectionMat);
 
         object.second->loadUniform(
-            ShaderProgram::defaultModelUniformName, modelMat);
-        object.second->loadUniform(
-            ShaderProgram::defaultViewUniformName, viewMat);
-        object.second->loadUniform(
-            ShaderProgram::defaultProjectionUniformName, projectionMat);
+            ShaderProgram::cameraPosUName, camera->cGetPos());
 
-        // std::cout << "draw uniforms loaded" << std::endl;
+        object.second->loadUniform(
+            ShaderProgram::lightColorUName, glm::vec3(1, 1, 1));
+
+        object.second->loadUniform(ShaderProgram::dimmingFactorUName, 0.03F);
+        object.second->loadUniform(ShaderProgram::isDistanceDimmingUName, true);
 
         object.second->draw();
         object.second->disableShader();
-
-        // std::cout << "drawed" << std::endl;
     }
 
-    // std::cout << "pre swaped" << std::endl;
     mainWindow->swapBuffers();
-    // std::cout << "swaped" << std::endl;
 }
 
 bool RenderEngine::shouldClose() const { return mainWindow->shouldClose(); }

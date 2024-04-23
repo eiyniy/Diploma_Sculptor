@@ -11,8 +11,15 @@ template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 
 template <class T>
-concept IsUniformType
-    = IsAnyOf<T, glm::vec2, glm::vec3, glm::vec4, glm::mat4x4, int>;
+concept IsUniformType = IsAnyOf<
+    T,
+    glm::vec2,
+    glm::vec3,
+    glm::vec4,
+    glm::mat4x4,
+    int,
+    float,
+    bool>;
 
 template <class T>
 concept IsGlmVec = IsAnyOf<T, glm::vec2, glm::vec3, glm::vec4>;

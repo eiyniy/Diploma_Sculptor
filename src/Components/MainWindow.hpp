@@ -31,6 +31,8 @@ public:
 
     std::pair<GLfloat, GLfloat> resetCoordOffset();
 
+    void switchInputMode();
+
     static void clear();
 
     void swapBuffers();
@@ -47,6 +49,8 @@ private:
     std::pair<GLfloat, GLfloat> lastCoord, coordOffset;
 
     bool isMoved;
+
+    bool isMouseCaptured;
 
     static void keyCallback(
         GLFWwindow* window, int key, int scancode, int action, int mode);

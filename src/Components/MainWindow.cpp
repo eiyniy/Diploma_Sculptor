@@ -16,6 +16,7 @@ MainWindow::MainWindow(const std::pair<int, int> _resolution)
     : resolution(_resolution)
     , keys()
     , isMoved(false)
+    , isMouseCaptured(false)
 {
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
     // Init GLFW
@@ -58,6 +59,8 @@ MainWindow::MainWindow(const std::pair<int, int> _resolution)
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
     activeResolution = { width, height };
+
+    switchInputMode();
 }
 
 std::pair<GLfloat, GLfloat> MainWindow::resetCoordOffset()
@@ -86,6 +89,17 @@ void MainWindow::clear()
 void MainWindow::swapBuffers() { glfwSwapBuffers(window); }
 
 void MainWindow::close() { glfwSetWindowShouldClose(window, GL_TRUE); }
+
+void MainWindow::switchInputMode()
+{
+    if (isMouseCaptured) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
+    isMouseCaptured = !isMouseCaptured;
+}
 
 void MainWindow::keyCallback(
     GLFWwindow* window, int key, int scancode, int action, int mode)

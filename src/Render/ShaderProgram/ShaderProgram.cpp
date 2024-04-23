@@ -7,13 +7,6 @@
 
 #include <string>
 
-const std::string ShaderProgram::defaultModelUniformName = "model";
-const std::string ShaderProgram::defaultViewUniformName = "view";
-const std::string ShaderProgram::defaultProjectionUniformName = "projection";
-
-const std::string ShaderProgram::defaultPositionAttributeName = "position";
-const std::string ShaderProgram::defaultTexCoordAttributeName = "texCoord";
-
 ShaderProgram::ShaderProgram(ConstructorPasskey<ShaderProgram>&& passkey)
     : program(glCreateProgram())
     , success(0)

@@ -25,6 +25,7 @@ private:
 
     GLuint verticesVBO;
     GLuint tVerticesVBO;
+    GLuint nVerticesVBO;
 
     std::map<const std::string_view, std::unique_ptr<ShaderProgram>>
         shaderPrograms;
@@ -34,13 +35,15 @@ private:
     bool _isAnyShaderEnabled;
 
     // TODO: Rename (tr?)
+    // TODO: Remove sizes
     std::vector<GLfloat> trVertices;
     std::size_t trVerticesSize;
-    GLsizei trVerticesStep;
 
     std::vector<GLfloat> trTVertices;
     std::size_t trTVerticesSize;
-    GLsizei trTVerticesStep;
+
+    std::vector<GLfloat> trNVertices;
+    std::size_t trNVerticesSize;
 
     std::vector<GLuint> indices;
     std::size_t indicesSize;
