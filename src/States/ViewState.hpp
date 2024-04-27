@@ -7,8 +7,8 @@
 class ViewState : public BaseState {
 public:
     ViewState(
-        std::shared_ptr<MainWindow> _mainWindow,
-        std::shared_ptr<Camera> _camera);
+        const std::shared_ptr<MainWindow>& _mainWindow,
+        const std::shared_ptr<Camera>& _camera);
 
     [[nodiscard]] StateTypes getType() const override;
 };

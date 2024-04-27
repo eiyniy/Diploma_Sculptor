@@ -32,3 +32,5 @@ std::unique_ptr<BaseState> EditInputEngine::update(const float dt)
 
     return nullptr;
 }
+
+void EditInputEngine::mouseCallbackInner(double xpos, double ypos) { }

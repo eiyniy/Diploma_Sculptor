@@ -17,14 +17,9 @@ ModelInputEngine::ModelInputEngine(
 
 std::unique_ptr<BaseState> ModelInputEngine::update(const float dt)
 {
-    auto res = BaseInputEngine::update(dt);
-    if (res != nullptr) {
-        return std::move(res);
-    }
-
     if (cGetKeys()[GLFW_KEY_ESCAPE]) {
         getMainWindow()->close();
-        return std::make_unique<CloseState>();
+        return std::make_unique<CloseState>(getMainWindow(), getCamera());
     }
 
     return nullptr;

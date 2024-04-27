@@ -14,4 +14,6 @@ public:
         std::shared_ptr<Camera> _camera);
 
     std::unique_ptr<BaseState> update(float dt) override;
+
+    void mouseCallbackInner(double xpos, double ypos) override;
 };

@@ -8,7 +8,8 @@
 #include <memory>
 
 ViewState::ViewState(
-    std::shared_ptr<MainWindow> _mainWindow, std::shared_ptr<Camera> _camera)
+    const std::shared_ptr<MainWindow>& _mainWindow,
+    const std::shared_ptr<Camera>& _camera)
     : BaseState(
           std::make_unique<ViewInputEngine>(_mainWindow, _camera),
           std::make_unique<ModelRenderEngine>(_mainWindow, _camera))

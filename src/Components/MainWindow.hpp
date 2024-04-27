@@ -1,35 +1,23 @@
 #pragma once
 
+#include <Concepts.hpp>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <array>
-#include <cstddef>
 #include <utility>
 
 class MainWindow {
-public:
-    static constexpr std::size_t keysLength = 1024;
-
 private:
     GLFWwindow* window;
 
-    std::pair<int, int> resolution, activeResolution;
-
-    std::array<bool, keysLength> keys;
-
-    std::pair<GLfloat, GLfloat> lastCoord, coordOffset;
-
-    bool isMoved;
+    std::pair<int, int> resolution;
+    std::pair<int, int> activeResolution;
 
     static void keyCallback(
         GLFWwindow* window, int key, int scancode, int action, int mode);
 
     static void mouseCallback(GLFWwindow* window, double xpos, double ypos);
-
-    void keyCallbackInner(int key, int scancode, int action, int mode);
-
-    void mouseCallbackInner(double xpos, double ypos);
 
 public:
     MainWindow(std::pair<int, int> _resolution);
@@ -47,14 +35,14 @@ public:
 
     [[nodiscard]] GLfloat getAspect() const;
 
-    [[nodiscard]] const std::array<bool, keysLength>& cGetKeys() const;
-
-    GLFWwindow* get();
-
-    std::pair<GLfloat, GLfloat> resetCoordOffset();
+    [[nodiscard]] GLFWwindow* get() const;
 
     void captureMouse();
     void releaseMouse();
+
+    template <class T>
+        requires IsInputEnginePt<T>
+    void setUserPointer(T inputEngine);
 
     void clear();
 
@@ -62,3 +50,10 @@ public:
 
     void close();
 };
+
+template <class T>
+    requires IsInputEnginePt<T>
+void MainWindow::setUserPointer(T inputEngine)
+{
+    glfwSetWindowUserPointer(window, inputEngine);
+}
