@@ -1,5 +1,7 @@
 #pragma once
 
+#include <BaseRenderEngine.hpp>
+
 #include <matrix_float4x4.hpp>
 #include <qualifier.hpp>
 
@@ -11,7 +13,7 @@ class Camera;
 class MainWindow;
 class Object;
 
-class RenderEngine {
+class ModelRenderEngine : public BaseRenderEngine {
 private:
     std::shared_ptr<MainWindow> mainWindow;
     std::shared_ptr<Camera> camera;
@@ -21,11 +23,12 @@ private:
     glm::mat4 projectionMat;
 
 public:
-    RenderEngine(
+    ModelRenderEngine(
         std::shared_ptr<MainWindow> _mainWindow,
         std::shared_ptr<Camera> _camera);
 
-    void draw(const std::map<std::string, std::shared_ptr<Object>>& objects);
+    void draw(
+        const std::map<std::string, std::shared_ptr<Object>>& objects) override;
 
     [[nodiscard]] bool shouldClose() const;
 };

@@ -1,7 +1,7 @@
-#include "ObjParser.hpp"
 #include <Camera.hpp>
 #include <Engine.hpp>
 #include <MainWindow.hpp>
+#include <ObjParser.hpp>
 #include <Object.hpp>
 #include <ObjectBuilder.hpp>
 #include <Scene.hpp>
@@ -91,6 +91,8 @@ int main(int argc, char** argv)
             sizeof(GLfloat),
             GL_FALSE));
 
+        // TODO: Add loading state before parsing
+
         shaderProgramBuilder.addNewUniform(ShaderProgram::modelUName);
         shaderProgramBuilder.addNewUniform(ShaderProgram::viewUName);
         shaderProgramBuilder.addNewUniform(ShaderProgram::projectionUName);
@@ -100,7 +102,8 @@ int main(int argc, char** argv)
         shaderProgramBuilder.addNewUniform(ShaderProgram::lightColorUName);
 
         shaderProgramBuilder.addNewUniform(ShaderProgram::dimmingFactorUName);
-        shaderProgramBuilder.addNewUniform(ShaderProgram::isDistanceDimmingUName);
+        shaderProgramBuilder.addNewUniform(
+            ShaderProgram::isDistanceDimmingUName);
 
         auto shaderProgram = shaderProgramBuilder.build();
 

@@ -16,7 +16,6 @@ MainWindow::MainWindow(const std::pair<int, int> _resolution)
     : resolution(_resolution)
     , keys()
     , isMoved(false)
-    , isMouseCaptured(false)
 {
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
     // Init GLFW
@@ -39,11 +38,6 @@ MainWindow::MainWindow(const std::pair<int, int> _resolution)
 
     glfwSetWindowUserPointer(window, this);
 
-    double cursorPosX = NAN;
-    double cursorPosY = NAN;
-    glfwGetCursorPos(window, &cursorPosX, &cursorPosY);
-    lastCoord = { cursorPosX, cursorPosY };
-
     glfwSetKeyCallback(window, keyCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
 
@@ -59,8 +53,6 @@ MainWindow::MainWindow(const std::pair<int, int> _resolution)
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
     activeResolution = { width, height };
-
-    switchInputMode();
 }
 
 std::pair<GLfloat, GLfloat> MainWindow::resetCoordOffset()
@@ -90,15 +82,19 @@ void MainWindow::swapBuffers() { glfwSwapBuffers(window); }
 
 void MainWindow::close() { glfwSetWindowShouldClose(window, GL_TRUE); }
 
-void MainWindow::switchInputMode()
+void MainWindow::captureMouse()
 {
-    if (isMouseCaptured) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    } else {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
+    double cursorPosX = NAN;
+    double cursorPosY = NAN;
+    glfwGetCursorPos(window, &cursorPosX, &cursorPosY);
+    lastCoord = { cursorPosX, cursorPosY };
 
-    isMouseCaptured = !isMouseCaptured;
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void MainWindow::releaseMouse()
+{
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void MainWindow::keyCallback(
@@ -159,7 +155,7 @@ GLfloat MainWindow::getAspect() const
         / static_cast<GLfloat>(activeResolution.second);
 }
 
-const std::array<bool, keysLength>& MainWindow::cGetKeys() const
+const std::array<bool, MainWindow::keysLength>& MainWindow::cGetKeys() const
 {
     return keys;
 }

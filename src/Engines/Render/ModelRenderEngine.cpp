@@ -1,5 +1,4 @@
-#include "vector_float3.hpp"
-#include <RenderEngine.hpp>
+#include <ModelRenderEngine.hpp>
 
 #include <Camera.hpp>
 #include <MainWindow.hpp>
@@ -12,10 +11,11 @@
 #include <type_mat4x4.hpp>
 #include <type_ptr.hpp>
 #include <type_vec4.hpp>
+#include <vector_float3.hpp>
 
 #include <utility>
 
-RenderEngine::RenderEngine(
+ModelRenderEngine::ModelRenderEngine(
     std::shared_ptr<MainWindow> _mainWindow, std::shared_ptr<Camera> _camera)
     : mainWindow(std::move(_mainWindow))
     , camera(std::move(_camera))
@@ -30,10 +30,10 @@ RenderEngine::RenderEngine(
         Settings::get()->getZFar());
 };
 
-void RenderEngine::draw(
+void ModelRenderEngine::draw(
     const std::map<std::string, std::shared_ptr<Object>>& objects)
 {
-    MainWindow::clear();
+    mainWindow->clear();
 
     viewMat = camera->cGetViewMat();
 
@@ -61,4 +61,7 @@ void RenderEngine::draw(
     mainWindow->swapBuffers();
 }
 
-bool RenderEngine::shouldClose() const { return mainWindow->shouldClose(); }
+bool ModelRenderEngine::shouldClose() const
+{
+    return mainWindow->shouldClose();
+}

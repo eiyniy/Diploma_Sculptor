@@ -1,8 +1,6 @@
 #pragma once
 
-#include <InputEngine.hpp>
-#include <RenderEngine.hpp>
-
+#include "BaseState.hpp"
 #include <Gl/glew.h>
 
 #include <memory>
@@ -23,11 +21,7 @@ private:
     std::shared_ptr<MainWindow> mainWindow;
     std::shared_ptr<Camera> camera;
 
-    RenderEngine renderEngine;
-    InputEngine inputEngine;
-
-    AxisName moveAxis;
-    Direction moveDirection;
+    std::unique_ptr<BaseState> state;
 
     GLfloat deltaTime;
     GLfloat lastFrameTime;
@@ -39,8 +33,8 @@ private:
 public:
     Engine(
         std::unique_ptr<Scene> _scene,
-        std::shared_ptr<MainWindow> _mainWindow,
-        std::shared_ptr<Camera> _camera);
+        const std::shared_ptr<MainWindow>& _mainWindow,
+        const std::shared_ptr<Camera>& _camera);
 
     Engine(const Engine&) = delete;
     Engine(Engine&&) = delete;

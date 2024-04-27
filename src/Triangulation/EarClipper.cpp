@@ -26,14 +26,13 @@ bool EarClipper::isConvexVertex(
     const glm::vec4& prevVertex,
     const glm::vec4& nextVertex)
 {
-    const auto v1 = prevVertex - vertex;
-    const auto v2 = nextVertex - vertex;
+    const auto v1 = glm::vec3(prevVertex - vertex);
+    const auto v2 = glm::vec3(nextVertex - vertex);
 
-    const auto crossProduct = v1 * v2;
-    const auto sin
-        = glm::length(crossProduct) / (glm::length(v1) * glm::length(v2));
+    const auto dot = glm::dot(v1, v2);
+    const auto cos = dot / (glm::length(v1) * glm::length(v2));
 
-    return sin > 0;
+    return cos > 0;
 }
 
 Triangle EarClipper::clipEar(

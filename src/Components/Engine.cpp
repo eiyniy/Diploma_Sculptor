@@ -1,9 +1,8 @@
+#include "ViewState.hpp"
 #include <Engine.hpp>
 
 #include <Enums.hpp>
-#include <InputEngine.hpp>
 #include <Object.hpp>
-#include <RenderEngine.hpp>
 #include <Scene.hpp>
 
 #include <GLFW/glfw3.h>
@@ -15,17 +14,14 @@
 
 Engine::Engine(
     std::unique_ptr<Scene> _scene,
-    std::shared_ptr<MainWindow> _mainWindow,
-    std::shared_ptr<Camera> _camera)
+    const std::shared_ptr<MainWindow>& _mainWindow,
+    const std::shared_ptr<Camera>& _camera)
     : scene(std::move(_scene))
-    , mainWindow(std::move(_mainWindow))
-    , camera(std::move(_camera))
-    , moveAxis(AxisName::X)
-    , moveDirection(Direction::Forward)
+    , mainWindow(_mainWindow)
+    , camera(_camera)
     , deltaTime(0.F)
     , lastFrameTime(0.F)
-    , renderEngine { mainWindow, camera }
-    , inputEngine(mainWindow, camera)
+    , state(std::make_unique<ViewState>(_mainWindow, _camera))
 {
 }
 
@@ -35,7 +31,7 @@ void Engine::start()
 {
     std::cout << "engine started" << std::endl;
 
-    while (!renderEngine.shouldClose()) {
+    while (state->getType() != StateTypes::Close) {
         auto currentFrame = static_cast<GLfloat>(glfwGetTime());
         deltaTime = currentFrame - lastFrameTime;
         lastFrameTime = currentFrame;
@@ -48,13 +44,19 @@ void Engine::start()
     }
 }
 
-void Engine::update() { inputEngine.update(deltaTime); }
+void Engine::update()
+{
+    auto res = state->update(deltaTime);
+    if (res != nullptr) {
+        state = std::move(res);
+    }
+}
 
 void Engine::draw()
 {
     auto& objects = scene->getAllObjects();
 
-    renderEngine.draw(objects);
+    state->draw(objects);
 }
 
 void Engine::addObject(const std::string& name, std::unique_ptr<Object> object)

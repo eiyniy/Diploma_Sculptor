@@ -32,3 +32,5 @@ enum class SceneMatrixConvert { View, Projection, Viewport };
 enum ShadingModel { Flat, Phong };
 
 enum class TextureType { Diffuse, Normal, Emissive, MRAO };
+
+enum class StateTypes { View, Edit, Close };
