@@ -47,7 +47,7 @@ public:
 
     void move(AxisName axis, Direction direction, GLfloat dt);
 
-    void rotate(std::pair<GLfloat, GLfloat> coordOffset);
+    void rotate(std::pair<float, float> coordOffset);
 
     [[nodiscard]] const glm::mat4& cGetViewMat() const;
 

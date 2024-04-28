@@ -52,7 +52,7 @@ void Camera::move(
     updateViewMat();
 }
 
-void Camera::rotate(const std::pair<GLfloat, GLfloat> coordOffset)
+void Camera::rotate(const std::pair<float, float> coordOffset)
 {
     yaw += coordOffset.first * mouseSens;
     pitch += coordOffset.second * mouseSens;

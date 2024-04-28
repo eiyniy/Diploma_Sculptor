@@ -1,12 +1,15 @@
+#include "vector_float3.hpp"
 #include <EditInputEngine.hpp>
 
 #include <BaseInputEngine.hpp>
 #include <Enums.hpp>
 #include <MainWindow.hpp>
+#include <Sculptor.hpp>
 #include <ViewState.hpp>
 
 #include <GLFW/glfw3.h>
 
+#include <iostream>
 #include <utility>
 
 EditInputEngine::EditInputEngine(
@@ -33,4 +36,25 @@ std::unique_ptr<BaseState> EditInputEngine::update(const float dt)
     return nullptr;
 }
 
-void EditInputEngine::mouseCallbackInner(double xpos, double ypos) { }
+void EditInputEngine::mouseCallbackInner(double xpos, double ypos)
+{
+    glm::vec3 rayOrig;
+    glm::vec3 rayDir;
+    Sculptor::getRayWorld(
+        { xpos, ypos },
+        getMainWindow()->getActiveResolution(),
+        const glm::mat4& projection_matrix,
+        const glm::mat4& view_matrix,
+        rayOrig,
+        rayDir);
+
+    const auto triangleId = Sculptor::getSelectedTriangleId(
+        const std::vector<GLfloat>& trVertices,
+        const std::vector<GLuint>& indices,
+        rayOrig,
+        rayDir);
+
+    if (triangleId.has_value()) {
+        std::cout << "Selected triangle id: " << *triangleId << std::endl;
+    }
+}

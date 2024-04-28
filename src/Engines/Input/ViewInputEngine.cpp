@@ -41,7 +41,7 @@ std::unique_ptr<BaseState> ViewInputEngine::update(const float dt)
         return std::move(res);
     }
 
-    const std::pair<GLfloat, GLfloat> coordOffset
+    const std::pair<float, float> coordOffset
         = { mousePos.first - lastMousePos.first,
             lastMousePos.second - mousePos.second };
     lastMousePos = mousePos;

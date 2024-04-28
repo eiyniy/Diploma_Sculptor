@@ -1,30 +1,26 @@
-#pragma once
+// #pragma once
 
-#include <vector_float4.hpp>
+// #include <vector_float4.hpp>
 
-#include <cmath>
-#include <memory>
-#include <utility>
-#include <vector>
+// #include <cmath>
+// #include <memory>
+// #include <utility>
+// #include <vector>
 
-class Triangle;
+// class Triangle;
 
-class Graph {
-private:
-    std::vector<std::vector<bool>> adjacencyMatrix;
-    std::vector<const glm::vec4*> nodes;
+// class Graph {
+// private:
+//     std::vector<std::vector<bool>> adjacencyMatrix;
+//     std::vector<const glm::vec4*> nodes;
+    
+// public:
+//     Graph();
 
-    [[nodiscard]] int findNearestVertexId(std::pair<int, int> pos) const;
+//     Graph(
+//         const std::vector<glm::vec4>& vertices,
+//         const std::vector<Triangle>& polygons);
 
-    static double findDistance(std::pair<int, int> v1, std::pair<int, int> v2);
-
-public:
-    Graph();
-
-    Graph(
-        const std::vector<glm::vec4>& drawableVertices,
-        const std::vector<Triangle>& polygons);
-
-    [[nodiscard]] std::unique_ptr<std::vector<int>>
-    getAffectedVerticesIds(std::pair<int, int> mousePos, int radius) const;
-};
+//     [[nodiscard]] std::unique_ptr<std::vector<int>>
+//     getAffectedVerticesIds(std::pair<int, int> mousePos, int radius) const;
+// };

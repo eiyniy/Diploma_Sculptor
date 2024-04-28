@@ -5,6 +5,7 @@
 #include <Object.hpp>
 #include <ObjectBuilder.hpp>
 #include <Scene.hpp>
+#include <Sculptor.hpp>
 #include <Settings.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
@@ -25,11 +26,10 @@
 #include <memory>
 #include <utility>
 
-const std::pair<int, int> startupResolution { 1280, 720 };
-
 // TODO: Make libraries auto downloadable
 
 // TODO: Move to settings
+const std::pair<int, int> startupResolution { 1280, 720 };
 const auto* const shaderProgramName = "base";
 
 int main(int argc, char** argv)
@@ -37,6 +37,39 @@ int main(int argc, char** argv)
     // TODO: Add App class & App::run
     try {
         std::cout << "Hello world!" << std::endl;
+
+        /*
+        glm::vec3 rayOrig { 0.4, 1, 0 };
+        glm::vec3 rayDir { 0, -1, 0 };
+        std::array<glm::vec3, 3> vertices {
+            { { 1.F, 0.F, 1.F }, { -1.F, 0.F, 1.F }, { 0.F, 0.F, -1.F } }
+        };
+        glm::vec3 intersection;
+        auto res = Sculptor::intersectRayTriangleGLM(
+            rayOrig, glm::normalize(rayDir), vertices, intersection);
+
+        const auto* resStr = res ? "true" : "false";
+
+        std::cout << "GLM: " << std::endl;
+        std::cout << "intersection: " << resStr << ": " << intersection.x << ' '
+                  << intersection.y << ' ' << intersection.z << std::endl;
+
+        res = Sculptor::intersectRayTriangleOrig(
+            { rayOrig.x, rayOrig.y, rayOrig.z },
+            { rayDir.x, rayDir.y, rayDir.z },
+            { vertices[0].x, vertices[0].y, vertices[0].z },
+            { vertices[1].x, vertices[1].y, vertices[1].z },
+            { vertices[2].x, vertices[2].y, vertices[2].z },
+            intersection.x,
+            intersection.y,
+            intersection.z);
+
+        resStr = res ? "true" : "false";
+
+        std::cout << "Orig: " << std::endl;
+        std::cout << "intersection: " << resStr << ": " << intersection.x << ' '
+                  << intersection.y << ' ' << intersection.z << std::endl;
+        */
 
         auto mainWindow = std::make_unique<MainWindow>(startupResolution);
 
@@ -112,11 +145,11 @@ int main(int argc, char** argv)
             // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\cube\cube.obj)";
             // =
             // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\models\car\car.obj)";
-            // =
-            // R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\sphere\sphere.obj)";
-            // =
-            // R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\angel.obj)";
-            = R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\woman1.obj)";
+            = R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\baseModels\sphere\sphere.obj)";
+        // =
+        // R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\angel.obj)";
+        // =
+        // R"(C:\Users\Natallia\Documents\Labs\AKG\L1\resources\models\woman1.obj)";
 
         ObjParser parser { path };
 

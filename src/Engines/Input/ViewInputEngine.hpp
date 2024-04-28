@@ -9,8 +9,8 @@ class Camera;
 
 class ViewInputEngine : public ModelInputEngine {
 private:
-    std::pair<GLfloat, GLfloat> lastMousePos;
-    std::pair<GLfloat, GLfloat> mousePos;
+    std::pair<float, float> lastMousePos;
+    std::pair<float, float> mousePos;
 
 public:
     ViewInputEngine(

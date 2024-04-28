@@ -50,15 +50,15 @@ bool Entry::operator==(const Entry& entry) const
     hash ^= std::hash<float>()(vertex.z) << shift++;
     hash ^= std::hash<float>()(vertex.w) << shift++;
 
-    if (tVertex.has_value()) {
-        hash ^= std::hash<float>()(tVertex->x) << shift++;
-        hash ^= std::hash<float>()(tVertex->y) << shift++;
-    }
-
     if (nVertex.has_value()) {
         hash ^= std::hash<float>()(nVertex->x) << shift++;
         hash ^= std::hash<float>()(nVertex->y) << shift++;
         hash ^= std::hash<float>()(nVertex->z) << shift++;
+    }
+
+    if (tVertex.has_value()) {
+        hash ^= std::hash<float>()(tVertex->x) << shift++;
+        hash ^= std::hash<float>()(tVertex->y) << shift++;
     }
 
     return hash;
@@ -122,16 +122,21 @@ void ObjectBuilder::transform()
             const auto vertexIds = triangle.cGetVertexIds(i);
 
             const auto vertexId = vertexIds.cGetVertexId() - 1;
-            auto nVertexId = vertexIds.cGetNormalVertexId();
-
             const auto vertex = vertices->at(vertexId);
 
+            auto nVertexId = vertexIds.cGetNormalVertexId();
             std::optional<glm::vec3> nVertex {};
             if (nVertexId.has_value() && nVertices != nullptr) {
                 nVertex = nVertices->at(--*nVertexId);
             }
 
-            const Entry entry { vertex, nVertex };
+            auto tVertexId = vertexIds.cGetTextureVertexId();
+            std::optional<glm::vec2> tVertex {};
+            if (tVertexId.has_value() && tVertices != nullptr) {
+                tVertex = tVertices->at(--*tVertexId);
+            }
+
+            const Entry entry { vertex, nVertex, tVertex };
 
             const auto hash = entry.hash();
             if (!entriesHashId.contains(hash)) {
