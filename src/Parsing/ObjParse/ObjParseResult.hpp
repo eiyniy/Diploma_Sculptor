@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Material.hpp>
 #include <Triangle.hpp>
 
 #include <vector_float2.hpp>

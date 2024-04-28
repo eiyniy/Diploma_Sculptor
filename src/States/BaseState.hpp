@@ -25,7 +25,7 @@ public:
 
     virtual ~BaseState();
 
-    [[nodiscard]] virtual StateTypes getType() const = 0;
+    [[nodiscard]] virtual StateType getType() const = 0;
 
     std::unique_ptr<BaseState> update(float dt);
     void draw(const std::map<std::string, std::shared_ptr<Object>>& objects);

@@ -14,4 +14,4 @@ CloseState::CloseState(
 {
 }
 
-StateTypes CloseState::getType() const { return StateTypes::Close; }
+StateType CloseState::getType() const { return StateType::Close; }

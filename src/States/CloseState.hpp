@@ -8,5 +8,5 @@ public:
         const std::shared_ptr<MainWindow>& _mainWindow,
         const std::shared_ptr<Camera>& _camera);
 
-    [[nodiscard]] StateTypes getType() const override;
+    [[nodiscard]] StateType getType() const override;
 };

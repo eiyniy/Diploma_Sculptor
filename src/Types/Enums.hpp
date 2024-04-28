@@ -33,4 +33,6 @@ enum ShadingModel { Flat, Phong };
 
 enum class TextureType { Diffuse, Normal, Emissive, MRAO };
 
-enum class StateTypes { View, Edit, Close };
+enum class StateType { View, Edit, Close };
+
+enum class EventType { CameraMove, CameraRotate, BrushMove, SculptorEdit };

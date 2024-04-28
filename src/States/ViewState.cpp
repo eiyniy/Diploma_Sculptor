@@ -16,4 +16,4 @@ ViewState::ViewState(
 {
 }
 
-StateTypes ViewState::getType() const { return StateTypes::View; }
+StateType ViewState::getType() const { return StateType::View; }

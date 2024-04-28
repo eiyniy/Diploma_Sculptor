@@ -35,6 +35,7 @@ const auto* const shaderProgramName = "base";
 int main(int argc, char** argv)
 {
     // TODO: Add App class & App::run
+    // TODO: Add Event bus for model editing, camera move and etc
     try {
         std::cout << "Hello world!" << std::endl;
 

@@ -16,4 +16,4 @@ EditState::EditState(
 {
 }
 
-StateTypes EditState::getType() const { return StateTypes::Edit; }
+StateType EditState::getType() const { return StateType::Edit; }

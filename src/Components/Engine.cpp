@@ -31,7 +31,7 @@ void Engine::start()
 {
     std::cout << "engine started" << std::endl;
 
-    while (state->getType() != StateTypes::Close) {
+    while (state->getType() != StateType::Close) {
         auto currentFrame = static_cast<GLfloat>(glfwGetTime());
         deltaTime = currentFrame - lastFrameTime;
         lastFrameTime = currentFrame;
