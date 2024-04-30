@@ -1,7 +1,5 @@
 #include <CameraMoveEvent.hpp>
 
-#include <Enums.hpp>
-
 CameraMoveEvent::CameraMoveEvent(
     const AxisName _axisName, const Direction _direction)
     : axisName(_axisName)

@@ -1,28 +1,32 @@
 #pragma once
 
 #include <Camera.hpp>
+#include <Enums.hpp>
+#include <IEvent.hpp>
+
+#include <GLFW/glfw3.h>
 
 #include <array>
 #include <memory>
+#include <optional>
+#include <queue>
 
 class BaseState;
 class MainWindow;
 
 static constexpr std::size_t keysLength = 1024;
 
-// TODO: Add commands queue
 class BaseInputEngine {
 private:
-    // TODO: Mb unique
-    std::shared_ptr<MainWindow> mainWindow;
-    std::shared_ptr<Camera> camera;
+    std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> eventBus;
 
     std::array<bool, keysLength> keys;
 
+    std::pair<float, float> mousePos;
+
 public:
     BaseInputEngine(
-        std::shared_ptr<MainWindow> _mainWindow,
-        std::shared_ptr<Camera> _camera);
+        std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus);
 
     BaseInputEngine(const BaseInputEngine&) = delete;
     BaseInputEngine(BaseInputEngine&&) = delete;
@@ -31,14 +35,20 @@ public:
 
     virtual ~BaseInputEngine() = default;
 
-    virtual std::unique_ptr<BaseState> update(float dt) = 0;
+    virtual std::optional<StateType> update(float dt) = 0;
 
     virtual void keyCallbackInner(int key, int scancode, int action, int mode);
 
-    virtual void mouseCallbackInner(double xpos, double ypos) = 0;
+    virtual void mouseMoveCallbackInner(double xpos, double ypos);
 
-    [[nodiscard]] std::shared_ptr<MainWindow> getMainWindow() const;
-    [[nodiscard]] std::shared_ptr<Camera> getCamera() const;
+    virtual void mouseButtonCallbackInner(
+        GLFWwindow* window, int button, int action, int mods);
 
-    [[nodiscard]] const std::array<bool, keysLength>& cGetKeys() const;
+    [[nodiscard]] const std::array<bool, keysLength>& getKeys() const;
+
+    [[nodiscard]] std::pair<float, float> getMousePos() const;
+
+    void pushEvent(std::unique_ptr<IEvent> event);
+
+    std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> transmitEventBus();
 };

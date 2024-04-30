@@ -52,10 +52,10 @@ void Camera::move(
     updateViewMat();
 }
 
-void Camera::rotate(const std::pair<float, float> coordOffset)
+void Camera::rotate(const std::pair<float, float> coordOffset, const float dt)
 {
-    yaw += coordOffset.first * mouseSens;
-    pitch += coordOffset.second * mouseSens;
+    yaw += coordOffset.first * mouseSens * dt;
+    pitch += coordOffset.second * mouseSens * dt;
 
     if (pitch > maxPitch) {
         pitch = maxPitch;

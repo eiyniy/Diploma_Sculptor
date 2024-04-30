@@ -112,3 +112,7 @@ void Object::draw() const
 }
 
 bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
+
+const std::vector<GLfloat>& Object::getTrVertices() const { return trVertices; }
+
+const std::vector<GLuint>& Object::getIndices() const { return indices; }

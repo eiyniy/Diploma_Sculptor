@@ -8,7 +8,7 @@ std::mutex Settings::mutex {};
 
 constexpr float defaultCameraSpeed = 10.F;
 constexpr float defaultCameraFoV = glm::radians(45.F);
-constexpr float defaultCameraMouseSens = 0.05F;
+constexpr float defaultCameraMouseSens = 20.F;
 constexpr float defaultZNear = 0.1F;
 constexpr float defaultZFar = 1000.F;
 constexpr glm::vec<4, GLclampf> defaultWindowClearColor {

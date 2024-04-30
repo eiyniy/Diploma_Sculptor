@@ -1,6 +1,6 @@
-#include "BaseInputEngine.hpp"
 #include <MainWindow.hpp>
 
+#include <BaseInputEngine.hpp>
 #include <Settings.hpp>
 
 #include <type_vec4.hpp>
@@ -10,7 +10,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <stdexcept>
 #include <utility>
 
 MainWindow::MainWindow(const std::pair<int, int> _resolution)
@@ -35,7 +34,8 @@ MainWindow::MainWindow(const std::pair<int, int> _resolution)
     glfwMakeContextCurrent(window);
 
     glfwSetKeyCallback(window, keyCallback);
-    glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetCursorPosCallback(window, mouseMoveCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
     glewExperimental = GL_TRUE;
     glewInit();
@@ -83,12 +83,21 @@ void MainWindow::keyCallback(
     inputEngine->keyCallbackInner(key, scancode, action, mode);
 }
 
-void MainWindow::mouseCallback(GLFWwindow* window, double xpos, double ypos)
+void MainWindow::mouseMoveCallback(GLFWwindow* window, double xpos, double ypos)
 {
     auto* obj = glfwGetWindowUserPointer(window);
     auto* inputEngine = static_cast<BaseInputEngine*>(obj);
 
-    inputEngine->mouseCallbackInner(xpos, ypos);
+    inputEngine->mouseMoveCallbackInner(xpos, ypos);
+}
+
+void MainWindow::mouseButtonCallback(
+    GLFWwindow* window, int button, int action, int mods)
+{
+    auto* obj = glfwGetWindowUserPointer(window);
+    auto* inputEngine = static_cast<BaseInputEngine*>(obj);
+
+    inputEngine->mouseButtonCallbackInner(window, button, action, mods);
 }
 
 std::pair<int, int> MainWindow::getActiveResolution() const

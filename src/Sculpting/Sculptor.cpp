@@ -1,5 +1,4 @@
-#include "matrix_float4x4.hpp"
-#include "vector_float3.hpp"
+#include "Math.hpp"
 #include <Sculptor.hpp>
 
 #include <Graph.hpp>
@@ -7,13 +6,16 @@
 
 #include <geometric.hpp>
 #include <matrix.hpp>
-#include <optional>
+#include <matrix_float4x4.hpp>
 #include <type_vec4.hpp>
+#include <vector_float3.hpp>
 #include <vector_float4.hpp>
 
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <iostream>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -78,11 +80,13 @@ std::optional<size_t> Sculptor::getSelectedTriangleId(
     const glm::vec3 rayOrig,
     const glm::vec3 rayDir)
 {
+    std::vector<std::pair<size_t, glm::vec3>> results;
+
     for (size_t triangleId = 0; triangleId < indices.size(); triangleId += 3) {
         std::array<glm::vec3, 3> triangleVertices {};
 
         for (int vertexId = 0; vertexId < 3; ++vertexId) {
-            const auto trIndex = triangleId * 3;
+            const auto trIndex = indices.at(triangleId + vertexId) * 4;
             const glm::vec3 vertex { trVertices.at(trIndex),
                                      trVertices.at(trIndex + 1),
                                      trVertices.at(trIndex + 2) };
@@ -90,13 +94,27 @@ std::optional<size_t> Sculptor::getSelectedTriangleId(
             triangleVertices.at(vertexId) = vertex;
         }
 
+        // TODO: Fix multiple intersections
         glm::vec3 tuv;
         if (intersectRayTriangleGLM(rayOrig, rayDir, triangleVertices, tuv)) {
-            return triangleId;
+            // return triangleId;
+
+            if (tuv.x > 0) {
+                std::cout << "tuv: " << tuv.x << ' ' << tuv.y << ' ' << tuv.z
+                          << std::endl;
+
+                results.emplace_back(triangleId, tuv);
+            }
         }
     }
 
-    return std::nullopt;
+    if (results.empty()) {
+        return std::nullopt;
+    }
+    
+    for (auto&& result : results) { }
+
+    std::cout << std::endl;
 }
 
 bool Sculptor::intersectRayTriangleGLM(
@@ -154,7 +172,7 @@ bool Sculptor::intersectRayTriangleGLM(
 
         /* calculate V parameter and test bounds */
         tuv.z = glm::dot(rayDir, qVec);
-        if (tuv.z > 0.0 || tuv.y + tuv.z < det) {
+        if (tuv.z > 0.F || tuv.y + tuv.z < det) {
             return false;
         }
     } else {
@@ -171,36 +189,26 @@ bool Sculptor::intersectRayTriangleGLM(
 
 void Sculptor::getRayWorld(
     std::pair<float, float> mousePos,
+    glm::vec3 cameraPos,
     std::pair<int, int> resolution,
     const glm::mat4& projectionMatrix,
     const glm::mat4& viewMatrix,
     glm::vec3& rayOrig,
     glm::vec3& rayDir)
 {
-    /*
-    const glm::vec3 ray_nds { x, y, z };
-    const glm::vec4 ray_clip { ray_nds.x, ray_nds.y, -1.0, 1.0 };
-    glm::vec4 ray_eye = glm::inverse(projection_matrix) * ray_clip;
-    ray_eye = glm::vec4(ray_eye.x, ray_eye.x, -1.0, 0.0);
-    glm::vec3 ray_wor { glm::inverse(view_matrix) * ray_eye };
-    ray_wor = glm::normalize(ray_wor);
-    */
-
     const float mouseXNdc
         = (2.F * mousePos.first) / static_cast<float>(resolution.first) - 1.F;
     const float mouseYNdc
         = 1.F - (2.F * mousePos.second) / static_cast<float>(resolution.second);
 
-    const glm::vec4 rayStartNdc { mouseXNdc, mouseYNdc, -1.F, 1.F };
+    glm::vec3 rayStartWorld = cameraPos;
     const glm::vec4 rayEndNdc { mouseXNdc, mouseYNdc, 0.F, 1.F };
 
     const glm::mat4 viewportToWorld
         = glm::inverse(projectionMatrix * viewMatrix);
-    glm::vec4 rayStartWorld = viewportToWorld * rayStartNdc;
-    rayStartWorld /= rayStartWorld.w;
     glm::vec4 rayEndWorld = viewportToWorld * rayEndNdc;
     rayEndWorld /= rayEndWorld.w;
 
     rayOrig = rayStartWorld;
-    rayDir = glm::normalize(rayEndWorld - rayStartWorld);
+    rayDir = glm::normalize(glm::vec3(rayEndWorld) - rayStartWorld);
 }

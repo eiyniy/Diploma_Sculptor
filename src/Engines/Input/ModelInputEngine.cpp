@@ -1,28 +1,30 @@
 #include <ModelInputEngine.hpp>
 
 #include <BaseInputEngine.hpp>
+#include <CloseEvent.hpp>
 #include <CloseState.hpp>
 #include <EditState.hpp>
+#include <Enums.hpp>
 
 #include <chrono>
 #include <memory>
 #include <utility>
 
 ModelInputEngine::ModelInputEngine(
-    std::shared_ptr<MainWindow> _mainWindow, std::shared_ptr<Camera> _camera)
-    : BaseInputEngine(std::move(_mainWindow), std::move(_camera))
+    std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus)
+    : BaseInputEngine(std::move(_eventBus))
     , switchTime(std::chrono::high_resolution_clock::now())
 {
 }
 
-std::unique_ptr<BaseState> ModelInputEngine::update(const float dt)
+std::optional<StateType> ModelInputEngine::update(const float dt)
 {
-    if (cGetKeys()[GLFW_KEY_ESCAPE]) {
-        getMainWindow()->close();
-        return std::make_unique<CloseState>(getMainWindow(), getCamera());
+    if (getKeys()[GLFW_KEY_ESCAPE]) {
+        pushEvent(std::make_unique<CloseEvent>());
+        return StateType::Close;
     }
 
-    return nullptr;
+    return std::nullopt;
 }
 
 bool ModelInputEngine::isKeysDelayElapsed() const

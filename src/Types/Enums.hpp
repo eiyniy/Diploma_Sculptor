@@ -35,4 +35,12 @@ enum class TextureType { Diffuse, Normal, Emissive, MRAO };
 
 enum class StateType { View, Edit, Close };
 
-enum class EventType { CameraMove, CameraRotate, BrushMove, SculptorEdit };
+enum class EventType {
+    CameraMove,
+    CameraRotate,
+    BrushMove,
+    SculptorEdit,
+    Close,
+    CaptureMouse,
+    ReleaseMouse
+};

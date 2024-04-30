@@ -36,6 +36,7 @@ private:
 
     // TODO: Rename (tr?)
     // TODO: Remove sizes
+    // TODO: Make unique_ptr
     std::vector<GLfloat> trVertices;
     std::size_t trVerticesSize;
 
@@ -80,6 +81,10 @@ public:
     void loadUniform(std::string_view name, const T& value) const;
 
     void draw() const;
+
+    [[nodiscard]] const std::vector<GLfloat>& getTrVertices() const;
+
+    [[nodiscard]] const std::vector<GLuint>& getIndices() const;
 };
 
 template <class T>

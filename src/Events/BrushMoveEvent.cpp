@@ -1,9 +1,5 @@
 #include <BrushMoveEvent.hpp>
 
-#include <Enums.hpp>
-
-#include <utility>
-
 BrushMoveEvent::BrushMoveEvent(std::pair<float, float> _mousePos)
     : mousePos(_mousePos)
 {

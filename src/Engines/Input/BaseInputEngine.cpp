@@ -3,15 +3,14 @@
 #include <BaseState.hpp>
 #include <MainWindow.hpp>
 
+#include <memory>
 #include <utility>
 
 BaseInputEngine::BaseInputEngine(
-    std::shared_ptr<MainWindow> _mainWindow, std::shared_ptr<Camera> _camera)
-    : mainWindow(std::move(_mainWindow))
-    , camera(std::move(_camera))
+    std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus)
+    : eventBus(std::move(_eventBus))
     , keys()
 {
-    mainWindow->setUserPointer(this);
 }
 
 void BaseInputEngine::keyCallbackInner(
@@ -28,14 +27,33 @@ void BaseInputEngine::keyCallbackInner(
     }
 }
 
-std::shared_ptr<MainWindow> BaseInputEngine::getMainWindow() const
+void BaseInputEngine::mouseMoveCallbackInner(double xpos, double ypos)
 {
-    return mainWindow;
+    mousePos = { xpos, ypos };
 }
 
-std::shared_ptr<Camera> BaseInputEngine::getCamera() const { return camera; }
+void BaseInputEngine::mouseButtonCallbackInner(
+    GLFWwindow* window, int button, int action, int mods)
+{
+}
 
-const std::array<bool, keysLength>& BaseInputEngine::cGetKeys() const
+const std::array<bool, keysLength>& BaseInputEngine::getKeys() const
 {
     return keys;
+}
+
+std::pair<float, float> BaseInputEngine::getMousePos() const
+{
+    return mousePos;
+}
+
+void BaseInputEngine::pushEvent(std::unique_ptr<IEvent> event)
+{
+    eventBus->push(std::move(event));
+}
+
+std::shared_ptr<std::queue<std::unique_ptr<IEvent>>>
+BaseInputEngine::transmitEventBus()
+{
+    return std::move(eventBus);
 }

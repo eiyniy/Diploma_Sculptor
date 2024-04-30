@@ -3,10 +3,13 @@
 #include <BaseInputEngine.hpp>
 #include <BaseRenderEngine.hpp>
 #include <Enums.hpp>
+#include <MainWindow.hpp>
 #include <Object.hpp>
 
 #include <map>
 #include <memory>
+
+// TODO: Remove all other states
 
 class BaseState {
 private:
@@ -27,7 +30,10 @@ public:
 
     [[nodiscard]] virtual StateType getType() const = 0;
 
-    std::unique_ptr<BaseState> update(float dt);
+    void
+    setWindowUserPointer(const std::shared_ptr<MainWindow>& mainWindow) const;
+
+    std::optional<StateType> update(float dt);
     void draw(const std::map<std::string, std::shared_ptr<Object>>& objects);
     // TODO: Remove objects from params
 };

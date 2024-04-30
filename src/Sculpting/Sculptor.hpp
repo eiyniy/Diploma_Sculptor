@@ -48,6 +48,7 @@ public:
 
     static void getRayWorld(
         std::pair<float, float> mousePos,
+        glm::vec3 cameraPos,
         std::pair<int, int> resolution,
         const glm::mat4& projectionMatrix,
         const glm::mat4& viewMatrix,

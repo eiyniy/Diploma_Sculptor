@@ -2,6 +2,7 @@
 
 #include <BaseInputEngine.hpp>
 #include <BaseRenderEngine.hpp>
+#include <MainWindow.hpp>
 
 BaseState::BaseState(
     std::unique_ptr<BaseInputEngine> _input,
@@ -13,7 +14,13 @@ BaseState::BaseState(
 
 BaseState::~BaseState() = default;
 
-std::unique_ptr<BaseState> BaseState::update(const float dt)
+void BaseState::setWindowUserPointer(
+    const std::shared_ptr<MainWindow>& mainWindow) const
+{
+    mainWindow->setUserPointer(input.get());
+}
+
+std::optional<StateType> BaseState::update(const float dt)
 {
     return input->update(dt);
 }

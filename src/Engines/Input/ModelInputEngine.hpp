@@ -12,10 +12,9 @@ private:
 
 public:
     ModelInputEngine(
-        std::shared_ptr<MainWindow> _mainWindow,
-        std::shared_ptr<Camera> _camera);
+        std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus);
 
-    std::unique_ptr<BaseState> update(float dt) override;
+    std::optional<StateType> update(float dt) override;
 
     [[nodiscard]] bool isKeysDelayElapsed() const;
 };

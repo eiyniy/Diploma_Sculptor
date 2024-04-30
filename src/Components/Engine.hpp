@@ -1,9 +1,12 @@
 #pragma once
 
-#include "BaseState.hpp"
+#include <BaseState.hpp>
+#include <IEvent.hpp>
+
 #include <Gl/glew.h>
 
 #include <memory>
+#include <queue>
 #include <string>
 
 class Scene;
@@ -23,10 +26,18 @@ private:
 
     std::unique_ptr<BaseState> state;
 
+    std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> eventBus;
+
+    std::shared_ptr<glm::mat4> modelMat;
+    std::shared_ptr<glm::mat4> viewMat;
+    std::shared_ptr<glm::mat4> projectionMat;
+
     GLfloat deltaTime;
     GLfloat lastFrameTime;
 
-    void update();
+    void updateEvents();
+
+    void updateState();
 
     void draw();
 

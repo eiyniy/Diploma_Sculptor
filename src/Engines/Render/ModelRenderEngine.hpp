@@ -18,14 +18,15 @@ private:
     std::shared_ptr<MainWindow> mainWindow;
     std::shared_ptr<Camera> camera;
 
-    glm::mat4 modelMat;
-    glm::mat4 viewMat;
-    glm::mat4 projectionMat;
+    std::shared_ptr<glm::mat4> modelMat;
+    std::shared_ptr<glm::mat4> projectionMat;
 
 public:
     ModelRenderEngine(
         std::shared_ptr<MainWindow> _mainWindow,
-        std::shared_ptr<Camera> _camera);
+        std::shared_ptr<Camera> _camera,
+        std::shared_ptr<glm::mat4> _modelMat,
+        std::shared_ptr<glm::mat4> _projectionMat);
 
     void draw(
         const std::map<std::string, std::shared_ptr<Object>>& objects) override;

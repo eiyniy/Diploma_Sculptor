@@ -1,19 +1,19 @@
 #pragma once
 
-#include "vector_float4.hpp"
 #include <IBuilder.hpp>
 #include <Object.hpp>
 #include <Triangle.hpp>
 
-#include <cstddef>
-#include <optional>
 #include <type_vec3.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
+#include <vector_float4.hpp>
 
 #include <GL/glew.h>
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
