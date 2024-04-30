@@ -14,6 +14,7 @@
 #include <Settings.hpp>
 #include <ViewState.hpp>
 
+#include <chrono>
 #include <matrix_float4x4.hpp>
 
 #include <GLFW/glfw3.h>
@@ -117,8 +118,14 @@ void Engine::updateEvents()
 
             const auto object = scene->getObject("OBJECT");
 
+            const auto start = std::chrono::high_resolution_clock::now();
             const auto triangleId = Sculptor::getSelectedTriangleId(
                 object->getTrVertices(), object->getIndices(), rayOrig, rayDir);
+            std::cout << "Triangle search time: "
+                      << std::chrono::duration_cast<std::chrono::nanoseconds>(
+                             std::chrono::high_resolution_clock::now() - start)
+                             .count()
+                      << std::endl;
 
             if (triangleId.has_value()) {
                 std::cout << "Selected triangle id: " << *triangleId

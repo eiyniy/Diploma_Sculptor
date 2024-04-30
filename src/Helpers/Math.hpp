@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Concepts.hpp>
+
 #include <cmath>
 #include <cstddef>
 #include <optional>
@@ -7,21 +9,21 @@
 
 class Math {
 public:
-    static constexpr size_t defaultULP = 5U;
+    static constexpr size_t defaultULP = 1U;
 
     Math() = delete;
 
     static std::optional<int> optStoi(const std::string& str);
 
     template <class T>
-    static std::enable_if_t<not std::numeric_limits<T>::is_integer, bool>
-    equalWithinUlps(T x, T y, std::size_t n = defaultULP);
+        requires NotInteger<T>
+    static T getEpsilon(T x, T y, std::size_t n = defaultULP);
 };
 
 // Replace with float getEpsilon(T x, T y, size_t n)
 template <class T>
-static std::enable_if_t<not std::numeric_limits<T>::is_integer, bool>
-equalWithinUlps(T x, T y, std::size_t n)
+    requires NotInteger<T>
+T Math::getEpsilon(T x, T y, std::size_t n)
 {
     // Since `epsilon()` is the gap size (ULP, unit in the last place)
     // of floating-point numbers in interval [1, 2), we can scale it to
@@ -31,7 +33,7 @@ equalWithinUlps(T x, T y, std::size_t n)
     // If `x` and `y` have different gap sizes (which means they have
     // different exponents), we take the smaller one. Taking the bigger
     // one is also reasonable, I guess.
-    const T m = std::min(std::fabs(x), std::fabs(y));
+    const T m = std::max(std::fabs(x), std::fabs(y));
 
     // Subnormal numbers have fixed exponent, which is `min_exponent - 1`.
     const int exp = m < std::numeric_limits<T>::min()
@@ -40,6 +42,5 @@ equalWithinUlps(T x, T y, std::size_t n)
 
     // We consider `x` and `y` equal if the difference between them is
     // within `n` ULPs.
-    return std::fabs(x - y)
-        <= n * std::ldexp(std::numeric_limits<T>::epsilon(), exp);
+    return n * std::ldexp(std::numeric_limits<T>::epsilon(), exp);
 }

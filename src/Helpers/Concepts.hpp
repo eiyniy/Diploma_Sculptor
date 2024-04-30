@@ -2,6 +2,7 @@
 
 #include <BaseInputEngine.hpp>
 
+#include <limits>
 #include <matrix_float4x4.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
@@ -32,3 +33,6 @@ template <class T>
 concept IsInputEnginePt = std::is_pointer_v<T>
     && (std::same_as<BaseInputEngine, std::remove_pointer_t<T>>
         || std::is_base_of_v<BaseInputEngine, std::remove_pointer_t<T>>);
+
+template <class T>
+concept NotInteger = !std::numeric_limits<T>::is_integer;

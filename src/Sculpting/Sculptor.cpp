@@ -1,7 +1,7 @@
-#include "Math.hpp"
 #include <Sculptor.hpp>
 
 #include <Graph.hpp>
+#include <Math.hpp>
 #include <Triangle.hpp>
 
 #include <geometric.hpp>
@@ -80,7 +80,7 @@ std::optional<size_t> Sculptor::getSelectedTriangleId(
     const glm::vec3 rayOrig,
     const glm::vec3 rayDir)
 {
-    std::vector<std::pair<size_t, glm::vec3>> results;
+    std::vector<std::pair<size_t, float>> idsWithDistance;
 
     for (size_t triangleId = 0; triangleId < indices.size(); triangleId += 3) {
         std::array<glm::vec3, 3> triangleVertices {};
@@ -94,27 +94,33 @@ std::optional<size_t> Sculptor::getSelectedTriangleId(
             triangleVertices.at(vertexId) = vertex;
         }
 
-        // TODO: Fix multiple intersections
         glm::vec3 tuv;
         if (intersectRayTriangleGLM(rayOrig, rayDir, triangleVertices, tuv)) {
             // return triangleId;
 
             if (tuv.x > 0) {
-                std::cout << "tuv: " << tuv.x << ' ' << tuv.y << ' ' << tuv.z
-                          << std::endl;
+                // std::cout << "tuv: " << tuv.x << ' ' << tuv.y << ' ' << tuv.z
+                //   << std::endl;
 
-                results.emplace_back(triangleId, tuv);
+                idsWithDistance.emplace_back(triangleId, tuv.x);
             }
         }
     }
 
-    if (results.empty()) {
+    if (idsWithDistance.empty()) {
         return std::nullopt;
     }
-    
-    for (auto&& result : results) { }
 
-    std::cout << std::endl;
+    std::pair<size_t, float> result { idsWithDistance.front() };
+    for (auto&& elem : idsWithDistance) {
+        if (elem.second < result.second) {
+            result = elem;
+        }
+    }
+
+    // std::cout << "Min distance: " << result.second << std::endl;
+    // std::cout << "Id: " << result.first << std::endl;
+    return result.first;
 }
 
 bool Sculptor::intersectRayTriangleGLM(
@@ -144,7 +150,8 @@ bool Sculptor::intersectRayTriangleGLM(
     tVec = rayOrigin - vertices[0];
     invDet = 1.F / det;
 
-    if (det > 0.000001F) {
+    // HACK: Mb return to constexpr fastEpsilon to increase fps
+    if (det > Math::getEpsilon(det, 0.F)) {
         /* calculate U parameter and test bounds */
         tuv.y = glm::dot(tVec, pVec);
         if (tuv.y < 0.F || tuv.y > det) {
@@ -159,8 +166,7 @@ bool Sculptor::intersectRayTriangleGLM(
         if (tuv.z < 0.F || tuv.y + tuv.z > det) {
             return false;
         }
-
-    } else if (det < -0.000001F) {
+    } else if (det < -Math::getEpsilon(det, 0.F)) {
         /* calculate U parameter and test bounds */
         tuv.y = glm::dot(tVec, pVec);
         if (tuv.y > 0.F || tuv.y < det) {
