@@ -35,19 +35,14 @@ private:
     bool _isAnyShaderEnabled;
 
     // TODO: Rename (tr?)
-    // TODO: Remove sizes
     // TODO: Make unique_ptr
     std::vector<GLfloat> trVertices;
-    std::size_t trVerticesSize;
 
     std::vector<GLfloat> trTVertices;
-    std::size_t trTVerticesSize;
 
     std::vector<GLfloat> trNVertices;
-    std::size_t trNVerticesSize;
 
     std::vector<GLuint> indices;
-    std::size_t indicesSize;
 
     std::map<const std::string_view, std::unique_ptr<Texture>> textures;
 
@@ -69,6 +64,16 @@ public:
 
     void bindTextures();
 
+    void bindVerticesVBO();
+
+    void bindTVerticesVBO();
+    
+    void bindNVerticesVBO();
+    
+    void bindIndicesEBO();
+
+    void unbindVBO();
+
     void selectShaderProgram(std::string_view name);
 
     void enableShader();
@@ -81,6 +86,9 @@ public:
     void loadUniform(std::string_view name, const T& value) const;
 
     void draw() const;
+
+    void performTransform(
+        const std::vector<std::pair<std::size_t, glm::vec3>>& transform);
 
     [[nodiscard]] const std::vector<GLfloat>& getTrVertices() const;
 

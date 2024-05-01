@@ -23,6 +23,7 @@ private:
     std::array<bool, keysLength> keys;
 
     std::pair<float, float> mousePos;
+    bool _isMouseMoved;
 
 public:
     BaseInputEngine(
@@ -47,6 +48,8 @@ public:
     [[nodiscard]] const std::array<bool, keysLength>& getKeys() const;
 
     [[nodiscard]] std::pair<float, float> getMousePos() const;
+
+    [[nodiscard]] bool& isMouseMoved();
 
     void pushEvent(std::unique_ptr<IEvent> event);
 

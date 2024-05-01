@@ -22,7 +22,6 @@
 ViewInputEngine::ViewInputEngine(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus)
     : ModelInputEngine(std::move(_eventBus))
-    , isMouseMoved(false)
 {
     pushEvent(std::make_unique<CaptureMouseEvent>());
 }
@@ -30,7 +29,6 @@ ViewInputEngine::ViewInputEngine(
 void ViewInputEngine::mouseMoveCallbackInner(double xpos, double ypos)
 {
     BaseInputEngine::mouseMoveCallbackInner(xpos, ypos);
-    isMouseMoved = true;
 }
 
 std::optional<StateType> ViewInputEngine::update(const float dt)
@@ -89,7 +87,7 @@ std::optional<StateType> ViewInputEngine::update(const float dt)
         pushEvent(std::make_unique<CameraRotateEvent>(coordOffset));
     }
 
-    if (isMouseMoved) {
+    if (isMouseMoved()) {
         const std::pair<float, float> coordOffset {
             getMousePos().first - lastMousePos.first,
             lastMousePos.second - getMousePos().second
@@ -98,7 +96,7 @@ std::optional<StateType> ViewInputEngine::update(const float dt)
 
         pushEvent(std::make_unique<CameraRotateEvent>(coordOffset));
 
-        isMouseMoved = false;
+        isMouseMoved() = false;
     }
 
     return std::nullopt;

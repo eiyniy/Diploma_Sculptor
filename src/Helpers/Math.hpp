@@ -9,7 +9,8 @@
 
 class Math {
 public:
-    static constexpr size_t defaultULP = 1U;
+    static constexpr std::size_t defaultULP = 1U;
+    static constexpr float fastEpsilon = 0.000001F;
 
     Math() = delete;
 
@@ -20,7 +21,6 @@ public:
     static T getEpsilon(T x, T y, std::size_t n = defaultULP);
 };
 
-// Replace with float getEpsilon(T x, T y, size_t n)
 template <class T>
     requires NotInteger<T>
 T Math::getEpsilon(T x, T y, std::size_t n)

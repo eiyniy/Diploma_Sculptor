@@ -106,8 +106,8 @@ void ObjParser::parseEntry(const std::string& line)
         return;
     }
 
-    size_t pos = 0;
-    size_t end = 0;
+    std::size_t pos = 0;
+    std::size_t end = 0;
 
     switch (*type) {
     case ObjEntryType::Vertex: {

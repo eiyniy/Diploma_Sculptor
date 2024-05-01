@@ -3,14 +3,17 @@
 #include <Graph.hpp>
 
 #include <matrix_float4x4.hpp>
-#include <optional>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
 
 #include <GL/glew.h>
 
+#include <array>
 #include <cstddef>
+#include <optional>
+#include <vector>
 
+// TODO: remove static from functions && store Brush
 class Sculptor {
 private:
     int radius;
@@ -38,14 +41,6 @@ public:
 
     // void createGraph(OldObject* object);
 
-    // void pull(
-    //     std::vector<glm::vec4>& vertices,
-    //     std::pair<int, int> mousePos,
-    //     const glm::vec4& direction);
-
-    // static void
-    // pull(OldObject* object, int triangleId, std::pair<int, int> mousePos);
-
     static void getRayWorld(
         std::pair<float, float> mousePos,
         glm::vec3 cameraPos,
@@ -55,9 +50,14 @@ public:
         glm::vec3& rayOrig,
         glm::vec3& rayDir);
 
-    static std::optional<size_t> getSelectedTriangleId(
+    static std::optional<std::array<std::size_t, 3>>
+    getSelectedTriangleVerticesIds(
         const std::vector<GLfloat>& trVertices,
         const std::vector<GLuint>& indices,
         glm::vec3 rayOrig,
         glm::vec3 rayDir);
+
+    // TODO: accept Brush
+    static std::vector<std::pair<std::size_t, glm::vec3>>
+    getTransform(const std::vector<std::size_t>& verticesId);
 };

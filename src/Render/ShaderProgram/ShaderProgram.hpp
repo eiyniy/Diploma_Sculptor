@@ -5,7 +5,6 @@
 
 #include <GL/glew.h>
 
-#include <cstddef>
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -15,7 +14,7 @@
 
 template <class T> class ConstructorPasskey;
 
-const size_t infoLogSize = 512;
+const std::size_t infoLogSize = 512;
 
 class ShaderProgram {
 

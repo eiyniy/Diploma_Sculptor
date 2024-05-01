@@ -17,6 +17,7 @@
 EditInputEngine::EditInputEngine(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus)
     : ModelInputEngine(std::move(_eventBus))
+    , mouse()
 {
     pushEvent(std::make_unique<ReleaseMouseEvent>());
 }
@@ -35,6 +36,11 @@ std::optional<StateType> EditInputEngine::update(const float dt)
         return StateType::View;
     }
 
+    if (mouse[GLFW_MOUSE_BUTTON_LEFT] && isMouseMoved()) {
+        pushEvent(std::make_unique<SculptorEditEvent>(getMousePos()));
+        isMouseMoved() = false;
+    }
+
     return std::nullopt;
 }
 
@@ -43,8 +49,9 @@ void EditInputEngine::mouseButtonCallbackInner(
 {
     BaseInputEngine::mouseButtonCallbackInner(window, button, action, mods);
 
-    // TODO: Move to update()
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        pushEvent(std::make_unique<SculptorEditEvent>(getMousePos()));
+    if (action == GLFW_PRESS) {
+        mouse.at(button) = true;
+    } else if (action == GLFW_RELEASE) {
+        mouse.at(button) = false;
     }
 }

@@ -8,8 +8,6 @@ class ViewInputEngine : public ModelInputEngine {
 private:
     std::pair<float, float> lastMousePos;
 
-    bool isMouseMoved;
-
 public:
     ViewInputEngine(
         std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus);

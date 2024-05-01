@@ -1,25 +1,28 @@
 #include <ObjectBuilder.hpp>
 
+#include <Camera.hpp>
 #include <IBuilder.hpp>
 #include <Object.hpp>
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
-#include <algorithm>
-#include <functional>
-#include <memory>
-#include <optional>
 #include <type_vec2.hpp>
 #include <type_vec3.hpp>
-#include <vector>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
+#include <vector_float4.hpp>
 
+#include <chrono>
 #include <cstddef>
+#include <functional>
+#include <iostream>
 #include <map>
+#include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 Entry::Entry()
     : vertex() {};
@@ -40,9 +43,9 @@ bool Entry::operator==(const Entry& entry) const
         && nVertex == entry.nVertex;
 }
 
-[[nodiscard]] size_t Entry::hash() const
+[[nodiscard]] std::size_t Entry::hash() const
 {
-    size_t hash {};
+    std::size_t hash {};
     auto shift = 0;
 
     hash ^= std::hash<float>()(vertex.x) << shift++;
@@ -64,7 +67,7 @@ bool Entry::operator==(const Entry& entry) const
     return hash;
 }
 
-size_t Entry::HashFunction::operator()(const Entry& entry) const
+std::size_t Entry::HashFunction::operator()(const Entry& entry) const
 {
     return entry.hash();
 }
@@ -93,27 +96,22 @@ void ObjectBuilder::reset()
     isVAOSetup = false;
 }
 
-void ObjectBuilder::generateBuffers()
-{
-    glGenVertexArrays(1, &instance->VAO);
-    glGenBuffers(1, &instance->verticesVBO);
-    glGenBuffers(1, &instance->tVerticesVBO);
-    glGenBuffers(1, &instance->nVerticesVBO);
-    glGenBuffers(1, &instance->EBO);
-}
-
 void ObjectBuilder::transform()
 {
     throwIfNotInited("Can't merge vertices. ");
 
-    std::map<size_t, size_t> entriesHashId;
+    const auto transformEntriesStart
+        = std::chrono::high_resolution_clock::now();
+
+    std::map<std::size_t, std::size_t> entriesHashId;
     std::vector<Entry> entries;
 
-    instance->indicesSize = triangles->size() * 3;
-    instance->indices.resize(instance->indicesSize);
+    instance->indices.resize(triangles->size() * 3);
 
-    size_t indicesPos = 0;
-    size_t entriesPos = 0;
+    std::size_t indicesPos = 0;
+    std::size_t entriesPos = 0;
+
+    std::cout << "Triangles count x3: " << triangles->size() * 3 << std::endl;
 
     for (const auto& triangle : *triangles) {
         const auto vertexIdsCount = triangle.cGetVertexIdsCount();
@@ -150,36 +148,51 @@ void ObjectBuilder::transform()
         }
     }
 
-    instance->trVerticesSize = entries.size() * 4;
-    instance->trVertices.resize(instance->trVerticesSize);
+    std::cout << "Entries count: " << entries.size() << std::endl;
 
-    instance->trTVerticesSize = entries.size() * 2;
-    instance->trTVertices.resize(instance->trTVerticesSize);
+    const auto transformSeparationStart
+        = std::chrono::high_resolution_clock::now();
 
-    instance->trNVerticesSize = entries.size() * 3;
-    instance->trNVertices.resize(instance->trNVerticesSize);
+    instance->trVertices.resize(entries.size() * glm::vec4::length());
+    instance->trTVertices.resize(entries.size() * glm::vec2::length());
+    instance->trNVertices.resize(entries.size() * glm::vec3::length());
 
-    size_t verticesPos = 0;
-    size_t tVerticesPos = 0;
-    size_t nVerticesPos = 0;
+    for (std::size_t entryid = 0,
+                     verticesPos = 0,
+                     tVerticesPos = 0,
+                     nVerticesPos = 0;
+         entryid < entries.size();
+         ++entryid, verticesPos += 4, tVerticesPos += 2, nVerticesPos += 3) {
+        auto&& entry = entries.at(entryid);
 
-    for (auto&& entry : entries) {
-        instance->trVertices[verticesPos++] = entry.vertex.x;
-        instance->trVertices[verticesPos++] = entry.vertex.y;
-        instance->trVertices[verticesPos++] = entry.vertex.z;
-        instance->trVertices[verticesPos++] = entry.vertex.w;
+        instance->trVertices[verticesPos] = entry.vertex.x;
+        instance->trVertices[verticesPos + 1] = entry.vertex.y;
+        instance->trVertices[verticesPos + 2] = entry.vertex.z;
+        instance->trVertices[verticesPos + 3] = entry.vertex.w;
 
         if (entry.tVertex.has_value()) {
-            instance->trTVertices[tVerticesPos++] = entry.tVertex->x;
-            instance->trTVertices[tVerticesPos++] = entry.tVertex->y;
+            instance->trTVertices[tVerticesPos] = entry.tVertex->x;
+            instance->trTVertices[tVerticesPos + 1] = entry.tVertex->y;
         }
 
         if (entry.nVertex.has_value()) {
-            instance->trNVertices[nVerticesPos++] = entry.nVertex->x;
-            instance->trNVertices[nVerticesPos++] = entry.nVertex->y;
-            instance->trNVertices[nVerticesPos++] = entry.nVertex->z;
+            instance->trNVertices[nVerticesPos] = entry.nVertex->x;
+            instance->trNVertices[nVerticesPos + 1] = entry.nVertex->y;
+            instance->trNVertices[nVerticesPos + 2] = entry.nVertex->z;
         }
     }
+
+    std::cout << "Transform entries time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     transformSeparationStart - transformEntriesStart)
+              << std::endl;
+    std::cout << "Transform separation time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::high_resolution_clock::now()
+                     - transformSeparationStart)
+              << std::endl;
+
+    isTransformed = true;
 }
 
 bool ObjectBuilder::isShaderProgramFinished() const
@@ -204,6 +217,12 @@ void ObjectBuilder::init(
 
     vertices = std::move(_vertices);
     triangles = std::move(_triangles);
+
+    glGenVertexArrays(1, &instance->VAO);
+    glGenBuffers(1, &instance->verticesVBO);
+    glGenBuffers(1, &instance->tVerticesVBO);
+    glGenBuffers(1, &instance->nVerticesVBO);
+    glGenBuffers(1, &instance->EBO);
 
     isInited = true;
 }
@@ -254,15 +273,6 @@ void ObjectBuilder::selectShaderProgram(std::string_view name)
     instance->selectShaderProgram(name);
 }
 
-void ObjectBuilder::merge()
-{
-    generateBuffers();
-
-    transform();
-
-    isTransformed = true;
-}
-
 void ObjectBuilder::setupVAO()
 {
     if (!isTransformed) {
@@ -274,48 +284,26 @@ void ObjectBuilder::setupVAO()
 
     glBindVertexArray(instance->VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, instance->verticesVBO);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(instance->trVerticesSize * sizeof(GLfloat)),
-        instance->trVertices.data(),
-        GL_STATIC_DRAW);
+    instance->bindVerticesVBO();
     instance->shaderPrograms.at(instance->currentShaderProgramName)
         ->enableAttribute(ShaderProgram::positionAName);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    instance->unbindVBO();
 
     if (tVertices != nullptr) {
-        glBindBuffer(GL_ARRAY_BUFFER, instance->tVerticesVBO);
-        glBufferData(
-            GL_ARRAY_BUFFER,
-            static_cast<GLsizeiptr>(
-                instance->trTVerticesSize * sizeof(GLfloat)),
-            instance->trTVertices.data(),
-            GL_STATIC_DRAW);
+        instance->bindTVerticesVBO();
         instance->shaderPrograms.at(instance->currentShaderProgramName)
             ->enableAttribute(ShaderProgram::texCoordAName);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        instance->unbindVBO();
     }
 
     if (nVertices != nullptr) {
-        glBindBuffer(GL_ARRAY_BUFFER, instance->nVerticesVBO);
-        glBufferData(
-            GL_ARRAY_BUFFER,
-            static_cast<GLsizeiptr>(
-                instance->trNVerticesSize * sizeof(GLfloat)),
-            instance->trNVertices.data(),
-            GL_STATIC_DRAW);
+        instance->bindNVerticesVBO();
         instance->shaderPrograms.at(instance->currentShaderProgramName)
             ->enableAttribute(ShaderProgram::normalAName);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        instance->unbindVBO();
     }
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance->EBO);
-    glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(instance->indicesSize * sizeof(GLuint)),
-        instance->indices.data(),
-        GL_STATIC_DRAW);
+    instance->bindIndicesEBO();
 
     glBindVertexArray(0);
 

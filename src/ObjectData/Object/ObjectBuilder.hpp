@@ -31,12 +31,12 @@ struct Entry {
         const std::optional<glm::vec3>& _nVertex = std::nullopt,
         const std::optional<glm::vec2>& _tVertex = std::nullopt);
 
-    [[nodiscard]] size_t hash() const;
+    [[nodiscard]] std::size_t hash() const;
 
     bool operator==(const Entry& entry) const;
 
     struct HashFunction {
-        size_t operator()(const Entry& entry) const;
+        std::size_t operator()(const Entry& entry) const;
     };
 };
 
@@ -56,10 +56,6 @@ private:
     void throwIfNotInited(const std::string& message) const;
 
     void reset() override;
-
-    void generateBuffers();
-
-    void transform();
 
     [[nodiscard]] bool isShaderProgramFinished() const;
 
@@ -89,8 +85,7 @@ public:
 
     void selectShaderProgram(std::string_view name);
 
-    // TODO: Rename
-    void merge();
+    void transform();
 
     void setupVAO();
 };

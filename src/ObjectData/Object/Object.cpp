@@ -1,3 +1,4 @@
+#include "vector_float4.hpp"
 #include <Object.hpp>
 
 #include <ShaderProgram.hpp>
@@ -10,11 +11,7 @@
 #include <utility>
 
 Object::Object(ConstructorPasskey<Object>&& passkey)
-    : trVerticesSize(0)
-    , trTVerticesSize(0)
-    , trNVerticesSize(0)
-    , indicesSize(0)
-    , VAO(0)
+    : VAO(0)
     , verticesVBO(0)
     , tVerticesVBO(0)
     , nVerticesVBO(0)
@@ -63,6 +60,54 @@ void Object::bindTextures()
     }
 }
 
+void Object::bindVerticesVBO()
+{
+    throwIfShaderNotSelected("bindVerticesVBO");
+
+    glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(trVertices.size() * sizeof(GLfloat)),
+        trVertices.data(),
+        GL_DYNAMIC_DRAW);
+}
+
+void Object::bindTVerticesVBO()
+{
+    throwIfShaderNotSelected("bindTVerticesVBO");
+
+    glBindBuffer(GL_ARRAY_BUFFER, tVerticesVBO);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(trTVertices.size() * sizeof(GLfloat)),
+        trTVertices.data(),
+        GL_STATIC_DRAW);
+}
+
+void Object::bindNVerticesVBO()
+{
+    throwIfShaderNotSelected("bindNVerticesVBO");
+
+    glBindBuffer(GL_ARRAY_BUFFER, nVerticesVBO);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(trNVertices.size() * sizeof(GLfloat)),
+        trNVertices.data(),
+        GL_STATIC_DRAW);
+}
+
+void Object::bindIndicesEBO()
+{
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(indices.size() * sizeof(GLuint)),
+        indices.data(),
+        GL_STATIC_DRAW);
+}
+
+void Object::unbindVBO() { glBindBuffer(GL_ARRAY_BUFFER, 0); }
+
 void Object::selectShaderProgram(const std::string_view name)
 {
     currentShaderProgramName = name;
@@ -104,11 +149,24 @@ void Object::draw() const
 
     glDrawElements(
         GL_TRIANGLES,
-        static_cast<GLsizei>(indicesSize),
+        static_cast<GLsizei>(indices.size()),
         GL_UNSIGNED_INT,
         nullptr);
 
     glBindVertexArray(0);
+}
+
+void Object::performTransform(
+    const std::vector<std::pair<std::size_t, glm::vec3>>& transform)
+{
+    for (auto&& vertexTransform : transform) {
+        trVertices.at(vertexTransform.first * glm::vec4::length())
+            += vertexTransform.second.x;
+        trVertices.at(vertexTransform.first * glm::vec4::length() + 1)
+            += vertexTransform.second.y;
+        trVertices.at(vertexTransform.first * glm::vec4::length() + 2)
+            += vertexTransform.second.z;
+    }
 }
 
 bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }

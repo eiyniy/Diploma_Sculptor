@@ -10,6 +10,7 @@ BaseInputEngine::BaseInputEngine(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus)
     : eventBus(std::move(_eventBus))
     , keys()
+    , _isMouseMoved(true)
 {
 }
 
@@ -30,6 +31,7 @@ void BaseInputEngine::keyCallbackInner(
 void BaseInputEngine::mouseMoveCallbackInner(double xpos, double ypos)
 {
     mousePos = { xpos, ypos };
+    _isMouseMoved = true;
 }
 
 void BaseInputEngine::mouseButtonCallbackInner(
@@ -46,6 +48,8 @@ std::pair<float, float> BaseInputEngine::getMousePos() const
 {
     return mousePos;
 }
+
+bool& BaseInputEngine::isMouseMoved() { return _isMouseMoved; }
 
 void BaseInputEngine::pushEvent(std::unique_ptr<IEvent> event)
 {

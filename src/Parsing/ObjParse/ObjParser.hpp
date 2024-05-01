@@ -55,14 +55,14 @@ T ObjParser::parseGlmVec(
 {
     T vec { 1 };
 
-    size_t pos = 0;
+    std::size_t pos = 0;
     for (char index = 0; index < 4; ++index) {
-        size_t start = line.find_first_of("0123456789.-", pos);
+        std::size_t start = line.find_first_of("0123456789.-", pos);
         if (start == std::string::npos) {
             break;
         }
 
-        size_t end = 0;
+        std::size_t end = 0;
         float extractedFloat = std::stof(line.substr(start), &end);
 
         fillFunc(vec, index, extractedFloat);
