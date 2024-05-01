@@ -1,18 +1,17 @@
 #pragma once
 
-#include <Camera.hpp>
 #include <Enums.hpp>
 #include <IEvent.hpp>
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <array>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <queue>
-
-class BaseState;
-class MainWindow;
+#include <utility>
 
 static constexpr std::size_t keysLength = 1024;
 

@@ -12,33 +12,15 @@
 #include <GL/glew.h>
 
 #include <cstddef>
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
 class ShaderProgram;
 class Texture;
-
-struct Entry {
-    glm::vec4 vertex;
-    std::optional<glm::vec3> nVertex;
-    std::optional<glm::vec2> tVertex;
-
-    Entry();
-    Entry(
-        const glm::vec4& _vertex,
-        const std::optional<glm::vec3>& _nVertex = std::nullopt,
-        const std::optional<glm::vec2>& _tVertex = std::nullopt);
-
-    [[nodiscard]] std::size_t hash() const;
-
-    bool operator==(const Entry& entry) const;
-
-    struct HashFunction {
-        std::size_t operator()(const Entry& entry) const;
-    };
-};
 
 class ObjectBuilder : public IBuilder<Object> {
 private:
@@ -52,10 +34,24 @@ private:
     std::unique_ptr<std::vector<Triangle>> triangles;
     std::unique_ptr<std::vector<glm::vec<3, GLuint>>> indices;
 
+    // TODO: Mb rename indices... to entries...
+    std::map<std::size_t, std::vector<std::size_t>> vericesIdToIndicesId;
+    std::map<std::size_t, std::size_t> indicesIdToVertexId;
+
     // TODO: Move this to IBuilder
     void throwIfNotInited(const std::string& message) const;
 
     void reset() override;
+
+    [[nodiscard]] static std::size_t hashEntryIdsNaive(
+        int vertexId,
+        std::optional<int> tVertexId = std::nullopt,
+        std::optional<int> nVertexId = std::nullopt);
+
+    [[nodiscard]] static std::size_t hashEntryIdsRotl(
+        int vertexId,
+        std::optional<int> tVertexId = std::nullopt,
+        std::optional<int> nVertexId = std::nullopt);
 
     [[nodiscard]] bool isShaderProgramFinished() const;
 

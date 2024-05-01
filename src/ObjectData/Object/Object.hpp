@@ -1,8 +1,10 @@
 #pragma once
 
+#include <Concepts.hpp>
 #include <ShaderProgram.hpp>
-#include <ShaderUniform.hpp>
 #include <Texture.hpp>
+
+#include <vector_float3.hpp>
 
 #include <GL/glew.h>
 
@@ -11,6 +13,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 template <class T> class ConstructorPasskey;
@@ -34,12 +37,12 @@ private:
 
     bool _isAnyShaderEnabled;
 
+    std::map<std::size_t, std::vector<std::size_t>> connectedIndicesIds;
+
     // TODO: Rename (tr?)
     // TODO: Make unique_ptr
     std::vector<GLfloat> trVertices;
-
     std::vector<GLfloat> trTVertices;
-
     std::vector<GLfloat> trNVertices;
 
     std::vector<GLuint> indices;
@@ -67,9 +70,9 @@ public:
     void bindVerticesVBO();
 
     void bindTVerticesVBO();
-    
+
     void bindNVerticesVBO();
-    
+
     void bindIndicesEBO();
 
     void unbindVBO();

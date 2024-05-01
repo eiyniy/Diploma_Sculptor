@@ -3,20 +3,24 @@
 #include <BaseTextParser.hpp>
 #include <EarClipper.hpp>
 #include <Enums.hpp>
-#include <Globals.hpp>
-#include <MtlParser.hpp>
+#include <ObjParseResult.hpp>
 #include <Triangle.hpp>
 
 #include <qualifier.hpp>
+#include <type_vec2.hpp>
+#include <type_vec3.hpp>
 #include <type_vec4.hpp>
+#include <vector_float2.hpp>
+#include <vector_float3.hpp>
 #include <vector_float4.hpp>
 
 #include <chrono>
-#include <cstdio>
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
+#include <utility>
 
 ObjParser::ObjParser(const std::string& _pathToObj)
     : BaseTextParser(_pathToObj)
@@ -165,14 +169,14 @@ void ObjParser::fillVec2(glm::vec2& vec, char index, float value)
     }
 }
 
-std::vector<VertexIds> ObjParser::parseVertexIds(const std::string& line)
+std::vector<EntryIds> ObjParser::parseVertexIds(const std::string& line)
 {
     auto entryType = ObjParser::getEntryType(line);
     if (entryType != ObjEntryType::Polygon) {
         throw std::logic_error("Could not parse polygon");
     }
 
-    std::vector<VertexIds> accumulator {};
+    std::vector<EntryIds> accumulator {};
     accumulator.reserve(3);
 
     auto iter = line.cbegin();
@@ -182,7 +186,7 @@ std::vector<VertexIds> ObjParser::parseVertexIds(const std::string& line)
 
     int i = 0;
     while (auto strPart = ObjParser::getNextPart(&iter, iterEnd, ' ')) {
-        accumulator.emplace_back(VertexIds::parse(*strPart));
+        accumulator.emplace_back(EntryIds::parse(*strPart));
         ++i;
     }
 
@@ -193,7 +197,7 @@ std::vector<Triangle> ObjParser::parsePolygon(const std::string& line)
 {
     const auto vertexIds = parseVertexIds(line);
 
-    std::vector<std::pair<glm::vec4, VertexIds>> polygonVertices;
+    std::vector<std::pair<glm::vec4, EntryIds>> polygonVertices;
 
     const auto polygonSize = vertexIds.size();
     for (int i = 0; i != polygonSize; ++i) {

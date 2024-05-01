@@ -1,13 +1,14 @@
 #include <Sculptor.hpp>
 
 #include <Globals.hpp>
-#include <Graph.hpp>
 #include <Math.hpp>
-#include <Triangle.hpp>
 
 #include <geometric.hpp>
 #include <matrix.hpp>
 #include <matrix_float4x4.hpp>
+#include <qualifier.hpp>
+#include <type_mat4x4.hpp>
+#include <type_vec3.hpp>
 #include <type_vec4.hpp>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
@@ -58,6 +59,7 @@ void Sculptor::getRayWorld(
 }
 
 // TODO: Mb move to Object OR make Object::getTriangle(Id)
+// TODO: Do not iterate through indices. Use triangles(?) insted
 std::optional<std::array<std::size_t, 3>>
 Sculptor::getSelectedTriangleVerticesIds(
     const std::vector<GLfloat>& trVertices,
@@ -183,7 +185,7 @@ Sculptor::getTransform(const std::vector<std::size_t>& verticesId)
 
     for (std::size_t i = 0; i < verticesId.size(); ++i) {
         transform.at(i)
-            = std::make_pair(verticesId.at(i), glm::vec3 { 1, 0, 0 });
+            = std::make_pair(verticesId.at(i), glm::vec3 { 0.1F, 0, 0 });
     }
 
     return transform;

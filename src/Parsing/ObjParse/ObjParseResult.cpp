@@ -2,6 +2,12 @@
 
 #include <Triangle.hpp>
 
+#include <vector_float2.hpp>
+#include <vector_float3.hpp>
+#include <vector_float4.hpp>
+
+#include <utility>
+
 ObjParseResult::ObjParseResult(
     std::unique_ptr<std::vector<glm::vec4>> _vertices,
     std::unique_ptr<std::vector<glm::vec3>> _nVertices,

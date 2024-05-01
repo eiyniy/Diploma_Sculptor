@@ -14,6 +14,7 @@ constexpr float defaultZFar = 1000.F;
 constexpr glm::vec<4, GLclampf> defaultWindowClearColor {
     0.2F, 0.3F, 0.3F, 1.0F
 };
+constexpr float defaultShaderProgramDimmingFactor = 0.03F;
 
 Settings::Settings()
     : cameraSpeed(defaultCameraSpeed)
@@ -26,6 +27,7 @@ Settings::Settings()
     , zNear(defaultZNear)
     , zFar(defaultZFar)
     , windowClearColor(defaultWindowClearColor)
+    , shaderProgramDimmingFactor(defaultShaderProgramDimmingFactor)
 {
 }
 
@@ -61,3 +63,8 @@ bool Settings::isDepthBufferEnabled() const { return depthBufferEnabled; }
 bool Settings::isResizeEnabled() const { return resizeEnabled; }
 
 const std::string& Settings::getWindowName() { return windowName; }
+
+float Settings::getShaderProgramDimmingFactor() const
+{
+    return shaderProgramDimmingFactor;
+}

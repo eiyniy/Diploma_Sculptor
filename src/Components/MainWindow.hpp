@@ -11,6 +11,8 @@ class MainWindow {
 private:
     GLFWwindow* window;
 
+    bool isContextSet;
+
     std::pair<int, int> resolution;
     std::pair<int, int> activeResolution;
 
@@ -19,7 +21,8 @@ private:
 
     static void mouseMoveCallback(GLFWwindow* window, double xpos, double ypos);
 
-    static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+    static void
+    mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 
 public:
     MainWindow(std::pair<int, int> _resolution);
@@ -46,7 +49,7 @@ public:
         requires IsInputEnginePt<T>
     void setUserPointer(T inputEngine);
 
-    void clear();
+    void clear() const;
 
     void swapBuffers();
 

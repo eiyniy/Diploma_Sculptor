@@ -2,10 +2,13 @@
 
 #include <BaseInputEngine.hpp>
 #include <CloseEvent.hpp>
-#include <CloseState.hpp>
-#include <EditState.hpp>
 #include <Enums.hpp>
+#include <IEvent.hpp>
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
+#include <array>
 #include <chrono>
 #include <memory>
 #include <utility>

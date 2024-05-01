@@ -1,22 +1,16 @@
 #include <Camera.hpp>
 #include <Engine.hpp>
 #include <MainWindow.hpp>
+#include <ObjParseResult.hpp>
 #include <ObjParser.hpp>
 #include <Object.hpp>
 #include <ObjectBuilder.hpp>
 #include <Scene.hpp>
-#include <Sculptor.hpp>
 #include <Settings.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
 #include <ShaderProgramBuilder.hpp>
-#include <Texture.hpp>
-#include <TextureBuilder.hpp>
-
-#include <type_vec2.hpp>
-#include <type_vec3.hpp>
-#include <vector_float2.hpp>
-#include <vector_float3.hpp>
+#include <Triangle.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -25,7 +19,7 @@
 #include <exception>
 #include <iostream>
 #include <memory>
-#include <string_view>
+#include <string>
 #include <utility>
 
 // TODO: Make libraries auto downloadable
@@ -114,8 +108,8 @@ int main(int argc, char** argv)
             // = projectPath + R"(resources\baseModels\cube\cube.obj)";
             // = projectPath + R"(resources\baseModels\sphere\sphere.obj)";
             // = projectPath + R"(resources\models\woman1.obj)";
-            // = projectPath + R"(resources\models\car\car.obj)";
-            = projectPath + R"(resources\models\angel\angel.obj)";
+            = projectPath + R"(resources\models\car\car.obj)";
+        // = projectPath + R"(resources\models\angel\angel.obj)";
 
         ObjParser parser { path };
 

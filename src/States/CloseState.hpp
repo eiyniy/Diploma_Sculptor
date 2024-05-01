@@ -1,6 +1,16 @@
 #pragma once
 
 #include <BaseState.hpp>
+#include <Enums.hpp>
+
+#include <matrix_float4x4.hpp>
+
+#include <memory>
+#include <queue>
+
+class Camera;
+class IEvent;
+class MainWindow;
 
 class CloseState : public BaseState {
 public:

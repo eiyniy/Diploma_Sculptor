@@ -1,10 +1,10 @@
 #include <BaseInputEngine.hpp>
 
-#include <BaseState.hpp>
-#include <MainWindow.hpp>
-
 #include <memory>
+#include <stdexcept>
 #include <utility>
+
+class IEvent;
 
 BaseInputEngine::BaseInputEngine(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus)

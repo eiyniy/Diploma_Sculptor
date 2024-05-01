@@ -1,16 +1,21 @@
 #include <EarClipper.hpp>
 
+#include <EntryIds.hpp>
 #include <Triangle.hpp>
 
+#include <geometric.hpp>
 #include <qualifier.hpp>
+#include <type_vec3.hpp>
 #include <type_vec4.hpp>
 #include <vector_float3.hpp>
+#include <vector_float4.hpp>
 
+#include <cmath>
 #include <stdexcept>
 #include <vector>
 
 std::vector<Triangle> EarClipper::triangulate(
-    std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices)
+    std::vector<std::pair<glm::vec4, EntryIds>>& polygonVertices)
 {
     std::vector<Triangle> result;
 
@@ -36,7 +41,7 @@ bool EarClipper::isConvexVertex(
 }
 
 Triangle EarClipper::clipEar(
-    std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices)
+    std::vector<std::pair<glm::vec4, EntryIds>>& polygonVertices)
 {
     int i = 0;
     const int size = (int)polygonVertices.size();
@@ -78,10 +83,10 @@ Triangle EarClipper::clipEar(
 }
 
 bool EarClipper::isPointsInside(
-    const std::pair<glm::vec4, VertexIds>& v0,
-    const std::pair<glm::vec4, VertexIds>& v1,
-    const std::pair<glm::vec4, VertexIds>& v2,
-    const std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices)
+    const std::pair<glm::vec4, EntryIds>& v0,
+    const std::pair<glm::vec4, EntryIds>& v1,
+    const std::pair<glm::vec4, EntryIds>& v2,
+    const std::vector<std::pair<glm::vec4, EntryIds>>& polygonVertices)
 {
     bool result = false;
 

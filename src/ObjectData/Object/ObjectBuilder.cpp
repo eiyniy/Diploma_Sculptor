@@ -1,13 +1,18 @@
 #include <ObjectBuilder.hpp>
 
-#include <Camera.hpp>
+#include <EntryIds.hpp>
+#include <Hasher.hpp>
 #include <IBuilder.hpp>
 #include <Object.hpp>
+#include <ObjectEntry.hpp>
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
+#include <Triangle.hpp>
 
+#include <qualifier.hpp>
 #include <type_vec2.hpp>
 #include <type_vec3.hpp>
+#include <type_vec4.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
@@ -23,54 +28,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-Entry::Entry()
-    : vertex() {};
-
-Entry::Entry(
-    const glm::vec4& _vertex,
-    const std::optional<glm::vec3>& _nVertex,
-    const std::optional<glm::vec2>& _tVertex)
-    : vertex(_vertex)
-    , nVertex(_nVertex)
-    , tVertex(_tVertex)
-{
-}
-
-bool Entry::operator==(const Entry& entry) const
-{
-    return vertex == entry.vertex && tVertex == entry.tVertex
-        && nVertex == entry.nVertex;
-}
-
-[[nodiscard]] std::size_t Entry::hash() const
-{
-    std::size_t hash {};
-    auto shift = 0;
-
-    hash ^= std::hash<float>()(vertex.x) << shift++;
-    hash ^= std::hash<float>()(vertex.y) << shift++;
-    hash ^= std::hash<float>()(vertex.z) << shift++;
-    hash ^= std::hash<float>()(vertex.w) << shift++;
-
-    if (nVertex.has_value()) {
-        hash ^= std::hash<float>()(nVertex->x) << shift++;
-        hash ^= std::hash<float>()(nVertex->y) << shift++;
-        hash ^= std::hash<float>()(nVertex->z) << shift++;
-    }
-
-    if (tVertex.has_value()) {
-        hash ^= std::hash<float>()(tVertex->x) << shift++;
-        hash ^= std::hash<float>()(tVertex->y) << shift++;
-    }
-
-    return hash;
-}
-
-std::size_t Entry::HashFunction::operator()(const Entry& entry) const
-{
-    return entry.hash();
-}
 
 ObjectBuilder::ObjectBuilder()
     : isInited(false)
@@ -96,6 +53,52 @@ void ObjectBuilder::reset()
     isVAOSetup = false;
 }
 
+std::size_t ObjectBuilder::hashEntryIdsNaive(
+    const int vertexId,
+    const std::optional<int> tVertexId,
+    const std::optional<int> nVertexId)
+{
+    std::size_t hash {};
+    const auto intHasher = std::hash<int>();
+    const auto charHasher = std::hash<char>();
+
+    hash ^= intHasher(vertexId);
+
+    if (nVertexId.has_value()) {
+        hash ^= charHasher('n') << 2;
+        hash ^= intHasher(*nVertexId) << 2;
+    }
+
+    if (tVertexId.has_value()) {
+        hash ^= charHasher('t') << 4;
+        hash ^= intHasher(*tVertexId) << 4;
+    }
+
+    return hash;
+}
+
+std::size_t ObjectBuilder::hashEntryIdsRotl(
+    const int vertexId,
+    const std::optional<int> tVertexId,
+    const std::optional<int> nVertexId)
+{
+    std::size_t hash {};
+
+    hash = Hasher::hashCombine(hash, vertexId);
+
+    if (nVertexId.has_value()) {
+        hash = Hasher::hashCombine(hash, 'n');
+        hash = Hasher::hashCombine(hash, *nVertexId);
+    }
+
+    if (tVertexId.has_value()) {
+        hash = Hasher::hashCombine(hash, 't');
+        hash = Hasher::hashCombine(hash, *tVertexId);
+    }
+
+    return hash;
+}
+
 void ObjectBuilder::transform()
 {
     throwIfNotInited("Can't merge vertices. ");
@@ -103,13 +106,13 @@ void ObjectBuilder::transform()
     const auto transformEntriesStart
         = std::chrono::high_resolution_clock::now();
 
-    std::map<std::size_t, std::size_t> entriesHashId;
-    std::vector<Entry> entries;
+    std::map<std::size_t, std::size_t> entriesIdsHashWithPos;
+    std::vector<ObjectEntry> entries;
 
     instance->indices.resize(triangles->size() * 3);
 
-    std::size_t indicesPos = 0;
-    std::size_t entriesPos = 0;
+    std::size_t indicesId = 0;
+    std::size_t entriesId = 0;
 
     std::cout << "Triangles count x3: " << triangles->size() * 3 << std::endl;
 
@@ -117,38 +120,49 @@ void ObjectBuilder::transform()
         const auto vertexIdsCount = triangle.cGetVertexIdsCount();
 
         for (auto i = 0; i < vertexIdsCount; ++i) {
-            const auto vertexIds = triangle.cGetVertexIds(i);
+            const auto entryIds = triangle.cGetVertexIds(i);
 
-            const auto vertexId = vertexIds.cGetVertexId() - 1;
+            const auto vertexId = entryIds.cGetVertexId() - 1;
             const auto vertex = vertices->at(vertexId);
 
-            auto nVertexId = vertexIds.cGetNormalVertexId();
+            auto nVertexId = entryIds.cGetNormalVertexId();
             std::optional<glm::vec3> nVertex {};
             if (nVertexId.has_value() && nVertices != nullptr) {
                 nVertex = nVertices->at(--*nVertexId);
             }
 
-            auto tVertexId = vertexIds.cGetTextureVertexId();
+            auto tVertexId = entryIds.cGetTextureVertexId();
             std::optional<glm::vec2> tVertex {};
             if (tVertexId.has_value() && tVertices != nullptr) {
                 tVertex = tVertices->at(--*tVertexId);
             }
 
-            const Entry entry { vertex, nVertex, tVertex };
+            const ObjectEntry entry { vertex, nVertex, tVertex };
+            const auto idsHash
+                = hashEntryIdsRotl(vertexId, tVertexId, nVertexId);
 
-            const auto hash = entry.hash();
-            if (!entriesHashId.contains(hash)) {
-                entriesHashId[hash] = entriesPos;
+            if (!entriesIdsHashWithPos.contains(idsHash)) {
+                entriesIdsHashWithPos[idsHash] = entriesId;
                 entries.push_back(entry);
 
-                instance->indices[indicesPos++] = entriesPos++;
+                indicesIdToVertexId[entriesId] = vertexId;
+                vericesIdToIndicesId[vertexId].push_back(entriesId);
+
+                instance->indices[indicesId++] = entriesId++;
             } else {
-                instance->indices[indicesPos++] = entriesHashId.at(hash);
+                instance->indices[indicesId++]
+                    = entriesIdsHashWithPos.at(idsHash);
             }
         }
     }
 
+    std::cout << "Entries id: " << entriesId << std::endl;
     std::cout << "Entries count: " << entries.size() << std::endl;
+
+    for (auto&& indexId : indicesIdToVertexId) {
+        instance->connectedIndicesIds[indexId.first]
+            = vericesIdToIndicesId[indexId.second];
+    }
 
     const auto transformSeparationStart
         = std::chrono::high_resolution_clock::now();
@@ -165,20 +179,26 @@ void ObjectBuilder::transform()
          ++entryid, verticesPos += 4, tVerticesPos += 2, nVerticesPos += 3) {
         auto&& entry = entries.at(entryid);
 
-        instance->trVertices[verticesPos] = entry.vertex.x;
-        instance->trVertices[verticesPos + 1] = entry.vertex.y;
-        instance->trVertices[verticesPos + 2] = entry.vertex.z;
-        instance->trVertices[verticesPos + 3] = entry.vertex.w;
+        const auto vertex = entry.getVertex();
 
-        if (entry.tVertex.has_value()) {
-            instance->trTVertices[tVerticesPos] = entry.tVertex->x;
-            instance->trTVertices[tVerticesPos + 1] = entry.tVertex->y;
+        instance->trVertices[verticesPos] = vertex.x;
+        instance->trVertices[verticesPos + 1] = vertex.y;
+        instance->trVertices[verticesPos + 2] = vertex.z;
+        instance->trVertices[verticesPos + 3] = vertex.w;
+
+        const auto nVertex = entry.getNVertex();
+
+        if (nVertex.has_value()) {
+            instance->trNVertices[nVerticesPos] = nVertex->x;
+            instance->trNVertices[nVerticesPos + 1] = nVertex->y;
+            instance->trNVertices[nVerticesPos + 2] = nVertex->z;
         }
 
-        if (entry.nVertex.has_value()) {
-            instance->trNVertices[nVerticesPos] = entry.nVertex->x;
-            instance->trNVertices[nVerticesPos + 1] = entry.nVertex->y;
-            instance->trNVertices[nVerticesPos + 2] = entry.nVertex->z;
+        const auto tVertex = entry.getTVertex();
+
+        if (tVertex.has_value()) {
+            instance->trTVertices[tVerticesPos] = tVertex->x;
+            instance->trTVertices[tVerticesPos + 1] = tVertex->y;
         }
     }
 

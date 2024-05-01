@@ -1,12 +1,15 @@
 #include <Engine.hpp>
 
+#include <BaseState.hpp>
 #include <BrushMoveEvent.hpp>
+#include <Camera.hpp>
 #include <CameraMoveEvent.hpp>
 #include <CameraRotateEvent.hpp>
 #include <CloseState.hpp>
 #include <EditState.hpp>
 #include <Enums.hpp>
 #include <IEvent.hpp>
+#include <MainWindow.hpp>
 #include <Object.hpp>
 #include <Scene.hpp>
 #include <Sculptor.hpp>
@@ -14,15 +17,24 @@
 #include <Settings.hpp>
 #include <ViewState.hpp>
 
+#include <matrix_clip_space.hpp>
 #include <matrix_float4x4.hpp>
+#include <qualifier.hpp>
+#include <type_mat4x4.hpp>
+#include <type_vec4.hpp>
+#include <vector_float3.hpp>
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <array>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <utility>
+#include <vector>
 
 Engine::Engine(
     std::unique_ptr<Scene> _scene,

@@ -8,12 +8,13 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <cmath>
 #include <iostream>
+#include <stdexcept>
 #include <utility>
 
 MainWindow::MainWindow(const std::pair<int, int> _resolution)
     : resolution(_resolution)
+    , isContextSet(true)
 {
     std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
 
@@ -47,8 +48,12 @@ MainWindow::MainWindow(const std::pair<int, int> _resolution)
     activeResolution = { width, height };
 }
 
-void MainWindow::clear()
+void MainWindow::clear() const
 {
+    if (!isContextSet) {
+        throw std::logic_error("Can't clear window. Context hasn't been set");
+    }
+
     const auto clearColor = Settings::get()->getWindowClearColor();
 
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);

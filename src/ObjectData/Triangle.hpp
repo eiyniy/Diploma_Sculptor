@@ -1,19 +1,20 @@
 #pragma once
 
-#include <VertexIds.hpp>
+#include <EntryIds.hpp> // IWYU pragma: keep
 
-#include <vector_float4.hpp>
+#include <array>
+#include <vector>
 
 class Triangle {
 private:
     int vertexIndexesCount;
 
-    std::array<VertexIds, 3> values;
+    std::array<EntryIds, 3> values;
 
 public:
-    Triangle(const std::vector<VertexIds>& indexes);
+    Triangle(const std::vector<EntryIds>& indexes);
 
     [[nodiscard]] int cGetVertexIdsCount() const;
 
-    [[nodiscard]] const VertexIds& cGetVertexIds(int i) const;
+    [[nodiscard]] const EntryIds& cGetVertexIds(int i) const;
 };

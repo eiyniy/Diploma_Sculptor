@@ -1,12 +1,20 @@
 #include <EditState.hpp>
 
+#include <BaseInputEngine.hpp>
+#include <BaseRenderEngine.hpp>
 #include <BaseState.hpp>
 #include <EditInputEngine.hpp>
 #include <Enums.hpp>
 #include <ModelRenderEngine.hpp>
-#include <ViewInputEngine.hpp>
+
+#include <matrix_float4x4.hpp>
 
 #include <memory>
+#include <utility>
+
+class Camera;
+class IEvent;
+class MainWindow;
 
 EditState::EditState(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,

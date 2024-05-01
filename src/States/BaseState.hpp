@@ -1,16 +1,18 @@
 #pragma once
 
-#include <BaseInputEngine.hpp>
-#include <BaseRenderEngine.hpp>
 #include <Enums.hpp>
-#include <MainWindow.hpp>
-#include <Object.hpp>
 
 #include <map>
 #include <memory>
+#include <optional>
+#include <string>
+
+class Object;
+class MainWindow;
+class BaseInputEngine;
+class BaseRenderEngine;
 
 // TODO: Remove all other states
-
 class BaseState {
 private:
     std::unique_ptr<BaseInputEngine> input;

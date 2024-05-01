@@ -1,17 +1,14 @@
 #include <ViewInputEngine.hpp>
 
 #include <BaseInputEngine.hpp>
-#include <Camera.hpp>
 #include <CameraMoveEvent.hpp>
 #include <CameraRotateEvent.hpp>
 #include <CaptureMouseEvent.hpp>
-#include <EditInputEngine.hpp>
-#include <EditState.hpp>
 #include <Enums.hpp>
-#include <MainWindow.hpp>
+#include <IEvent.hpp>
 #include <ModelInputEngine.hpp>
-#include <ModelRenderEngine.hpp>
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <array>

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <BaseState.hpp>
-#include <IEvent.hpp>
+#include <matrix_float4x4.hpp>
 
-#include <Gl/glew.h>
+#include <GL/glew.h>
 
 #include <memory>
 #include <queue>
@@ -15,8 +14,8 @@ class Camera;
 
 class Object;
 
-enum class AxisName;
-enum class Direction;
+class BaseState;
+class IEvent;
 
 class Engine {
 private:

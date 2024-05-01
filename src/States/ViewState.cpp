@@ -1,11 +1,20 @@
 #include <ViewState.hpp>
 
+#include <BaseInputEngine.hpp>
+#include <BaseRenderEngine.hpp>
 #include <BaseState.hpp>
 #include <Enums.hpp>
 #include <ModelRenderEngine.hpp>
 #include <ViewInputEngine.hpp>
 
+#include <matrix_float4x4.hpp>
+
 #include <memory>
+#include <utility>
+
+class Camera;
+class IEvent;
+class MainWindow;
 
 ViewState::ViewState(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,

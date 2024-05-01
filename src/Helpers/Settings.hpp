@@ -17,6 +17,8 @@ private:
 
     GLfloat cameraMouseSens;
 
+    float shaderProgramDimmingFactor;
+
     float zNear;
     float zFar;
 
@@ -52,6 +54,8 @@ public:
     [[nodiscard]] bool isVSyncEnabled() const;
     [[nodiscard]] bool isDepthBufferEnabled() const;
     [[nodiscard]] bool isResizeEnabled() const;
+
+    [[nodiscard]] float getShaderProgramDimmingFactor() const;
 
     const std::string& getWindowName();
 };

@@ -6,11 +6,11 @@
 #include <Settings.hpp>
 #include <ShaderProgram.hpp>
 
-#include <matrix_clip_space.hpp>
+#include <matrix_float4x4.hpp>
 #include <qualifier.hpp>
 #include <type_mat4x4.hpp>
 #include <type_ptr.hpp>
-#include <type_vec4.hpp>
+#include <type_vec3.hpp>
 #include <vector_float3.hpp>
 
 #include <utility>
@@ -46,7 +46,9 @@ void ModelRenderEngine::draw(
         object.second->loadUniform(
             ShaderProgram::lightColorUName, glm::vec3(1, 1, 1));
 
-        object.second->loadUniform(ShaderProgram::dimmingFactorUName, 0.03F);
+        object.second->loadUniform(
+            ShaderProgram::dimmingFactorUName,
+            Settings::get()->getShaderProgramDimmingFactor());
         object.second->loadUniform(ShaderProgram::isDistanceDimmingUName, true);
 
         object.second->draw();

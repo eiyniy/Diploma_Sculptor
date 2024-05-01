@@ -1,12 +1,18 @@
 #pragma once
 
+#include <Enums.hpp>
 #include <ModelInputEngine.hpp>
 
-#include <array>
-#include <memory>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
-class MainWindow;
-class Camera;
+#include <array>
+#include <cstddef>
+#include <memory>
+#include <optional>
+#include <queue>
+
+class IEvent;
 
 class EditInputEngine : public ModelInputEngine {
 public:

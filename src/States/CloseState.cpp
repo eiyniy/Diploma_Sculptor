@@ -2,10 +2,18 @@
 
 #include <BaseInputEngine.hpp>
 #include <BaseRenderEngine.hpp>
+#include <BaseState.hpp>
 #include <Enums.hpp>
 #include <ModelRenderEngine.hpp>
 #include <ViewInputEngine.hpp>
+
+#include <matrix_float4x4.hpp>
+
 #include <utility>
+
+class Camera;
+class IEvent;
+class MainWindow;
 
 CloseState::CloseState(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,

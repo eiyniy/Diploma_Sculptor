@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Enums.hpp>
 #include <IEvent.hpp>
 
 class CloseEvent : public IEvent {

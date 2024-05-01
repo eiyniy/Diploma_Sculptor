@@ -2,12 +2,12 @@
 
 #include <BaseInputEngine.hpp>
 #include <Enums.hpp>
-#include <MainWindow.hpp>
+#include <IEvent.hpp>
+#include <ModelInputEngine.hpp>
 #include <ReleaseMouseEvent.hpp>
-#include <Sculptor.hpp>
 #include <SculptorEditEvent.hpp>
-#include <ViewState.hpp>
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <memory>

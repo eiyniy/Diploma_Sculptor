@@ -4,6 +4,11 @@
 #include <BaseRenderEngine.hpp>
 #include <MainWindow.hpp>
 
+#include <utility>
+
+class Object;
+enum class StateType;
+
 BaseState::BaseState(
     std::unique_ptr<BaseInputEngine> _input,
     std::unique_ptr<BaseRenderEngine> _render)

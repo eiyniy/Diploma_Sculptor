@@ -1,9 +1,14 @@
 #pragma once
 
 #include <BaseInputEngine.hpp>
+#include <Enums.hpp>
 
 #include <chrono>
 #include <memory>
+#include <optional>
+#include <queue>
+
+class IEvent;
 
 class ModelInputEngine : public BaseInputEngine {
 private:

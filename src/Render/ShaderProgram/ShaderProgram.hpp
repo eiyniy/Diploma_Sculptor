@@ -1,10 +1,12 @@
 #pragma once
 
+#include <Concepts.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderUniform.hpp>
 
 #include <GL/glew.h>
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <stdexcept>

@@ -4,6 +4,7 @@
 #include <Settings.hpp>
 
 #include <geometric.hpp>
+#include <matrix_float4x4.hpp>
 #include <matrix_transform.hpp>
 #include <qualifier.hpp>
 #include <trigonometric.hpp>

@@ -2,29 +2,28 @@
 
 #include <Triangle.hpp>
 
-#include <geometric.hpp>
-#include <qualifier.hpp>
-#include <vector_float3.hpp>
+#include <vector_float4.hpp>
 
-#include <cmath>
 #include <utility>
 #include <vector>
 
-const float triangleToParallelogramRatio = 0.5F;
+class EntryIds;
 
 class EarClipper {
 private:
+    static constexpr float triangleToParallelogramRatio = 0.5F;
+
     static double
     area(const glm::vec4& v0, const glm::vec4& v1, const glm::vec4& v2);
 
     static bool isPointsInside(
-        const std::pair<glm::vec4, VertexIds>& v0,
-        const std::pair<glm::vec4, VertexIds>& v1,
-        const std::pair<glm::vec4, VertexIds>& v2,
-        const std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices);
+        const std::pair<glm::vec4, EntryIds>& v0,
+        const std::pair<glm::vec4, EntryIds>& v1,
+        const std::pair<glm::vec4, EntryIds>& v2,
+        const std::vector<std::pair<glm::vec4, EntryIds>>& polygonVertices);
 
     static Triangle
-    clipEar(std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices);
+    clipEar(std::vector<std::pair<glm::vec4, EntryIds>>& polygonVertices);
 
     static bool isConvexVertex(
         const glm::vec4& vertex,
@@ -33,5 +32,5 @@ private:
 
 public:
     static std::vector<Triangle>
-    triangulate(std::vector<std::pair<glm::vec4, VertexIds>>& polygonVertices);
+    triangulate(std::vector<std::pair<glm::vec4, EntryIds>>& polygonVertices);
 };

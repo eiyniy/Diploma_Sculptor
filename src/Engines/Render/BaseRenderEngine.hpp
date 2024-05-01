@@ -17,6 +17,7 @@ public:
 
     virtual ~BaseRenderEngine() = default;
 
-    virtual void draw(const std::map<std::string, std::shared_ptr<Object>>& objects)
+    virtual void
+    draw(const std::map<std::string, std::shared_ptr<Object>>& objects)
         = 0;
 };

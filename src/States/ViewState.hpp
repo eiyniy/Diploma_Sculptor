@@ -1,8 +1,16 @@
 #pragma once
 
 #include <BaseState.hpp>
-#include <Camera.hpp>
-#include <MainWindow.hpp>
+#include <Enums.hpp>
+
+#include <matrix_float4x4.hpp>
+
+#include <memory>
+#include <queue>
+
+class Camera;
+class IEvent;
+class MainWindow;
 
 class ViewState : public BaseState {
 public:

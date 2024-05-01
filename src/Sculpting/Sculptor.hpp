@@ -1,19 +1,19 @@
 #pragma once
 
-#include <Graph.hpp>
-
 #include <matrix_float4x4.hpp>
 #include <vector_float3.hpp>
-#include <vector_float4.hpp>
 
 #include <GL/glew.h>
 
 #include <array>
 #include <cstddef>
 #include <optional>
+#include <utility>
 #include <vector>
 
 // TODO: remove static from functions && store Brush
+// TODO: Store some glm::vec3 direction in Brush to make different brushes.
+// Multiple interpolated to vertex position direction by normals
 class Sculptor {
 private:
     int radius;

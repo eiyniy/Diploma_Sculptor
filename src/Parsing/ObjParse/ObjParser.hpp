@@ -2,15 +2,16 @@
 
 #include <BaseTextParser.hpp>
 #include <Concepts.hpp>
+#include <EntryIds.hpp>
 #include <Enums.hpp>
 #include <ObjParseResult.hpp>
 #include <Triangle.hpp>
 
-#include <cstddef>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -37,7 +38,7 @@ private:
     static void fillVec2(glm::vec2& vec, char index, float value);
     static void fillVec4(glm::vec4& vec, char index, float value);
 
-    static std::vector<VertexIds> parseVertexIds(const std::string& line);
+    static std::vector<EntryIds> parseVertexIds(const std::string& line);
     std::vector<Triangle> parsePolygon(const std::string& line);
 
 public:

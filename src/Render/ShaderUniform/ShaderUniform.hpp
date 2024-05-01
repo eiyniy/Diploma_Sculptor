@@ -10,6 +10,7 @@
 
 #include <GL/glew.h>
 
+#include <concepts>
 #include <stdexcept>
 #include <string>
 #include <string_view>

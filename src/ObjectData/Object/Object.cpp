@@ -1,8 +1,12 @@
-#include "vector_float4.hpp"
 #include <Object.hpp>
 
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
+
+#include <qualifier.hpp>
+#include <type_vec3.hpp>
+#include <vector_float3.hpp>
+#include <vector_float4.hpp>
 
 #include <memory>
 #include <stdexcept>
@@ -106,6 +110,7 @@ void Object::bindIndicesEBO()
         GL_STATIC_DRAW);
 }
 
+// NOLINTNEXTLINE
 void Object::unbindVBO() { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
 void Object::selectShaderProgram(const std::string_view name)
@@ -160,12 +165,17 @@ void Object::performTransform(
     const std::vector<std::pair<std::size_t, glm::vec3>>& transform)
 {
     for (auto&& vertexTransform : transform) {
-        trVertices.at(vertexTransform.first * glm::vec4::length())
-            += vertexTransform.second.x;
-        trVertices.at(vertexTransform.first * glm::vec4::length() + 1)
-            += vertexTransform.second.y;
-        trVertices.at(vertexTransform.first * glm::vec4::length() + 2)
-            += vertexTransform.second.z;
+        const auto extendedTransformPositions
+            = connectedIndicesIds.at(vertexTransform.first);
+
+        for (auto&& transformPos : extendedTransformPositions) {
+            trVertices.at(transformPos * glm::vec4::length())
+                += vertexTransform.second.x;
+            trVertices.at(transformPos * glm::vec4::length() + 1)
+                += vertexTransform.second.y;
+            trVertices.at(transformPos * glm::vec4::length() + 2)
+                += vertexTransform.second.z;
+        }
     }
 }
 

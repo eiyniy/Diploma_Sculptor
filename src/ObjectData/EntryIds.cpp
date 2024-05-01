@@ -1,11 +1,13 @@
-#include <VertexIds.hpp>
+#include <EntryIds.hpp>
 
 #include <Math.hpp>
 #include <ObjParser.hpp>
+#include <Triangle.hpp>
 
+#include <array>
 #include <stdexcept>
 
-VertexIds::VertexIds(
+EntryIds::EntryIds(
     const int _vertexId,
     const std::optional<int>& _tVertexId,
     const std::optional<int>& _nVertexId)
@@ -15,7 +17,7 @@ VertexIds::VertexIds(
 {
 }
 
-VertexIds VertexIds::parse(const std::string& str)
+EntryIds EntryIds::parse(const std::string& str)
 {
     auto accumulator = std::array<std::optional<int>, 3>();
 
@@ -32,20 +34,20 @@ VertexIds VertexIds::parse(const std::string& str)
         throw std::logic_error("Invalid argument");
     }
 
-    return VertexIds { *accumulator[0], accumulator[1], accumulator[2] };
+    return EntryIds { *accumulator[0], accumulator[1], accumulator[2] };
 }
 
-const VertexIds& Triangle::cGetVertexIds(const int i) const
+const EntryIds& Triangle::cGetVertexIds(const int i) const
 {
     if (i > 2) {
-        throw std::invalid_argument("Could not get VertexIds");
+        throw std::invalid_argument("Could not get EntryIds");
     }
 
     return values.at(i);
 }
 
-int VertexIds::cGetVertexId() const { return vertexId; }
+int EntryIds::cGetVertexId() const { return vertexId; }
 
-std::optional<int> VertexIds::cGetNormalVertexId() const { return nVertexId; }
+std::optional<int> EntryIds::cGetNormalVertexId() const { return nVertexId; }
 
-std::optional<int> VertexIds::cGetTextureVertexId() const { return tVertexId; }
+std::optional<int> EntryIds::cGetTextureVertexId() const { return tVertexId; }
