@@ -93,9 +93,16 @@ public:
     void performTransform(
         const std::vector<std::pair<std::size_t, glm::vec3>>& transform);
 
+    // TODO: Remove
     [[nodiscard]] const std::vector<GLfloat>& getTrVertices() const;
 
     [[nodiscard]] const std::vector<GLuint>& getIndices() const;
+
+    [[nodiscard]] glm::vec3
+    getFaceNormalCross(std::array<std::size_t, 3> verticesId) const;
+
+    [[nodiscard]] glm::vec3
+    getFaceNormalAverage(std::array<std::size_t, 3> verticesId) const;
 };
 
 template <class T>

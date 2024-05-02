@@ -177,15 +177,14 @@ bool Sculptor::intersectRayTriangleGLM(
     return true;
 }
 
-std::vector<std::pair<std::size_t, glm::vec3>>
-Sculptor::getTransform(const std::vector<std::size_t>& verticesId)
+std::vector<std::pair<std::size_t, glm::vec3>> Sculptor::getTransform(
+    std::vector<std::size_t>&& verticesId, glm::vec3&& normal)
 {
     std::vector<std::pair<std::size_t, glm::vec3>> transform;
     transform.resize(verticesId.size());
 
     for (std::size_t i = 0; i < verticesId.size(); ++i) {
-        transform.at(i)
-            = std::make_pair(verticesId.at(i), glm::vec3 { 0.1F, 0, 0 });
+        transform.at(i) = std::make_pair(verticesId.at(i), normal * 0.05F);
     }
 
     return transform;

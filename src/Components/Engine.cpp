@@ -27,6 +27,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <cstddef>
 #include <array>
 #include <iostream>
 #include <memory>
@@ -129,12 +130,17 @@ void Engine::updateEvents()
 
             const auto object = scene->getObject("OBJECT");
 
-            const auto verticesId = Sculptor::getSelectedTriangleVerticesIds(
+            // TODO!: Do not pass private object fields here
+            auto verticesId = Sculptor::getSelectedTriangleVerticesIds(
                 object->getTrVertices(), object->getIndices(), rayOrig, rayDir);
 
             if (verticesId.has_value()) {
+                std::vector<std::size_t> verticesIdVector { verticesId->begin(),
+                                                            verticesId->end() };
+
                 const auto transform = Sculptor::getTransform(
-                    { verticesId->begin(), verticesId->end() });
+                    std::move(verticesIdVector),
+                    object->getFaceNormalAverage(*verticesId));
 
                 object->bindVerticesVBO();
                 object->performTransform(transform);

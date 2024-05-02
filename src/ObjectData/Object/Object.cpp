@@ -8,11 +8,13 @@
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
 
+#include <array>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 Object::Object(ConstructorPasskey<Object>&& passkey)
     : VAO(0)
@@ -184,3 +186,39 @@ bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
 const std::vector<GLfloat>& Object::getTrVertices() const { return trVertices; }
 
 const std::vector<GLuint>& Object::getIndices() const { return indices; }
+
+glm::vec3
+Object::getFaceNormalCross(std::array<std::size_t, 3> verticesId) const
+{
+    const auto vec4Length = glm::vec4::length();
+
+    std::array<glm::vec3, 3> vertices {};
+
+    for (int i = 0; i < verticesId.size(); ++i) {
+        vertices.at(i) = { trVertices.at(verticesId.at(i) * vec4Length),
+                           trVertices.at(verticesId.at(i) * vec4Length + 1),
+                           trVertices.at(verticesId.at(i) * vec4Length + 2) };
+    }
+
+    const glm::vec3 edge1 { vertices[1] - vertices[0] };
+    const glm::vec3 edge2 { vertices[2] - vertices[0] };
+
+    return glm::normalize(glm::cross(edge2, edge1));
+}
+
+glm::vec3
+Object::getFaceNormalAverage(std::array<std::size_t, 3> verticesId) const
+{
+    const auto vec3Length = glm::vec3::length();
+
+    std::array<glm::vec3, 3> normals {};
+
+    for (int i = 0; i < verticesId.size(); ++i) {
+        normals.at(i) = { trNVertices.at(verticesId.at(i) * vec3Length),
+                          trNVertices.at(verticesId.at(i) * vec3Length + 1),
+                          trNVertices.at(verticesId.at(i) * vec3Length + 2) };
+    }
+
+    return (normals[0] + normals[1] + normals[2])
+        / static_cast<float>(vec3Length);
+}
