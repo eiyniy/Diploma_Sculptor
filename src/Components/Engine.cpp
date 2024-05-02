@@ -27,8 +27,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <cstddef>
 #include <array>
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -130,9 +130,11 @@ void Engine::updateEvents()
 
             const auto object = scene->getObject("OBJECT");
 
+            auto&& intersections = object->getRayIntersections(rayOrig, rayDir);
+
             // TODO!: Do not pass private object fields here
             auto verticesId = Sculptor::getSelectedTriangleVerticesIds(
-                object->getTrVertices(), object->getIndices(), rayOrig, rayDir);
+                std::move(intersections));
 
             if (verticesId.has_value()) {
                 std::vector<std::size_t> verticesIdVector { verticesId->begin(),

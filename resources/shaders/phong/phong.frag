@@ -6,6 +6,7 @@ in vec3 viewPosition;
 out vec4 color;
 
 uniform vec3 cameraPos;
+uniform vec3 lightColor;
 
 void main()
 {

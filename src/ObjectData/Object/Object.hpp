@@ -93,10 +93,8 @@ public:
     void performTransform(
         const std::vector<std::pair<std::size_t, glm::vec3>>& transform);
 
-    // TODO: Remove
-    [[nodiscard]] const std::vector<GLfloat>& getTrVertices() const;
-
-    [[nodiscard]] const std::vector<GLuint>& getIndices() const;
+    [[nodiscard]] std::vector<std::pair<std::array<std::size_t, 3>, float>>
+    getRayIntersections(glm::vec3 rayOrig, glm::vec3 rayDir) const;
 
     [[nodiscard]] glm::vec3
     getFaceNormalCross(std::array<std::size_t, 3> verticesId) const;

@@ -18,22 +18,6 @@ class Sculptor {
 private:
     int radius;
 
-    static bool intersectRayTriangleGLM(
-        const glm::vec3& rayOrigin,
-        const glm::vec3& rayDir,
-        const std::array<glm::vec3, 3>& vertices,
-        glm::vec3& tuv);
-
-    static int intersectRayTriangleOrig(
-        std::array<double, 3> orig,
-        std::array<double, 3> dir,
-        std::array<double, 3> vert0,
-        std::array<double, 3> vert1,
-        std::array<double, 3> vert2,
-        float& t,
-        float& u,
-        float& v);
-
 public:
     Sculptor(int _radius);
 
@@ -50,14 +34,28 @@ public:
         glm::vec3& rayOrig,
         glm::vec3& rayDir);
 
+    static bool intersectRayTriangleGLM(
+        const glm::vec3& rayOrigin,
+        const glm::vec3& rayDir,
+        const std::array<glm::vec3, 3>& vertices,
+        glm::vec3& tuv);
+
+    static int intersectRayTriangleOrig(
+        std::array<double, 3> orig,
+        std::array<double, 3> dir,
+        std::array<double, 3> vert0,
+        std::array<double, 3> vert1,
+        std::array<double, 3> vert2,
+        float& t,
+        float& u,
+        float& v);
+
     static std::optional<std::array<std::size_t, 3>>
     getSelectedTriangleVerticesIds(
-        const std::vector<GLfloat>& trVertices,
-        const std::vector<GLuint>& indices,
-        glm::vec3 rayOrig,
-        glm::vec3 rayDir);
+        std::vector<std::pair<std::array<std::size_t, 3>, float>>&&
+            intersectionsIdDistance);
 
     // TODO: accept Brush
     static std::vector<std::pair<std::size_t, glm::vec3>>
-    getTransform(std::vector<std::size_t>&& verticesId, glm::vec3&& normal);
+    getTransform(std::vector<std::size_t>&& verticesId, glm::vec3 normal);
 };

@@ -1,5 +1,7 @@
 #include <Object.hpp>
 
+#include <Globals.hpp>
+#include <Sculptor.hpp>
 #include <ShaderProgram.hpp>
 #include <Texture.hpp>
 
@@ -183,9 +185,41 @@ void Object::performTransform(
 
 bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
 
-const std::vector<GLfloat>& Object::getTrVertices() const { return trVertices; }
+std::vector<std::pair<std::array<std::size_t, 3>, float>>
+Object::getRayIntersections(
+    const glm::vec3 rayOrig, const glm::vec3 rayDir) const
+{
+    std::vector<std::pair<std::array<std::size_t, 3>, float>>
+        idsWithDistance {};
 
-const std::vector<GLuint>& Object::getIndices() const { return indices; }
+#pragma omp parallel for if (!_IS_DEBUG)
+    for (std::size_t triangleId = 0; triangleId < indices.size();
+         triangleId += 3) {
+        std::array<glm::vec3, 3> triangleVertices {};
+
+        for (int vertexId = 0; vertexId < 3; ++vertexId) {
+            const auto trIndex = indices.at(triangleId + vertexId) * 4;
+            triangleVertices.at(vertexId) = { trVertices.at(trIndex),
+                                              trVertices.at(trIndex + 1),
+                                              trVertices.at(trIndex + 2) };
+        }
+
+        glm::vec3 tuv;
+        if (Sculptor::intersectRayTriangleGLM(
+                rayOrig, rayDir, triangleVertices, tuv)
+            && tuv.x > 0) {
+#pragma omp critical(new_result)
+            {
+                std::array<std::size_t, 3> Ids { indices.at(triangleId),
+                                                 indices.at(triangleId + 1),
+                                                 indices.at(triangleId + 2) };
+                idsWithDistance.emplace_back(Ids, tuv.x);
+            }
+        }
+    }
+
+    return idsWithDistance;
+}
 
 glm::vec3
 Object::getFaceNormalCross(std::array<std::size_t, 3> verticesId) const

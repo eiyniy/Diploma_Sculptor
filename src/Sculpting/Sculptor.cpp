@@ -62,44 +62,15 @@ void Sculptor::getRayWorld(
 // TODO: Do not iterate through indices. Use triangles(?) insted
 std::optional<std::array<std::size_t, 3>>
 Sculptor::getSelectedTriangleVerticesIds(
-    const std::vector<GLfloat>& trVertices,
-    const std::vector<GLuint>& indices,
-    const glm::vec3 rayOrig,
-    const glm::vec3 rayDir)
+    std::vector<std::pair<std::array<std::size_t, 3>, float>>&&
+        intersectionsIdDistance)
 {
-    std::vector<std::pair<std::array<std::size_t, 3>, float>> idsWithDistance;
-
-#pragma omp parallel for if (!_IS_DEBUG)
-    for (std::size_t triangleId = 0; triangleId < indices.size();
-         triangleId += 3) {
-        std::array<glm::vec3, 3> triangleVertices {};
-
-        for (int vertexId = 0; vertexId < 3; ++vertexId) {
-            const auto trIndex = indices.at(triangleId + vertexId) * 4;
-            triangleVertices.at(vertexId) = { trVertices.at(trIndex),
-                                              trVertices.at(trIndex + 1),
-                                              trVertices.at(trIndex + 2) };
-        }
-
-        glm::vec3 tuv;
-        if (intersectRayTriangleGLM(rayOrig, rayDir, triangleVertices, tuv)
-            && tuv.x > 0) {
-#pragma omp critical(new_result)
-            {
-                std::array<std::size_t, 3> Ids { indices.at(triangleId),
-                                                 indices.at(triangleId + 1),
-                                                 indices.at(triangleId + 2) };
-                idsWithDistance.emplace_back(Ids, tuv.x);
-            }
-        }
-    }
-
-    if (idsWithDistance.empty()) {
+    if (intersectionsIdDistance.empty()) {
         return std::nullopt;
     }
 
-    auto result = idsWithDistance.front();
-    for (auto&& elem : idsWithDistance) {
+    auto result = intersectionsIdDistance.front();
+    for (auto&& elem : intersectionsIdDistance) {
         if (elem.second < result.second) {
             result = elem;
         }
@@ -177,8 +148,8 @@ bool Sculptor::intersectRayTriangleGLM(
     return true;
 }
 
-std::vector<std::pair<std::size_t, glm::vec3>> Sculptor::getTransform(
-    std::vector<std::size_t>&& verticesId, glm::vec3&& normal)
+std::vector<std::pair<std::size_t, glm::vec3>>
+Sculptor::getTransform(std::vector<std::size_t>&& verticesId, glm::vec3 normal)
 {
     std::vector<std::pair<std::size_t, glm::vec3>> transform;
     transform.resize(verticesId.size());
