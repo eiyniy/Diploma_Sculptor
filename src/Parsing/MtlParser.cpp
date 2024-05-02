@@ -2,9 +2,7 @@
 
 #include <BaseTextParser.hpp>
 #include <Enums.hpp>
-#include <ImageParser.hpp>
 #include <Material.hpp>
-#include <OldTexture.hpp>
 
 #include <qualifier.hpp>
 #include <type_vec4.hpp>
@@ -40,15 +38,7 @@ MtlParser::parse()
 
     if (!name.empty()) {
         (*materials)[name] = std::make_shared<const Material>(
-            name,
-            ambient,
-            diffuse,
-            specular,
-            specularExp,
-            std::move(diffuseMap),
-            std::move(emissiveMap),
-            std::move(normalMap),
-            std::move(mraoMap));
+            name, ambient, diffuse, specular, specularExp);
     }
 
     resetMaterial();
@@ -72,15 +62,7 @@ void MtlParser::parseEntry(const std::string& line)
     case MtlEntryType::NewMaterial: {
         if (!name.empty()) {
             (*materials)[name] = std::make_shared<const Material>(
-                name,
-                ambient,
-                diffuse,
-                specular,
-                specularExp,
-                std::move(diffuseMap),
-                std::move(emissiveMap),
-                std::move(normalMap),
-                std::move(mraoMap));
+                name, ambient, diffuse, specular, specularExp);
         }
 
         resetMaterial();
@@ -115,17 +97,9 @@ void MtlParser::parseEntry(const std::string& line)
         break;
     }
     case MtlEntryType::DiffuseMap:
-        diffuseMap = parseTexture(line, getPathToFile());
-        break;
     case MtlEntryType::EmissiveMap:
-        emissiveMap = parseTexture(line, getPathToFile());
-        break;
     case MtlEntryType::NormalMap:
-        normalMap = parseTexture(line, getPathToFile());
-        break;
     case MtlEntryType::MRAOMap:
-        mraoMap = parseTexture(line, getPathToFile());
-        break;
     default:
         break;
     }
@@ -180,10 +154,6 @@ void MtlParser::resetMaterial()
     diffuse = std::nullopt;
     specular = std::nullopt;
     specularExp = std::nullopt;
-    diffuseMap = nullptr;
-    emissiveMap = nullptr;
-    normalMap = nullptr;
-    mraoMap = nullptr;
 }
 
 glm::vec4 MtlParser::parseCoeff(const std::string& line)
@@ -211,65 +181,4 @@ glm::vec4 MtlParser::parseCoeff(const std::string& line)
     // throw std::logic_error("MtlParser. Can't parse value.");
 
     return { accumulator[0], accumulator[1], accumulator[2], 1.F };
-}
-
-std::unique_ptr<const OldTexture> MtlParser::parseTexture(
-    const std::string& line,
-    const std::string& pathToFile,
-    std::optional<MtlEntryType> optType)
-{
-    if (!optType) {
-        optType = MtlParser::getEntryType(line);
-        if (!optType) {
-            throw std::logic_error(
-                "Can't parse material texture. Can't get entry type");
-        }
-    }
-
-    const auto entryType = *optType;
-    if (entryType != MtlEntryType::DiffuseMap
-        && entryType != MtlEntryType::EmissiveMap
-        && entryType != MtlEntryType::NormalMap
-        && entryType != MtlEntryType::MRAOMap) {
-        throw std::logic_error(
-            "Can't parse material texture. Invalid entry type");
-    }
-
-    auto iter = line.cbegin();
-    const auto iterEnd = line.cend();
-
-    MtlParser::getNextPart(&iter, iterEnd, ' ');
-
-    const auto optTexturePath = MtlParser::getNextPart(&iter, iterEnd, ' ');
-
-    if (!optTexturePath) {
-        throw std::logic_error(
-            "Can't parse material texture. Invalid texture path");
-    }
-
-    TextureType textureType {};
-
-    switch (entryType) {
-    case MtlEntryType::DiffuseMap:
-        textureType = TextureType::Diffuse;
-        break;
-    case MtlEntryType::EmissiveMap:
-        textureType = TextureType::Emissive;
-        break;
-    case MtlEntryType::NormalMap:
-        textureType = TextureType::Normal;
-        break;
-    case MtlEntryType::MRAOMap:
-        textureType = TextureType::MRAO;
-        break;
-    default:
-        throw std::logic_error(
-            "Can't parse material texture. Invalid entry type");
-    }
-
-    const auto texturePath
-        = pathToFile.substr(0, pathToFile.rfind('/') + 1) + *optTexturePath;
-
-    const ImageParser parser { texturePath, textureType };
-    return parser.parse();
 }

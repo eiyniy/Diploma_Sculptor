@@ -155,7 +155,7 @@ std::vector<std::pair<std::size_t, glm::vec3>> Sculptor::getTransform(
     transform.resize(verticesId.size());
 
     for (std::size_t i = 0; i < verticesId.size(); ++i) {
-        const auto transformValue = normal * (isInverted ? 0.05F : -0.05F);
+        const auto transformValue = normal * (isInverted ? -0.05F : 0.05F);
         transform.at(i) = std::make_pair(verticesId.at(i), transformValue);
     }
 

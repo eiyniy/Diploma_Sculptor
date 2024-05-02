@@ -40,16 +40,17 @@ void ModelRenderEngine::draw(
         object.second->loadUniform(
             ShaderProgram::projectionUName, *projectionMat);
 
-        object.second->loadUniform(
-            ShaderProgram::cameraPosUName, camera->cGetPos());
+        // object.second->loadUniform(
+        //     ShaderProgram::cameraPosUName, camera->cGetPos());
 
-        object.second->loadUniform(
-            ShaderProgram::lightColorUName, glm::vec3(1, 1, 1));
+        // object.second->loadUniform(
+        //     ShaderProgram::lightColorUName, glm::vec3(1, 1, 1));
 
-        object.second->loadUniform(
-            ShaderProgram::dimmingFactorUName,
-            Settings::get()->getShaderProgramDimmingFactor());
-        object.second->loadUniform(ShaderProgram::isDistanceDimmingUName, true);
+        // object.second->loadUniform(
+        //     ShaderProgram::dimmingFactorUName,
+        //     Settings::get()->getShaderProgramDimmingFactor());
+        // object.second->loadUniform(ShaderProgram::isDistanceDimmingUName,
+        // true);
 
         object.second->draw();
         object.second->disableShader();

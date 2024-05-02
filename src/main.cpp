@@ -62,10 +62,16 @@ int main(int argc, char** argv)
         shaderProgramBuilder.init(shaderProgramName);
 
         shaderProgramBuilder.addShader(
-            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\flat\flat.vert)",
+            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\base.vert)",
             GL_VERTEX_SHADER);
+        // shaderProgramBuilder.addShader(
+        //     R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\flat\flat.frag)",
+        //     GL_FRAGMENT_SHADER);
+        // shaderProgramBuilder.addShader(
+        //     R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\normals\normals.frag)",
+        //     GL_FRAGMENT_SHADER);
         shaderProgramBuilder.addShader(
-            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\flat\flat.frag)",
+            R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders\normals\flatNormals.frag)",
             GL_FRAGMENT_SHADER);
 
         shaderProgramBuilder.link();
@@ -91,13 +97,12 @@ int main(int argc, char** argv)
         shaderProgramBuilder.addNewUniform(ShaderProgram::viewUName);
         shaderProgramBuilder.addNewUniform(ShaderProgram::projectionUName);
 
-        shaderProgramBuilder.addNewUniform(ShaderProgram::cameraPosUName);
+        // shaderProgramBuilder.addNewUniform(ShaderProgram::cameraPosUName);
 
-        shaderProgramBuilder.addNewUniform(ShaderProgram::lightColorUName);
+        // shaderProgramBuilder.addNewUniform(ShaderProgram::lightColorUName);
 
-        shaderProgramBuilder.addNewUniform(ShaderProgram::dimmingFactorUName);
-        shaderProgramBuilder.addNewUniform(
-            ShaderProgram::isDistanceDimmingUName);
+        // shaderProgramBuilder.addNewUniform(ShaderProgram::dimmingFactorUName);
+        // shaderProgramBuilder.addNewUniform(ShaderProgram::isDistanceDimmingUName);
 
         auto shaderProgram = shaderProgramBuilder.build();
 

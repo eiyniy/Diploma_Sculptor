@@ -12,11 +12,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CIMG_NEED_X11 0)
-set(CIMG_NEED_PNG 1)
-set(CIMG_NEED_JPG 1)
-
-set(CIMG_H_PATH "${PROJECT_SOURCE_DIR}/Libraries/CImg")
 set(SOIL_H_PATH "${PROJECT_SOURCE_DIR}/Libraries/SOIL/includes/SOIL")
 
 
@@ -67,37 +62,6 @@ target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${header_dir_list})
 # ---OpenMP---
 find_package(OpenMP REQUIRED)
 target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
-
-
-# ---CImg---
-add_library(CImg_Lib INTERFACE)
-target_include_directories(CImg_Lib INTERFACE ${CIMG_H_PATH})
-target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE CImg_Lib)
-
-if(CIMG_NEED_X11)
-    message(STATUS "Looking for X11...")
-    find_package(X11 REQUIRED)
-    target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${X11_INCLUDE_DIR})
-    target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
-else()
-    target_compile_definitions(${LOCAL_PROJECT_NAME} PRIVATE cimg_display=0)
-endif()
-
-if(CIMG_NEED_JPG)
-    message(STATUS "Looking for libjpeg...")
-    find_package(JPEG REQUIRED)
-    target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${JPEG_INCLUDE_DIR})
-    target_link_libraries (${LOCAL_PROJECT_NAME} PRIVATE ${JPEG_LIBRARY})
-    target_compile_definitions(${LOCAL_PROJECT_NAME} PRIVATE cimg_use_jpeg=1)
-endif()
-
-if(CIMG_NEED_PNG)
-    message(STATUS "Looking for libpng...")
-    find_package(PNG REQUIRED)
-    target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE ${PNG_INCLUDE_DIR})
-    target_link_libraries (${LOCAL_PROJECT_NAME} PRIVATE ${PNG_LIBRARY})
-    target_compile_definitions(${LOCAL_PROJECT_NAME} PRIVATE cimg_use_png=1)
-endif()
 
 
 # ---GLFW---

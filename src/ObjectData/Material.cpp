@@ -14,41 +14,13 @@ Material::Material(
     const std::optional<glm::vec4>& _ambient,
     const std::optional<glm::vec4>& _diffuse,
     const std::optional<glm::vec4>& _specular,
-    const std::optional<double>& _specularExp,
-    std::shared_ptr<const OldTexture> _diffuseMap,
-    std::shared_ptr<const OldTexture> _emissiveMap,
-    std::shared_ptr<const OldTexture> _normalMap,
-    std::shared_ptr<const OldTexture> _mraoMap)
+    const std::optional<double>& _specularExp)
     : name(std::move(_name))
     , ambient(_ambient)
     , diffuse(_diffuse)
     , specular(_specular)
     , specularExp(_specularExp)
-    , diffuseMap(std::move(_diffuseMap))
-    , emissiveMap(std::move(_emissiveMap))
-    , normalMap(std::move(_normalMap))
-    , mraoMap(std::move(_mraoMap))
 {
-}
-
-std::shared_ptr<const OldTexture> Material::cGetDiffuseMap() const
-{
-    return diffuseMap;
-}
-
-std::shared_ptr<const OldTexture> Material::cGetEmissiveMap() const
-{
-    return emissiveMap;
-}
-
-std::shared_ptr<const OldTexture> Material::cGetNormalMap() const
-{
-    return normalMap;
-}
-
-std::shared_ptr<const OldTexture> Material::cGetMRAOMap() const
-{
-    return mraoMap;
 }
 
 const std::string& Material::cGetName() const { return name; }
