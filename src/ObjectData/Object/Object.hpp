@@ -39,8 +39,6 @@ private:
 
     std::map<std::size_t, std::vector<std::size_t>> connectedIndicesIds;
 
-    // TODO: Rename (tr?)
-    // TODO: Make unique_ptr
     std::vector<GLfloat> trVertices;
     std::vector<GLfloat> trTVertices;
     std::vector<GLfloat> trNVertices;
@@ -83,7 +81,6 @@ public:
 
     void disableShader();
 
-    // TODO: Get rid of this chain of calls to loadUniform()
     template <class T>
         requires IsUniformType<T>
     void loadUniform(std::string_view name, const T& value) const;

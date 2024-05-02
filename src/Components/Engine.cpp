@@ -132,7 +132,6 @@ void Engine::updateEvents()
 
             auto&& intersections = object->getRayIntersections(rayOrig, rayDir);
 
-            // TODO!: Do not pass private object fields here
             auto verticesId = Sculptor::getSelectedTriangleVerticesIds(
                 std::move(intersections));
 
@@ -142,7 +141,8 @@ void Engine::updateEvents()
 
                 const auto transform = Sculptor::getTransform(
                     std::move(verticesIdVector),
-                    object->getFaceNormalAverage(*verticesId));
+                    object->getFaceNormalAverage(*verticesId),
+                    sculptorEditEvent->isInverted());
 
                 object->bindVerticesVBO();
                 object->performTransform(transform);

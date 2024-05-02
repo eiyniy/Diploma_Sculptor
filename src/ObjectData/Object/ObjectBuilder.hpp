@@ -34,7 +34,6 @@ private:
     std::unique_ptr<std::vector<Triangle>> triangles;
     std::unique_ptr<std::vector<glm::vec<3, GLuint>>> indices;
 
-    // TODO: Mb rename indices... to entries...
     std::map<std::size_t, std::vector<std::size_t>> vericesIdToIndicesId;
     std::map<std::size_t, std::size_t> indicesIdToVertexId;
 

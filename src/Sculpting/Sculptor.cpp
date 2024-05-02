@@ -58,8 +58,6 @@ void Sculptor::getRayWorld(
     rayDir = glm::normalize(glm::vec3(rayEndWorld) - rayStartWorld);
 }
 
-// TODO: Mb move to Object OR make Object::getTriangle(Id)
-// TODO: Do not iterate through indices. Use triangles(?) insted
 std::optional<std::array<std::size_t, 3>>
 Sculptor::getSelectedTriangleVerticesIds(
     std::vector<std::pair<std::array<std::size_t, 3>, float>>&&
@@ -148,14 +146,17 @@ bool Sculptor::intersectRayTriangleGLM(
     return true;
 }
 
-std::vector<std::pair<std::size_t, glm::vec3>>
-Sculptor::getTransform(std::vector<std::size_t>&& verticesId, glm::vec3 normal)
+std::vector<std::pair<std::size_t, glm::vec3>> Sculptor::getTransform(
+    std::vector<std::size_t>&& verticesId,
+    const glm::vec3 normal,
+    const bool isInverted)
 {
     std::vector<std::pair<std::size_t, glm::vec3>> transform;
     transform.resize(verticesId.size());
 
     for (std::size_t i = 0; i < verticesId.size(); ++i) {
-        transform.at(i) = std::make_pair(verticesId.at(i), normal * 0.05F);
+        const auto transformValue = normal * (isInverted ? 0.05F : -0.05F);
+        transform.at(i) = std::make_pair(verticesId.at(i), transformValue);
     }
 
     return transform;

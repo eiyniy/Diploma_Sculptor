@@ -37,7 +37,12 @@ std::optional<StateType> EditInputEngine::update(const float dt)
     }
 
     if (mouse[GLFW_MOUSE_BUTTON_LEFT] && isMouseMoved()) {
-        pushEvent(std::make_unique<SculptorEditEvent>(getMousePos()));
+        if (keys[GLFW_KEY_LEFT_CONTROL]) {
+            pushEvent(std::make_unique<SculptorEditEvent>(getMousePos(), true));
+        } else {
+            pushEvent(
+                std::make_unique<SculptorEditEvent>(getMousePos(), false));
+        }
         isMouseMoved() = false;
     }
 

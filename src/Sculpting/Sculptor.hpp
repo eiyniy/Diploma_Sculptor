@@ -57,5 +57,5 @@ public:
 
     // TODO: accept Brush
     static std::vector<std::pair<std::size_t, glm::vec3>>
-    getTransform(std::vector<std::size_t>&& verticesId, glm::vec3 normal);
+    getTransform(std::vector<std::size_t>&& verticesId, glm::vec3 normal, bool isInverted);
 };
