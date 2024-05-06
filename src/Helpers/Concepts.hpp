@@ -26,11 +26,20 @@ concept IsUniformType = IsAnyOf<
     float,
     bool>;
 
-template <class T>
-concept IsGlmVec = IsAnyOf<T, glm::vec2, glm::vec3, glm::vec4>;
+template <int L>
+concept GlmVecLength = L > 0 && L <= 4;
+
+template <typename T>
+concept NumericType = std::integral<T> || std::floating_point<T>;
+
+template <int L, typename V>
+concept GlmVec = requires {
+    GlmVecLength<L>;
+    NumericType<V>;
+};
 
 template <class T>
-concept IsInputEnginePt = std::is_pointer_v<T>
+concept InputEnginePt = std::is_pointer_v<T>
     && (std::same_as<BaseInputEngine, std::remove_pointer_t<T>>
         || std::is_base_of_v<BaseInputEngine, std::remove_pointer_t<T>>);
 

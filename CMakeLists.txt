@@ -14,6 +14,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOIL_H_PATH "${PROJECT_SOURCE_DIR}/Libraries/SOIL/includes/SOIL")
 
+set(IWYU_ENABLED FALSE)
+
 
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
@@ -83,7 +85,7 @@ target_link_libraries(${LOCAL_PROJECT_NAME} PRIVATE openGL32)
 
 
 # ---IWYU---
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND IWYU_ENABLED)
 find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
 set(iwyu_path_and_options ${iwyu_path})
 set_property(TARGET ${LOCAL_PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path_and_options}) 

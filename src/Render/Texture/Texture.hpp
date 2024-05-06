@@ -20,7 +20,8 @@ private:
 
     bool isBinded;
 
-    int width, height;
+    int width;
+    int height;
 
     std::string name;
 

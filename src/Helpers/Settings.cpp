@@ -12,9 +12,11 @@ constexpr float defaultCameraMouseSens = 20.F;
 constexpr float defaultZNear = 0.1F;
 constexpr float defaultZFar = 1000.F;
 constexpr glm::vec<4, GLclampf> defaultWindowClearColor {
-    0.2F, 0.3F, 0.3F, 1.0F
+    0.2F, 0.3F, 0.3F, 1.F
 };
-constexpr float defaultShaderProgramDimmingFactor = 0.03F;
+constexpr float defaultDistanceDimmingFactor = 0.03F;
+constexpr glm::vec3 defaultLightColor { 1.F, 1.F, 1.F };
+constexpr glm::vec3 defaultLinesColor { 1.F, 0.F, 0.F };
 
 Settings::Settings()
     : cameraSpeed(defaultCameraSpeed)
@@ -27,7 +29,10 @@ Settings::Settings()
     , zNear(defaultZNear)
     , zFar(defaultZFar)
     , windowClearColor(defaultWindowClearColor)
-    , shaderProgramDimmingFactor(defaultShaderProgramDimmingFactor)
+    , distanceDimmingFactor(defaultDistanceDimmingFactor)
+    , lightColor(defaultLightColor)
+    , linesColor(defaultLinesColor)
+    , isDistanceDimmingEnabled(true)
 {
 }
 
@@ -64,7 +69,16 @@ bool Settings::isResizeEnabled() const { return resizeEnabled; }
 
 const std::string& Settings::getWindowName() { return windowName; }
 
-float Settings::getShaderProgramDimmingFactor() const
+glm::vec3 Settings::getLightColor() const { return lightColor; }
+
+float Settings::getDistanceDimmingFactor() const
 {
-    return shaderProgramDimmingFactor;
+    return distanceDimmingFactor;
 }
+
+bool Settings::getIsDistanceDimmingEnabled() const
+{
+    return isDistanceDimmingEnabled;
+}
+
+glm::vec3 Settings::getLinesColor() const { return linesColor; }

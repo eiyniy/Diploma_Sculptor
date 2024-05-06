@@ -1,6 +1,7 @@
 #include <ObjParser.hpp>
 
 #include <BaseTextParser.hpp>
+#include <Camera.hpp>
 #include <EarClipper.hpp>
 #include <Enums.hpp>
 #include <ObjParseResult.hpp>
@@ -10,6 +11,7 @@
 #include <type_vec2.hpp>
 #include <type_vec3.hpp>
 #include <type_vec4.hpp>
+#include <vector>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
@@ -29,6 +31,7 @@ ObjParser::ObjParser(const std::string& _pathToObj)
     nVertices = std::make_unique<std::vector<glm::vec3>>();
     tVertices = std::make_unique<std::vector<glm::vec2>>();
     polygons = std::make_unique<std::vector<Triangle>>();
+    linesId = std::make_unique<std::vector<glm::vec<2, GLuint>>>();
 }
 
 std::optional<ObjEntryType> ObjParser::getEntryType(const std::string& line)
@@ -55,7 +58,11 @@ std::optional<ObjEntryType> ObjParser::getEntryType(const std::string& line)
     if (type && type == "f") {
         return ObjEntryType::Polygon;
     }
-    return {};
+    if (type && type == "l") {
+        return ObjEntryType::Line;
+    }
+
+    return std::nullopt;
 }
 
 ObjParseResult ObjParser::parse()
@@ -63,9 +70,9 @@ ObjParseResult ObjParser::parse()
     const auto timeStart = std::chrono::high_resolution_clock::now();
 
     const auto fileContent = readFile();
-    const auto lines = splitByLines(fileContent);
+    const auto fileLines = splitByLines(fileContent);
 
-    for (const auto& line : lines) {
+    for (const auto& line : fileLines) {
         parseEntry(line);
     }
 
@@ -77,11 +84,22 @@ ObjParseResult ObjParser::parse()
     std::cout << "vertices parse time: " << verticeParseTime << " ms"
               << std::endl;
 
-    polygons->reserve(polygonStrings.size());
+    if (!polygonStrings.empty()) {
+        polygons->reserve(polygonStrings.size());
 
-    for (const auto& string : polygonStrings) {
-        for (const auto& polygon : parsePolygon(string)) {
-            polygons->emplace_back(polygon);
+        for (const auto& string : polygonStrings) {
+            for (const auto& polygon : parsePolygon(string)) {
+                polygons->push_back(polygon);
+            }
+        }
+    }
+
+    if (!lineStrings.empty()) {
+        linesId->reserve(lineStrings.size());
+
+        for (const auto& string : lineStrings) {
+            const auto line = parseGlmVec<2U, GLuint>(string);
+            linesId->push_back(line);
         }
     }
 
@@ -100,7 +118,8 @@ ObjParseResult ObjParser::parse()
     return { std::move(vertices),
              std::move(nVertices),
              std::move(tVertices),
-             std::move(polygons) };
+             std::move(polygons),
+             std::move(linesId) };
 }
 
 void ObjParser::parseEntry(const std::string& line)
@@ -114,58 +133,24 @@ void ObjParser::parseEntry(const std::string& line)
     std::size_t end = 0;
 
     switch (*type) {
-    case ObjEntryType::Vertex: {
-        vertices->push_back(parseGlmVec<glm::vec4>(line, fillVec4));
+    case ObjEntryType::Vertex:
+        vertices->push_back(parseGlmVec<4, float>(line));
         break;
-    }
-    case ObjEntryType::NormalVertex: {
-        nVertices->push_back(parseGlmVec<glm::vec3>(line, fillVec3));
+    case ObjEntryType::NormalVertex:
+        nVertices->push_back(parseGlmVec<3, float>(line));
         break;
-    }
-    case ObjEntryType::TextureVertex: {
-        tVertices->push_back(parseGlmVec<glm::vec2>(line, fillVec2));
+    case ObjEntryType::TextureVertex:
+        tVertices->push_back(parseGlmVec<2, float>(line));
         break;
-    }
-    case ObjEntryType::Polygon: {
+    case ObjEntryType::Polygon:
         polygonStrings.push_back(line);
         break;
-    }
+    case ObjEntryType::Line:
+        lineStrings.push_back(line);
+        break;
     case ObjEntryType::MtlPath:
     case ObjEntryType::UseMtl:
         break;
-    }
-}
-
-void ObjParser::fillVec4(glm::vec4& vec, char index, float value)
-{
-    if (index == 0) {
-        vec.x = value;
-    } else if (index == 1) {
-        vec.y = value;
-    } else if (index == 2) {
-        vec.z = value;
-    } else if (index == 3) {
-        vec.w = value;
-    }
-}
-
-void ObjParser::fillVec3(glm::vec3& vec, char index, float value)
-{
-    if (index == 0) {
-        vec.x = value;
-    } else if (index == 1) {
-        vec.y = value;
-    } else if (index == 2) {
-        vec.z = value;
-    }
-}
-
-void ObjParser::fillVec2(glm::vec2& vec, char index, float value)
-{
-    if (index == 0) {
-        vec.x = value;
-    } else if (index == 1) {
-        vec.y = value;
     }
 }
 

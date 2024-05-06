@@ -41,9 +41,11 @@ bool ShaderProgramBuilder::isShadersFinished() const
         && addedShadersTypes.contains(GL_FRAGMENT_SHADER);
 }
 
-void ShaderProgramBuilder::init(std::string_view name)
+void ShaderProgramBuilder::init(
+    std::string_view name, std::unique_ptr<IUniformLoader> uniformLoader)
 {
     instance->init(name);
+    instance->uniformLoader = std::move(uniformLoader);
     isInited = true;
 }
 

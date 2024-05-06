@@ -5,6 +5,8 @@
 
 #include <GL/glew.h>
 
+#include <memory>
+#include <stdexcept>
 #include <string>
 
 ShaderProgram::ShaderProgram(ConstructorPasskey<ShaderProgram>&& passkey)
@@ -21,6 +23,17 @@ void ShaderProgram::enableAttribute(const std::string_view name)
 {
     auto& attribute = attributes.at(name);
     attribute->enable(0, nullptr);
+}
+
+// TODO: Rewrite. Do not pass shared_ptr to ShaderProgramm
+void ShaderProgram::loadUniforms()
+{
+    if (!isEnabled()) {
+        throw std::logic_error("Can't load uniforms via UniformLoader. Shader "
+                               "hasn't been enabled");
+    }
+
+    uniformLoader->load(this);
 }
 
 void ShaderProgram::enable()

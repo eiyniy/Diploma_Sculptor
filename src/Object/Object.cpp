@@ -1,5 +1,6 @@
 #include <Object.hpp>
 
+#include <Camera.hpp>
 #include <Globals.hpp>
 #include <Sculptor.hpp>
 #include <ShaderProgram.hpp>
@@ -20,6 +21,7 @@
 
 Object::Object(ConstructorPasskey<Object>&& passkey)
     : VAO(0)
+    , drawMode(0)
     , verticesVBO(0)
     , tVerticesVBO(0)
     , nVerticesVBO(0)
@@ -104,7 +106,7 @@ void Object::bindNVerticesVBO()
         GL_STATIC_DRAW);
 }
 
-void Object::bindIndicesEBO()
+void Object::bindEBO()
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(
@@ -157,12 +159,17 @@ void Object::draw() const
     glBindVertexArray(VAO);
 
     glDrawElements(
-        GL_TRIANGLES,
+        drawMode,
         static_cast<GLsizei>(indices.size()),
         GL_UNSIGNED_INT,
         nullptr);
 
     glBindVertexArray(0);
+}
+
+void Object::loadUniforms()
+{
+    shaderPrograms.at(currentShaderProgramName)->loadUniforms();
 }
 
 void Object::performTransform(
@@ -185,8 +192,7 @@ void Object::performTransform(
 
 bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
 
-std::vector<std::pair<std::array<std::size_t, 3>, float>>
-Object::getRayIntersections(
+std::optional<std::array<std::size_t, 3>> Object::getFirstRayIntersection(
     const glm::vec3 rayOrig, const glm::vec3 rayDir) const
 {
     std::vector<std::pair<std::array<std::size_t, 3>, float>>
@@ -218,7 +224,18 @@ Object::getRayIntersections(
         }
     }
 
-    return idsWithDistance;
+    if (idsWithDistance.empty()) {
+        return std::nullopt;
+    }
+
+    auto result = idsWithDistance.front();
+    for (auto&& elem : idsWithDistance) {
+        if (elem.second < result.second) {
+            result = elem;
+        }
+    }
+
+    return result.first;
 }
 
 glm::vec3

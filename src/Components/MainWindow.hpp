@@ -45,9 +45,7 @@ public:
     void captureMouse();
     void releaseMouse();
 
-    template <class T>
-        requires IsInputEnginePt<T>
-    void setUserPointer(T inputEngine);
+    template <InputEnginePt T> void setUserPointer(T inputEngine);
 
     void clear() const;
 
@@ -56,9 +54,7 @@ public:
     void close();
 };
 
-template <class T>
-    requires IsInputEnginePt<T>
-void MainWindow::setUserPointer(T inputEngine)
+template <InputEnginePt T> void MainWindow::setUserPointer(T inputEngine)
 {
     glfwSetWindowUserPointer(window, inputEngine);
 }

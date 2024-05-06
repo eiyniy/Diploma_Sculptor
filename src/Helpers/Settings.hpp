@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_vec4.hpp>
+#include <vector_float3.hpp>
 
 #include <GL/glew.h>
 
@@ -17,7 +18,8 @@ private:
 
     GLfloat cameraMouseSens;
 
-    float shaderProgramDimmingFactor;
+    float distanceDimmingFactor;
+    bool isDistanceDimmingEnabled;
 
     float zNear;
     float zFar;
@@ -27,6 +29,10 @@ private:
     bool vSyncEnabled;
     bool depthBufferEnabled;
     bool resizeEnabled;
+
+    glm::vec3 lightColor;
+
+    glm::vec3 linesColor;
 
     std::string windowName;
 
@@ -55,7 +61,12 @@ public:
     [[nodiscard]] bool isDepthBufferEnabled() const;
     [[nodiscard]] bool isResizeEnabled() const;
 
-    [[nodiscard]] float getShaderProgramDimmingFactor() const;
+    [[nodiscard]] glm::vec3 getLightColor() const;
+
+    [[nodiscard]] float getDistanceDimmingFactor() const;
+    [[nodiscard]] bool getIsDistanceDimmingEnabled() const;
+
+    [[nodiscard]] glm::vec3 getLinesColor() const;
 
     const std::string& getWindowName();
 };

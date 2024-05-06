@@ -2,22 +2,19 @@
 
 #include <BaseState.hpp>
 #include <Enums.hpp>
-
-#include <matrix_float4x4.hpp>
+#include <MainWindow.hpp>
 
 #include <memory>
 #include <queue>
 
-class Camera;
 class IEvent;
 class MainWindow;
 
-class CloseState : public BaseState {
+class LoadingState : public BaseState {
 public:
-    CloseState(
+    LoadingState(
         std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,
-        std::shared_ptr<MainWindow> _mainWindow,
-        std::shared_ptr<Camera> _camera);
+        std::shared_ptr<MainWindow> _mainWindow);
 
     [[nodiscard]] StateType getType() const override;
 };

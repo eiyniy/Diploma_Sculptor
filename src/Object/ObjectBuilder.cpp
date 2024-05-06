@@ -1,5 +1,6 @@
 #include <ObjectBuilder.hpp>
 
+#include <BaseInputEngine.hpp>
 #include <EntryIds.hpp>
 #include <Hasher.hpp>
 #include <IBuilder.hpp>
@@ -33,6 +34,8 @@ ObjectBuilder::ObjectBuilder()
     : isInited(false)
     , isTransformed(false)
     , isVAOSetup(false)
+    , isTrianglesAdded(false)
+    , isLinesAdded(false)
 {
 }
 
@@ -48,9 +51,21 @@ void ObjectBuilder::reset()
 {
     IBuilder<Object>::reset();
 
+    vertices.reset();
+    nVertices.reset();
+    tVertices.reset();
+    triangles.reset();
+    lines.reset();
+    indices.reset();
+
+    vericesIdToIndicesId.clear();
+    indicesIdToVertexId.clear();
+
     isInited = false;
     isTransformed = false;
     isVAOSetup = false;
+    isTrianglesAdded = false;
+    isLinesAdded = true;
 }
 
 std::size_t ObjectBuilder::hashEntryIdsNaive(
@@ -101,7 +116,18 @@ std::size_t ObjectBuilder::hashEntryIdsRotl(
 
 void ObjectBuilder::transform()
 {
-    throwIfNotInited("Can't merge vertices. ");
+    if (instance->drawMode == GL_TRIANGLES) {
+        transformTriangles();
+    } else if (instance->drawMode == GL_LINES) {
+        transformLines();
+    }
+
+    isTransformed = true;
+}
+
+void ObjectBuilder::transformTriangles()
+{
+    throwIfNotInited("Can't transform triangles. ");
 
     const auto transformEntriesStart
         = std::chrono::high_resolution_clock::now();
@@ -211,8 +237,51 @@ void ObjectBuilder::transform()
                      std::chrono::high_resolution_clock::now()
                      - transformSeparationStart)
               << std::endl;
+}
 
-    isTransformed = true;
+void ObjectBuilder::transformLines()
+{
+    throwIfNotInited("Can't transform lines. ");
+
+    const auto transformLinesStart = std::chrono::high_resolution_clock::now();
+
+    instance->indices.resize(lines->size() * glm::vec2::length());
+
+    std::size_t indicesId = 0;
+
+    std::cout << "Lines count x2: " << lines->size() * glm::vec2::length()
+              << std::endl;
+
+    for (const auto& line : *lines) {
+        instance->indices[indicesId++] = line.x - 1;
+        instance->indices[indicesId++] = line.y - 1;
+    }
+
+    const auto transformSeparationStart
+        = std::chrono::high_resolution_clock::now();
+
+    instance->trVertices.resize(vertices->size() * glm::vec4::length());
+
+    for (std::size_t verticesPos = 0, trVerticesPos = 0;
+         verticesPos < vertices->size();
+         ++verticesPos, trVerticesPos += 4) {
+        const auto& vertex = vertices->at(verticesPos);
+
+        instance->trVertices[trVerticesPos] = vertex.x;
+        instance->trVertices[trVerticesPos + 1] = vertex.y;
+        instance->trVertices[trVerticesPos + 2] = vertex.z;
+        instance->trVertices[trVerticesPos + 3] = vertex.w;
+    }
+
+    std::cout << "Transform entries time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     transformSeparationStart - transformLinesStart)
+              << std::endl;
+    std::cout << "Transform separation time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::high_resolution_clock::now()
+                     - transformSeparationStart)
+              << std::endl;
 }
 
 bool ObjectBuilder::isShaderProgramFinished() const
@@ -223,20 +292,21 @@ bool ObjectBuilder::isShaderProgramFinished() const
 bool ObjectBuilder::isFinished() const
 {
     return IBuilder<Object>::isFinished() && isInited
-        && isShaderProgramFinished() && isTransformed && isVAOSetup;
+        && isShaderProgramFinished() && isTransformed && isVAOSetup
+        && (isTrianglesAdded || isLinesAdded);
 }
 
 void ObjectBuilder::init(
-    std::unique_ptr<std::vector<glm::vec4>> _vertices,
-    std::unique_ptr<std::vector<Triangle>> _triangles)
+    const GLenum drawMode, std::unique_ptr<std::vector<glm::vec4>> _vertices)
 {
     if (isInited) {
         throw std::logic_error(
             "Can't init ObjectBuilder. It has already been initialised");
     }
 
+    instance->drawMode = drawMode;
+
     vertices = std::move(_vertices);
-    triangles = std::move(_triangles);
 
     glGenVertexArrays(1, &instance->VAO);
     glGenBuffers(1, &instance->verticesVBO);
@@ -245,6 +315,38 @@ void ObjectBuilder::init(
     glGenBuffers(1, &instance->EBO);
 
     isInited = true;
+}
+
+void ObjectBuilder::addTriangles(
+    std::unique_ptr<std::vector<Triangle>> _triangles)
+{
+    const std::string error = "Can't add triangles to ObjectBuilder. ";
+
+    throwIfNotInited(error);
+
+    if (triangles != nullptr) {
+        throw std::logic_error(error + "They have been already added.");
+    }
+
+    triangles = std::move(_triangles);
+
+    isTrianglesAdded = true;
+}
+
+void ObjectBuilder::addLines(
+    std::unique_ptr<std::vector<glm::vec<2, GLuint>>> _lines)
+{
+    const std::string error = "Can't add lines to ObjectBuilder. ";
+
+    throwIfNotInited(error);
+
+    if (lines != nullptr) {
+        throw std::logic_error(error + "They have been already added.");
+    }
+
+    lines = std::move(_lines);
+
+    isLinesAdded = true;
 }
 
 void ObjectBuilder::addTVertices(
@@ -323,7 +425,7 @@ void ObjectBuilder::setupVAO()
         instance->unbindVBO();
     }
 
-    instance->bindIndicesEBO();
+    instance->bindEBO();
 
     glBindVertexArray(0);
 

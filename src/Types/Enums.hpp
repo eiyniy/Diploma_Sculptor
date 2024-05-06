@@ -6,7 +6,8 @@ enum class ObjEntryType {
     Vertex,
     TextureVertex,
     NormalVertex,
-    Polygon
+    Polygon,
+    Line
 };
 
 enum class MtlEntryType {
@@ -33,7 +34,7 @@ enum ShadingModel { Flat, Phong };
 
 enum class TextureType { Diffuse, Normal, Emissive, MRAO };
 
-enum class StateType { View, Edit, Close };
+enum class StateType { View, Edit, Close, Loading };
 
 enum class EventType {
     CameraMove,
@@ -42,5 +43,6 @@ enum class EventType {
     SculptorEdit,
     Close,
     CaptureMouse,
-    ReleaseMouse
+    ReleaseMouse,
+    EngineLoad
 };

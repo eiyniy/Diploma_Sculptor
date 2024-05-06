@@ -23,6 +23,8 @@ class Object {
     friend class ObjectBuilder;
 
 private:
+    GLenum drawMode;
+
     GLuint VAO;
     GLuint EBO;
 
@@ -30,6 +32,7 @@ private:
     GLuint tVerticesVBO;
     GLuint nVerticesVBO;
 
+    // TODO: Remove map, just single SP
     std::map<const std::string_view, std::unique_ptr<ShaderProgram>>
         shaderPrograms;
 
@@ -51,6 +54,10 @@ private:
 
     void throwIfShaderNotSelected(const std::string& message) const;
 
+    template <class T>
+        requires IsUniformType<T>
+    void loadUniform(std::string_view name, const T& value) const;
+
 public:
     Object(ConstructorPasskey<Object>&& passkey);
 
@@ -71,7 +78,7 @@ public:
 
     void bindNVerticesVBO();
 
-    void bindIndicesEBO();
+    void bindEBO();
 
     void unbindVBO();
 
@@ -81,17 +88,15 @@ public:
 
     void disableShader();
 
-    template <class T>
-        requires IsUniformType<T>
-    void loadUniform(std::string_view name, const T& value) const;
-
     void draw() const;
+
+    void loadUniforms();
 
     void performTransform(
         const std::vector<std::pair<std::size_t, glm::vec3>>& transform);
 
-    [[nodiscard]] std::vector<std::pair<std::array<std::size_t, 3>, float>>
-    getRayIntersections(glm::vec3 rayOrig, glm::vec3 rayDir) const;
+    [[nodiscard]] std::optional<std::array<std::size_t, 3>>
+    getFirstRayIntersection(glm::vec3 rayOrig, glm::vec3 rayDir) const;
 
     [[nodiscard]] glm::vec3
     getFaceNormalCross(std::array<std::size_t, 3> verticesId) const;

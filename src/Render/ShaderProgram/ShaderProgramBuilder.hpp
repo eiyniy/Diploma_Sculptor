@@ -37,7 +37,8 @@ public:
 
     virtual ~ShaderProgramBuilder() = default;
 
-    void init(std::string_view name);
+    void
+    init(std::string_view name, std::unique_ptr<IUniformLoader> uniformLoader);
 
     void addShader(std::string sourcePath, GLenum shaderType);
 

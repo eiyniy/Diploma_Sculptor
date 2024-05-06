@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Concepts.hpp>
+#include <IUniformLoader.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderUniform.hpp>
 
@@ -27,6 +28,7 @@ private:
 
     GLuint program;
 
+    // TODO: Remove name
     std::string name;
 
     GLint success;
@@ -40,20 +42,24 @@ private:
 
     std::map<const std::string_view, std::unique_ptr<ShaderUniform>> uniforms;
 
+    std::unique_ptr<IUniformLoader> uniformLoader;
+
     bool _isUsed;
 
 public:
-    static constexpr std::string_view modelUName = "model";
-    static constexpr std::string_view viewUName = "view";
-    static constexpr std::string_view projectionUName = "projection";
+    static constexpr std::string_view modelUName = "uModel";
+    static constexpr std::string_view viewUName = "uView";
+    static constexpr std::string_view projectionUName = "uProjection";
 
-    static constexpr std::string_view cameraPosUName = "cameraPos";
+    static constexpr std::string_view colorUName = "uColor";
 
-    static constexpr std::string_view lightColorUName = "lightColor";
+    static constexpr std::string_view cameraPosUName = "uCameraPos";
 
-    static constexpr std::string_view dimmingFactorUName = "dimmingFactor";
+    static constexpr std::string_view lightColorUName = "uLightColor";
+
+    static constexpr std::string_view dimmingFactorUName = "uDimmingFactor";
     static constexpr std::string_view isDistanceDimmingUName
-        = "isDistanceDimming";
+        = "uIsDistanceDimming";
 
     static constexpr std::string_view positionAName = "position";
     static constexpr std::string_view texCoordAName = "texCoord";
@@ -66,6 +72,8 @@ public:
     template <class T>
         requires IsUniformType<T>
     void loadUniform(std::string_view name, const T& value) const;
+
+    void loadUniforms();
 
     void enable();
 

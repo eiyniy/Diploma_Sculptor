@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Brush.hpp>
+
 #include <matrix_float4x4.hpp>
 #include <vector_float3.hpp>
 
@@ -16,12 +18,10 @@
 // Multiple interpolated to vertex position direction by normals
 class Sculptor {
 private:
-    int radius;
+    Brush brush;
 
 public:
-    Sculptor(int _radius);
-
-    [[nodiscard]] int cGetRadius() const;
+    Sculptor(Brush _brush);
 
     // void createGraph(OldObject* object);
 
@@ -50,12 +50,12 @@ public:
         float& u,
         float& v);
 
-    static std::optional<std::array<std::size_t, 3>>
-    getSelectedTriangleVerticesIds(
-        std::vector<std::pair<std::array<std::size_t, 3>, float>>&&
-            intersectionsIdDistance);
+    std::vector<std::array<std::size_t, 3>>
+    getSelectedVerticesId(std::array<std::size_t, 3>&& intersectionVerticesId);
 
     // TODO: accept Brush
-    static std::vector<std::pair<std::size_t, glm::vec3>>
-    getTransform(std::vector<std::size_t>&& verticesId, glm::vec3 normal, bool isInverted);
+    std::vector<std::pair<std::size_t, glm::vec3>> getTransform(
+        std::vector<std::size_t>&& verticesId,
+        glm::vec3 normal,
+        bool isInverted);
 };

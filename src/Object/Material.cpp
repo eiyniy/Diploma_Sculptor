@@ -2,7 +2,6 @@
 
 #include <vector_float4.hpp>
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <utility>

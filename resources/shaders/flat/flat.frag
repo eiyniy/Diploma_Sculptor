@@ -4,12 +4,12 @@ in vec3 positionModel;
 
 out vec4 color;
 
-uniform vec3 cameraPos;
+uniform vec3 uCameraPos;
 
-uniform vec3 lightColor;
+uniform vec3 uLightColor;
 
-uniform float dimmingFactor;
-uniform bool isDistanceDimming;
+uniform float uDimmingFactor;
+uniform bool uIsDistanceDimming;
 
 void main()
 {
@@ -17,13 +17,13 @@ void main()
     vec3 yTangent = dFdy(positionModel);
     vec3 faceNormal = normalize(cross(xTangent, yTangent));
     
-    vec3 lightDir = normalize(cameraPos - positionModel);
+    vec3 lightDir = normalize(uCameraPos - positionModel);
     float lightValue = max(dot(lightDir, faceNormal), 0.F);
 
-    if (isDistanceDimming) {
-        float dimmingValue = max((distance(cameraPos, positionModel) * dimmingFactor), 1.F);
+    if (uIsDistanceDimming) {
+        float dimmingValue = max((distance(uCameraPos, positionModel) * uDimmingFactor), 1.F);
         lightValue /= dimmingValue;
     }
 
-    color = vec4(lightValue * lightColor, 1.0F);
+    color = vec4(lightValue * uLightColor, 1.0F);
 }

@@ -1,5 +1,6 @@
 #include <Sculptor.hpp>
 
+#include <Brush.hpp>
 #include <Globals.hpp>
 #include <Math.hpp>
 
@@ -16,12 +17,11 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
-#include <optional>
 #include <utility>
 #include <vector>
 
-Sculptor::Sculptor(const int _radius)
-    : radius(_radius)
+Sculptor::Sculptor(const Brush _brush)
+    : brush(_brush)
 {
 }
 
@@ -29,8 +29,6 @@ Sculptor::Sculptor(const int _radius)
 // {
 //     graph = Graph(object->cGetDrawable(), object->cGetPolygons());
 // }
-
-int Sculptor::cGetRadius() const { return radius; }
 
 void Sculptor::getRayWorld(
     std::pair<float, float> mousePos,
@@ -58,23 +56,10 @@ void Sculptor::getRayWorld(
     rayDir = glm::normalize(glm::vec3(rayEndWorld) - rayStartWorld);
 }
 
-std::optional<std::array<std::size_t, 3>>
-Sculptor::getSelectedTriangleVerticesIds(
-    std::vector<std::pair<std::array<std::size_t, 3>, float>>&&
-        intersectionsIdDistance)
+std::vector<std::array<std::size_t, 3>> Sculptor::getSelectedVerticesId(
+    std::array<std::size_t, 3>&& intersectionVerticesId)
 {
-    if (intersectionsIdDistance.empty()) {
-        return std::nullopt;
-    }
-
-    auto result = intersectionsIdDistance.front();
-    for (auto&& elem : intersectionsIdDistance) {
-        if (elem.second < result.second) {
-            result = elem;
-        }
-    }
-
-    return result.first;
+    // TODO: Find vertices in radius
 }
 
 bool Sculptor::intersectRayTriangleGLM(
@@ -155,7 +140,11 @@ std::vector<std::pair<std::size_t, glm::vec3>> Sculptor::getTransform(
     transform.resize(verticesId.size());
 
     for (std::size_t i = 0; i < verticesId.size(); ++i) {
-        const auto transformValue = normal * (isInverted ? -0.05F : 0.05F);
+        const auto signedStrengthF = isInverted
+            ? -static_cast<float>(brush.getStrength())
+            : static_cast<float>(brush.getStrength());
+
+        const auto transformValue = normal * signedStrengthF;
         transform.at(i) = std::make_pair(verticesId.at(i), transformValue);
     }
 

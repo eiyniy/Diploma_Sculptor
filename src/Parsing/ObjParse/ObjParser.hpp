@@ -1,12 +1,14 @@
 #pragma once
 
 #include <BaseTextParser.hpp>
+#include <Camera.hpp>
 #include <Concepts.hpp>
 #include <EntryIds.hpp>
 #include <Enums.hpp>
 #include <ObjParseResult.hpp>
 #include <Triangle.hpp>
 
+#include <qualifier.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
@@ -24,19 +26,20 @@ private:
     std::unique_ptr<std::vector<glm::vec3>> nVertices;
     std::unique_ptr<std::vector<glm::vec2>> tVertices;
     std::unique_ptr<std::vector<Triangle>> polygons;
+    std::unique_ptr<std::vector<glm::vec<2, GLuint>>> linesId;
 
     std::vector<std::string> polygonStrings;
+    std::vector<std::string> lineStrings;
 
     void parseEntry(const std::string& line);
 
-    template <class T>
-        requires IsGlmVec<T>
-    T parseGlmVec(
-        const std::string& line, void (*fillFunc)(T&, char index, float value));
+    template <int L, NumericType V>
+        requires GlmVec<L, V>
+    glm::vec<L, V> parseGlmVec(const std::string& line);
 
-    static void fillVec3(glm::vec3& vec, char index, float value);
-    static void fillVec2(glm::vec2& vec, char index, float value);
-    static void fillVec4(glm::vec4& vec, char index, float value);
+    template <int L, NumericType T>
+        requires GlmVecLength<L>
+    static void fillVec(glm::vec<L, T>& vec, char index, T value);
 
     static std::vector<EntryIds> parseVertexIds(const std::string& line);
     std::vector<Triangle> parsePolygon(const std::string& line);
@@ -49,12 +52,11 @@ public:
     static std::optional<ObjEntryType> getEntryType(const std::string& line);
 };
 
-template <class T>
-    requires IsGlmVec<T>
-T ObjParser::parseGlmVec(
-    const std::string& line, void (*fillFunc)(T&, char index, float value))
+template <int L, NumericType V>
+    requires GlmVec<L, V>
+glm::vec<L, V> ObjParser::parseGlmVec(const std::string& line)
 {
-    T vec { 1 };
+    glm::vec<L, V> vec { 1 };
 
     std::size_t pos = 0;
     for (char index = 0; index < 4; ++index) {
@@ -64,12 +66,38 @@ T ObjParser::parseGlmVec(
         }
 
         std::size_t end = 0;
-        float extractedFloat = std::stof(line.substr(start), &end);
 
-        fillFunc(vec, index, extractedFloat);
+        V extractedValue {};
+
+        if constexpr (std::is_integral_v<V>) {
+            extractedValue = std::stoi(line.substr(start), &end);
+        } else if constexpr (std::is_floating_point_v<V>) {
+            extractedValue = std::stof(line.substr(start), &end);
+        }
+
+        fillVec(vec, index, extractedValue);
 
         pos = start + end;
     }
 
     return vec;
+}
+
+template <int L, NumericType T>
+    requires GlmVecLength<L>
+void ObjParser::fillVec(glm::vec<L, T>& vec, char index, T value)
+{
+    if (index == 0) {
+        vec.x = value;
+    } else if (index == 1) {
+        vec.y = value;
+    } else if (index == 2) {
+        if constexpr (L > 2) {
+            vec.z = value;
+        }
+    } else if (index == 3) {
+        if constexpr (L > 3) {
+            vec.w = value;
+        }
+    }
 }

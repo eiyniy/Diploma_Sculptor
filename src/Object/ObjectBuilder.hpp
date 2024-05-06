@@ -4,6 +4,7 @@
 #include <Object.hpp>
 #include <Triangle.hpp>
 
+#include <qualifier.hpp>
 #include <type_vec3.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
@@ -25,13 +26,18 @@ class Texture;
 class ObjectBuilder : public IBuilder<Object> {
 private:
     bool isInited;
+    bool isTrianglesAdded;
+    bool isLinesAdded;
     bool isTransformed;
     bool isVAOSetup;
 
     std::unique_ptr<std::vector<glm::vec4>> vertices;
     std::unique_ptr<std::vector<glm::vec3>> nVertices;
     std::unique_ptr<std::vector<glm::vec2>> tVertices;
+
     std::unique_ptr<std::vector<Triangle>> triangles;
+    std::unique_ptr<std::vector<glm::vec<2, GLuint>>> lines;
+
     std::unique_ptr<std::vector<glm::vec<3, GLuint>>> indices;
 
     std::map<std::size_t, std::vector<std::size_t>> vericesIdToIndicesId;
@@ -56,6 +62,10 @@ private:
 
     [[nodiscard]] bool isFinished() const override;
 
+    void transformTriangles();
+
+    void transformLines();
+
 public:
     ObjectBuilder();
 
@@ -66,9 +76,12 @@ public:
 
     virtual ~ObjectBuilder() = default;
 
-    void init(
-        std::unique_ptr<std::vector<glm::vec4>> _vertices,
-        std::unique_ptr<std::vector<Triangle>> _triangles);
+    void
+    init(GLenum drawMode, std::unique_ptr<std::vector<glm::vec4>> _vertices);
+
+    void addTriangles(std::unique_ptr<std::vector<Triangle>> _triangles);
+
+    void addLines(std::unique_ptr<std::vector<glm::vec<2, GLuint>>> _lines);
 
     void addTVertices(std::unique_ptr<std::vector<glm::vec2>> _tVertices);
 

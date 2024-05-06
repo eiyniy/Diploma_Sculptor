@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Sculptor.hpp>
+
 #include <matrix_float4x4.hpp>
 
 #include <GL/glew.h>
@@ -30,6 +32,8 @@ private:
     std::shared_ptr<glm::mat4> modelMat;
     std::shared_ptr<glm::mat4> viewMat;
     std::shared_ptr<glm::mat4> projectionMat;
+
+    Sculptor sculptor;
 
     GLfloat deltaTime;
     GLfloat lastFrameTime;
