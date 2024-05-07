@@ -6,13 +6,13 @@
 #include <Enums.hpp>
 #include <LoadingInputEngine.hpp>
 #include <LoadingRenderEngine.hpp>
-#include <Object.hpp>
 
 #include <memory>
 #include <utility>
 
 class IEvent;
 class MainWindow;
+class ShaderProgramManager;
 
 LoadingState::LoadingState(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,

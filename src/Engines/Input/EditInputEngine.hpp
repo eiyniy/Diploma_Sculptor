@@ -3,7 +3,7 @@
 #include <Enums.hpp>
 #include <ModelInputEngine.hpp>
 
-#include <GL/glew.h>
+#include <GL/glew.h> // IWYU pragma: keep
 #include <GLFW/glfw3.h>
 
 #include <array>

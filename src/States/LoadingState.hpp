@@ -2,14 +2,13 @@
 
 #include <BaseState.hpp>
 #include <Enums.hpp>
-#include <MainWindow.hpp>
-#include <ShaderProgramManager.hpp>
 
 #include <memory>
 #include <queue>
 
 class IEvent;
 class MainWindow;
+class ShaderProgramManager;
 
 class LoadingState : public BaseState {
 public:

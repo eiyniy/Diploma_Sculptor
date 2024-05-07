@@ -1,9 +1,12 @@
 #pragma once
 
 #include <BaseUniformLoader.hpp>
-#include <IUniformLoader.hpp>
 
-#include <vector_float3.hpp>
+#include <matrix_float4x4.hpp>
+
+#include <memory>
+
+class ShaderProgram;
 
 class LinesUniformLoader : public BaseUniformLoader {
 public:

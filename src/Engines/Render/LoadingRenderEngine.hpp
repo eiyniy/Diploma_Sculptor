@@ -2,7 +2,12 @@
 
 #include <BaseRenderEngine.hpp>
 
+#include <map>
+#include <memory>
+#include <string>
+
 class MainWindow;
+class Object;
 
 class LoadingRenderEngine : public BaseRenderEngine {
 private:

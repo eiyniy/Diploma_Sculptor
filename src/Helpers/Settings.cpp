@@ -1,11 +1,15 @@
 #include <Settings.hpp>
 
+#include <qualifier.hpp>
 #include <trigonometric.hpp>
+#include <type_vec3.hpp>
 #include <type_vec4.hpp>
+#include <vector_float3.hpp>
 
 Settings* Settings::instance { nullptr };
 std::mutex Settings::mutex {};
 
+// TODO: Move to private static
 constexpr float defaultCameraSpeed = 10.F;
 constexpr float defaultCameraFoV = glm::radians(45.F);
 constexpr float defaultCameraMouseSens = 20.F;

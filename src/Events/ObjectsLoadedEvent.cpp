@@ -1,6 +1,7 @@
 #include <ObjectsLoadedEvent.hpp>
 
 #include <Enums.hpp>
+#include <Object.hpp>
 
 #include <utility>
 

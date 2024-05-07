@@ -1,17 +1,7 @@
 #include <ModelRenderEngine.hpp>
 
-#include <Camera.hpp>
 #include <MainWindow.hpp>
 #include <Object.hpp>
-#include <Settings.hpp>
-#include <ShaderProgram.hpp>
-
-#include <matrix_float4x4.hpp>
-#include <qualifier.hpp>
-#include <type_mat4x4.hpp>
-#include <type_ptr.hpp>
-#include <type_vec3.hpp>
-#include <vector_float3.hpp>
 
 #include <utility>
 

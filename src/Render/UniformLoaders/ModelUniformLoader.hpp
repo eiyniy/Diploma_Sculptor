@@ -1,10 +1,14 @@
 #pragma once
 
 #include <BaseUniformLoader.hpp>
-#include <Camera.hpp>
-#include <IUniformLoader.hpp>
 
+#include <matrix_float4x4.hpp>
 #include <vector_float3.hpp>
+
+#include <memory>
+
+class Camera;
+class ShaderProgram;
 
 class ModelUniformLoader : public BaseUniformLoader {
 private:

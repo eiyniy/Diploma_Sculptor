@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qualifier.hpp>
 #include <type_vec4.hpp>
 #include <vector_float3.hpp>
 

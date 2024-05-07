@@ -11,6 +11,7 @@
 #include <string_view>
 
 class ShaderAttribute;
+class IUniformLoader;
 
 class ShaderProgramBuilder : public IBuilder<ShaderProgram> {
 private:

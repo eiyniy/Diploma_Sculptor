@@ -1,16 +1,20 @@
 #pragma once
 
 #include <BaseInputEngine.hpp>
+#include <Enums.hpp>
 #include <ObjParseResult.hpp>
 #include <ObjParser.hpp>
 #include <ObjectBuilder.hpp>
-#include <ShaderProgramManager.hpp>
 
 #include <Object.hpp>
 
 #include <future>
 #include <memory>
+#include <optional>
+#include <queue>
+#include <vector>
 
+class ShaderProgramManager;
 class IEvent;
 
 class LoadingInputEngine : public BaseInputEngine {

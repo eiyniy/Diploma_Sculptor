@@ -6,8 +6,6 @@
 #include <string>
 #include <utility>
 
-class OldTexture;
-
 Material::Material(
     std::string _name,
     const std::optional<glm::vec4>& _ambient,

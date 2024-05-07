@@ -1,7 +1,6 @@
 #pragma once
 
 #include <BaseTextParser.hpp>
-#include <Camera.hpp>
 #include <Concepts.hpp>
 #include <EntryIds.hpp>
 #include <Enums.hpp>
@@ -9,9 +8,12 @@
 #include <Triangle.hpp>
 
 #include <qualifier.hpp>
+#include <type_vec2.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
+
+#include <GL/glew.h>
 
 #include <cstddef>
 #include <memory>

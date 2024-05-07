@@ -7,7 +7,7 @@
 #include <ReleaseMouseEvent.hpp>
 #include <SculptorEditEvent.hpp>
 
-#include <GL/glew.h>
+#include <GL/glew.h> // IWYU pragma: keep
 #include <GLFW/glfw3.h>
 
 #include <memory>

@@ -1,6 +1,7 @@
 #include <ShaderProgram.hpp>
 
 #include <IBuilder.hpp>
+#include <IUniformLoader.hpp>
 #include <ShaderAttribute.hpp>
 
 #include <GL/glew.h>

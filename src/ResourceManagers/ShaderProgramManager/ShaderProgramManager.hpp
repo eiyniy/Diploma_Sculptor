@@ -1,12 +1,16 @@
 #pragma once
 
-#include <Camera.hpp>
 #include <ShaderProgram.hpp>
 #include <ShaderProgramBuilder.hpp>
 
+#include <matrix_float4x4.hpp>
+
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
+
+class Camera;
 
 using namespace std::string_view_literals;
 

@@ -1,7 +1,10 @@
 #include <BaseUniformLoader.hpp>
 
-#include <IUniformLoader.hpp>
 #include <ShaderProgram.hpp>
+
+#include <matrix_float4x4.hpp>
+#include <type_mat4x4.hpp>
+#include <type_ptr.hpp>
 
 #include <utility>
 

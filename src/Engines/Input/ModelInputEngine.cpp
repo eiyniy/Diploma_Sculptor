@@ -5,11 +5,10 @@
 #include <Enums.hpp>
 #include <IEvent.hpp>
 
-#include <GL/glew.h>
+#include <GL/glew.h> // IWYU pragma: keep
 #include <GLFW/glfw3.h>
 
 #include <array>
-#include <chrono>
 #include <memory>
 #include <utility>
 

@@ -1,17 +1,15 @@
 #include <ObjParser.hpp>
 
 #include <BaseTextParser.hpp>
-#include <Camera.hpp>
 #include <EarClipper.hpp>
+#include <EntryIds.hpp>
 #include <Enums.hpp>
 #include <ObjParseResult.hpp>
 #include <Triangle.hpp>
 
-#include <qualifier.hpp>
 #include <type_vec2.hpp>
 #include <type_vec3.hpp>
 #include <type_vec4.hpp>
-#include <vector>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
@@ -23,6 +21,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 ObjParser::ObjParser()
     : BaseTextParser()

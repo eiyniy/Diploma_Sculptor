@@ -1,9 +1,12 @@
 #include <LinesUniformLoader.hpp>
 
 #include <BaseUniformLoader.hpp>
-#include <IUniformLoader.hpp>
 #include <Settings.hpp>
 #include <ShaderProgram.hpp>
+
+#include <matrix_float4x4.hpp>
+#include <qualifier.hpp>
+#include <type_ptr.hpp>
 
 #include <utility>
 

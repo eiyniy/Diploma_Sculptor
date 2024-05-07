@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Enums.hpp>
 #include <Sculptor.hpp>
 
-#include <functional>
 #include <matrix_float4x4.hpp>
 
 #include <GL/glew.h>
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <queue>
@@ -21,6 +20,8 @@ class Object;
 
 class BaseState;
 class IEvent;
+
+enum class EventType;
 
 class Engine {
 private:

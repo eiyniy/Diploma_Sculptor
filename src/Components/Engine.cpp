@@ -1,6 +1,7 @@
 #include <Engine.hpp>
 
 #include <BaseState.hpp>
+#include <Brush.hpp>
 #include <BrushMoveEvent.hpp>
 #include <Camera.hpp>
 #include <CameraMoveEvent.hpp>
@@ -9,19 +10,14 @@
 #include <EditState.hpp>
 #include <Enums.hpp>
 #include <IEvent.hpp>
-#include <LinesUniformLoader.hpp>
 #include <LoadingState.hpp>
 #include <MainWindow.hpp>
-#include <ModelUniformLoader.hpp>
-#include <ObjParser.hpp>
 #include <Object.hpp>
-#include <ObjectBuilder.hpp>
 #include <ObjectsLoadedEvent.hpp>
 #include <Scene.hpp>
 #include <Sculptor.hpp>
 #include <SculptorEditEvent.hpp>
 #include <Settings.hpp>
-#include <ShaderProgramBuilder.hpp>
 #include <ShaderProgramManager.hpp>
 #include <ViewState.hpp>
 

@@ -4,7 +4,7 @@
 #include <Object.hpp>
 #include <Triangle.hpp>
 
-#include <qualifier.hpp>
+#include <type_vec2.hpp>
 #include <type_vec3.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
@@ -92,7 +92,7 @@ public:
     void addShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
 
     void addTexture(std::unique_ptr<Texture> texture);
-    
+
     void transform();
 
     void setupVAO();

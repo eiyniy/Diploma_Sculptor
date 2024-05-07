@@ -3,9 +3,10 @@
 #include <IUniformLoader.hpp>
 
 #include <matrix_float4x4.hpp>
-#include <vector_float3.hpp>
 
 #include <memory>
+
+class ShaderProgram;
 
 class BaseUniformLoader : public IUniformLoader {
 private:

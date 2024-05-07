@@ -1,16 +1,18 @@
 #pragma once
 
 #include <Concepts.hpp>
-#include <ShaderProgram.hpp>
+#include <ShaderProgram.hpp> // IWYU pragma: keep
 #include <Texture.hpp>
 
 #include <vector_float3.hpp>
 
 #include <GL/glew.h>
 
+#include <array>
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>

@@ -2,6 +2,7 @@
 
 #include <Triangle.hpp>
 
+#include <type_vec2.hpp>
 #include <vector_float2.hpp>
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>

@@ -7,8 +7,6 @@
 #include <ModelRenderEngine.hpp>
 #include <ViewInputEngine.hpp>
 
-#include <matrix_float4x4.hpp>
-
 #include <utility>
 
 class Camera;

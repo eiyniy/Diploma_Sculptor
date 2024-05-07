@@ -2,6 +2,7 @@
 
 #include <BaseTextParser.hpp>
 #include <IBuilder.hpp>
+#include <IUniformLoader.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
 #include <ShaderUniform.hpp>

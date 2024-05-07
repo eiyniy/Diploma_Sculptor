@@ -5,13 +5,20 @@
 #include <IEvent.hpp>
 #include <ObjParseResult.hpp>
 #include <ObjParser.hpp>
+#include <Object.hpp>
 #include <ObjectBuilder.hpp>
 #include <ObjectsLoadedEvent.hpp>
+#include <ShaderProgramManager.hpp>
+#include <Triangle.hpp>
 
+#include <GL/glew.h>
+
+#include <chrono>
 #include <future>
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 LoadingInputEngine::LoadingInputEngine(

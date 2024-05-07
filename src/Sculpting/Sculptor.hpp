@@ -5,11 +5,8 @@
 #include <matrix_float4x4.hpp>
 #include <vector_float3.hpp>
 
-#include <GL/glew.h>
-
 #include <array>
 #include <cstddef>
-#include <optional>
 #include <utility>
 #include <vector>
 

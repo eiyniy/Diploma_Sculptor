@@ -1,16 +1,8 @@
 #include <Camera.hpp>
 #include <Engine.hpp>
 #include <MainWindow.hpp>
-#include <ObjParseResult.hpp>
-#include <ObjParser.hpp>
-#include <Object.hpp>
-#include <ObjectBuilder.hpp>
 #include <Scene.hpp>
 #include <Settings.hpp>
-#include <ShaderAttribute.hpp>
-#include <ShaderProgram.hpp>
-#include <ShaderProgramBuilder.hpp>
-#include <Triangle.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

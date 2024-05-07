@@ -1,8 +1,19 @@
 #include <ShaderProgramManager.hpp>
 
+#include <IUniformLoader.hpp>
 #include <LinesUniformLoader.hpp>
 #include <ModelUniformLoader.hpp>
+#include <ShaderAttribute.hpp>
+#include <ShaderProgram.hpp>
 #include <ShaderProgramBuilder.hpp>
+
+#include <matrix_float4x4.hpp>
+
+#include <GL/glew.h>
+
+#include <utility>
+
+class Camera;
 
 ShaderProgramManager::ShaderProgramManager(
     const std::string_view _shaderFolderPath)

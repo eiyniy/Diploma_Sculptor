@@ -4,6 +4,8 @@
 
 #include <utility>
 
+class Object;
+
 LoadingRenderEngine::LoadingRenderEngine(
     std::shared_ptr<MainWindow> _mainWindow)
     : mainWindow(std::move(_mainWindow))

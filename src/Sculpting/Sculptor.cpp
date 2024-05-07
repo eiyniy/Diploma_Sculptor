@@ -1,7 +1,6 @@
 #include <Sculptor.hpp>
 
 #include <Brush.hpp>
-#include <Globals.hpp>
 #include <Math.hpp>
 
 #include <geometric.hpp>
