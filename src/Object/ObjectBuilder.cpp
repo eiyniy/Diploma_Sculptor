@@ -286,7 +286,7 @@ void ObjectBuilder::transformLines()
 
 bool ObjectBuilder::isShaderProgramFinished() const
 {
-    return !instance->shaderPrograms.empty();
+    return instance->shaderProgram != nullptr;
 }
 
 bool ObjectBuilder::isFinished() const
@@ -297,13 +297,16 @@ bool ObjectBuilder::isFinished() const
 }
 
 void ObjectBuilder::init(
-    const GLenum drawMode, std::unique_ptr<std::vector<glm::vec4>> _vertices)
+    const std::string_view name,
+    const GLenum drawMode,
+    std::unique_ptr<std::vector<glm::vec4>> _vertices)
 {
     if (isInited) {
         throw std::logic_error(
             "Can't init ObjectBuilder. It has already been initialised");
     }
 
+    instance->name = name;
     instance->drawMode = drawMode;
 
     vertices = std::move(_vertices);
@@ -378,21 +381,20 @@ void ObjectBuilder::addNVertices(
 }
 
 void ObjectBuilder::addShaderProgram(
-    std::unique_ptr<ShaderProgram> shaderProgram)
+    std::shared_ptr<ShaderProgram> shaderProgram)
 {
-    instance->shaderPrograms.insert(
-        std::make_pair(shaderProgram->getName(), std::move(shaderProgram)));
+    if (instance->shaderProgram != nullptr) {
+        throw std::logic_error(
+            "Can't add shader program. It has been already added");
+    }
+
+    instance->shaderProgram = std::move(shaderProgram);
 }
 
 void ObjectBuilder::addTexture(std::unique_ptr<Texture> texture)
 {
     instance->textures.insert(
         std::make_pair(texture->getName(), std::move(texture)));
-}
-
-void ObjectBuilder::selectShaderProgram(std::string_view name)
-{
-    instance->selectShaderProgram(name);
 }
 
 void ObjectBuilder::setupVAO()
@@ -402,26 +404,21 @@ void ObjectBuilder::setupVAO()
             "Can't setup VAO. ObjectBuilder haven't been merged.");
     }
 
-    instance->throwIfShaderNotSelected("Can't setup VAO.");
-
     glBindVertexArray(instance->VAO);
 
     instance->bindVerticesVBO();
-    instance->shaderPrograms.at(instance->currentShaderProgramName)
-        ->enableAttribute(ShaderProgram::positionAName);
+    instance->shaderProgram->enableAttribute(ShaderProgram::positionAName);
     instance->unbindVBO();
 
     if (tVertices != nullptr) {
         instance->bindTVerticesVBO();
-        instance->shaderPrograms.at(instance->currentShaderProgramName)
-            ->enableAttribute(ShaderProgram::texCoordAName);
+        instance->shaderProgram->enableAttribute(ShaderProgram::texCoordAName);
         instance->unbindVBO();
     }
 
     if (nVertices != nullptr) {
         instance->bindNVerticesVBO();
-        instance->shaderPrograms.at(instance->currentShaderProgramName)
-            ->enableAttribute(ShaderProgram::normalAName);
+        instance->shaderProgram->enableAttribute(ShaderProgram::normalAName);
         instance->unbindVBO();
     }
 

@@ -17,8 +17,8 @@
 
 const auto chanelMaxValue = 255.F;
 
-MtlParser::MtlParser(const std::string& _pathToMtl)
-    : BaseTextParser(_pathToMtl)
+MtlParser::MtlParser()
+    : BaseTextParser()
 {
     resetMaterial();
 
@@ -27,9 +27,9 @@ MtlParser::MtlParser(const std::string& _pathToMtl)
 }
 
 std::unique_ptr<const std::map<std::string, std::shared_ptr<const Material>>>
-MtlParser::parse()
+MtlParser::parse(const std::string& pathToMtl)
 {
-    const auto fileContent = readFile();
+    const auto fileContent = readFile(pathToMtl);
     const auto lines = splitByLines(fileContent);
 
     for (const auto& line : lines) {

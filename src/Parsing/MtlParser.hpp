@@ -13,11 +13,11 @@
 
 class MtlParser : public BaseTextParser {
 public:
-    explicit MtlParser(const std::string& _pathToMtl);
+    explicit MtlParser();
 
     std::unique_ptr<
         const std::map<std::string, std::shared_ptr<const Material>>>
-    parse();
+    parse(const std::string& pathToMtl);
 
 private:
     std::unique_ptr<std::map<std::string, std::shared_ptr<const Material>>>

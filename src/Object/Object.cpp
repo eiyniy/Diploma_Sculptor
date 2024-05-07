@@ -26,7 +26,7 @@ Object::Object(ConstructorPasskey<Object>&& passkey)
     , tVerticesVBO(0)
     , nVerticesVBO(0)
     , EBO(0)
-    , _isAnyShaderEnabled(false)
+    , _isShaderEnabled(false)
 {
 }
 
@@ -42,15 +42,8 @@ Object::~Object()
 void Object::throwIfShaderNotEnabled(
     const std::string& message = std::string()) const
 {
-    if (!isAnyShaderEnabled()) {
+    if (!isShaderEnabled()) {
         throw std::logic_error("No one shader is enabled. " + message);
-    }
-}
-
-void Object::throwIfShaderNotSelected(const std::string& message) const
-{
-    if (currentShaderProgramName.empty()) {
-        throw std::logic_error("No one shader is selected. " + message);
     }
 }
 
@@ -72,8 +65,6 @@ void Object::bindTextures()
 
 void Object::bindVerticesVBO()
 {
-    throwIfShaderNotSelected("bindVerticesVBO");
-
     glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -84,8 +75,6 @@ void Object::bindVerticesVBO()
 
 void Object::bindTVerticesVBO()
 {
-    throwIfShaderNotSelected("bindTVerticesVBO");
-
     glBindBuffer(GL_ARRAY_BUFFER, tVerticesVBO);
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -96,8 +85,6 @@ void Object::bindTVerticesVBO()
 
 void Object::bindNVerticesVBO()
 {
-    throwIfShaderNotSelected("bindNVerticesVBO");
-
     glBindBuffer(GL_ARRAY_BUFFER, nVerticesVBO);
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -119,37 +106,27 @@ void Object::bindEBO()
 // NOLINTNEXTLINE
 void Object::unbindVBO() { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
-void Object::selectShaderProgram(const std::string_view name)
-{
-    currentShaderProgramName = name;
-}
-
 void Object::enableShader()
 {
-    if (isAnyShaderEnabled()) {
+    if (isShaderEnabled()) {
         throw std::logic_error("Can't enable shader program. There is another "
                                "one enabled already");
     }
 
-    throwIfShaderNotSelected("Can't enable shader program.");
-
-    auto& shaderProgram = shaderPrograms.at(currentShaderProgramName);
-
     shaderProgram->enable();
 
-    currentShaderProgramName = shaderProgram->getName();
-    _isAnyShaderEnabled = true;
+    _isShaderEnabled = true;
 }
 
 void Object::disableShader()
 {
-    if (!isAnyShaderEnabled()) {
+    if (!isShaderEnabled()) {
         throw std::logic_error(
             "Can't disable shader program. No one of them is enabled");
     }
 
-    shaderPrograms.at(currentShaderProgramName)->disable();
-    _isAnyShaderEnabled = false;
+    shaderProgram->disable();
+    _isShaderEnabled = false;
 }
 
 void Object::draw() const
@@ -157,6 +134,8 @@ void Object::draw() const
     throwIfShaderNotEnabled("draw");
 
     glBindVertexArray(VAO);
+
+    // std::cout << "Draw indices count: " << indices.size() << std::endl;
 
     glDrawElements(
         drawMode,
@@ -167,10 +146,7 @@ void Object::draw() const
     glBindVertexArray(0);
 }
 
-void Object::loadUniforms()
-{
-    shaderPrograms.at(currentShaderProgramName)->loadUniforms();
-}
+void Object::loadUniforms() { shaderProgram->loadUniforms(); }
 
 void Object::performTransform(
     const std::vector<std::pair<std::size_t, glm::vec3>>& transform)
@@ -190,7 +166,7 @@ void Object::performTransform(
     }
 }
 
-bool Object::isAnyShaderEnabled() const { return _isAnyShaderEnabled; }
+bool Object::isShaderEnabled() const { return _isShaderEnabled; }
 
 std::optional<std::array<std::size_t, 3>> Object::getFirstRayIntersection(
     const glm::vec3 rayOrig, const glm::vec3 rayDir) const
@@ -273,3 +249,5 @@ Object::getFaceNormalAverage(std::array<std::size_t, 3> verticesId) const
     return (normals[0] + normals[1] + normals[2])
         / static_cast<float>(vec3Length);
 }
+
+std::string_view Object::getName() const { return name; }

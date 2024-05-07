@@ -6,6 +6,7 @@
 #include <Enums.hpp>
 #include <LoadingInputEngine.hpp>
 #include <LoadingRenderEngine.hpp>
+#include <Object.hpp>
 
 #include <memory>
 #include <utility>
@@ -15,9 +16,11 @@ class MainWindow;
 
 LoadingState::LoadingState(
     std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,
-    std::shared_ptr<MainWindow> _mainWindow)
+    std::shared_ptr<MainWindow> _mainWindow,
+    std::shared_ptr<ShaderProgramManager> _shaderProgramManager)
     : BaseState(
-          std::make_unique<LoadingInputEngine>(std::move(_eventBus)),
+          std::make_unique<LoadingInputEngine>(
+              std::move(_eventBus), std::move(_shaderProgramManager)),
           std::make_unique<LoadingRenderEngine>(std::move(_mainWindow)))
 {
 }

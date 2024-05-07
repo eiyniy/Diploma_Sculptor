@@ -7,19 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <system_error>
-#include <utility>
 #include <vector>
-
-// TODO Replace all (const std::string &) with (std::string_view)
-
-BaseTextParser::BaseTextParser(std::string _pathToFile)
-    : pathToFile(std::move(_pathToFile))
-{
-    std::error_code ec;
-    if (!std::filesystem::exists(pathToFile, ec)) {
-        throw std::logic_error("Could not open file");
-    }
-}
 
 std::vector<std::string> BaseTextParser::splitByLines(const std::string& string)
 {
@@ -67,8 +55,13 @@ std::optional<std::string> BaseTextParser::getNextPart(
     return result;
 }
 
-std::string BaseTextParser::readFile()
+std::string BaseTextParser::readFile(const std::string& pathToFile)
 {
+    std::error_code ec;
+    if (!std::filesystem::exists(pathToFile, ec)) {
+        throw std::logic_error("Could not open file");
+    }
+
     readStream.open(pathToFile, std::ios::binary);
     if (!readStream.is_open()) {
         throw std::logic_error("Could not open file");
@@ -82,5 +75,3 @@ std::string BaseTextParser::readFile()
 
     return buffer;
 }
-
-std::string BaseTextParser::getPathToFile() const { return pathToFile; }

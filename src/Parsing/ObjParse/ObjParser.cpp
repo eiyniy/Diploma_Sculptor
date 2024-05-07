@@ -24,14 +24,10 @@
 #include <string>
 #include <utility>
 
-ObjParser::ObjParser(const std::string& _pathToObj)
-    : BaseTextParser(_pathToObj)
+ObjParser::ObjParser()
+    : BaseTextParser()
 {
-    vertices = std::make_unique<std::vector<glm::vec4>>();
-    nVertices = std::make_unique<std::vector<glm::vec3>>();
-    tVertices = std::make_unique<std::vector<glm::vec2>>();
-    polygons = std::make_unique<std::vector<Triangle>>();
-    linesId = std::make_unique<std::vector<glm::vec<2, GLuint>>>();
+    reset();
 }
 
 std::optional<ObjEntryType> ObjParser::getEntryType(const std::string& line)
@@ -65,11 +61,20 @@ std::optional<ObjEntryType> ObjParser::getEntryType(const std::string& line)
     return std::nullopt;
 }
 
-ObjParseResult ObjParser::parse()
+void ObjParser::reset()
+{
+    vertices = std::make_unique<std::vector<glm::vec4>>();
+    nVertices = std::make_unique<std::vector<glm::vec3>>();
+    tVertices = std::make_unique<std::vector<glm::vec2>>();
+    polygons = std::make_unique<std::vector<Triangle>>();
+    linesId = std::make_unique<std::vector<glm::vec<2, GLuint>>>();
+}
+
+ObjParseResult ObjParser::parse(const std::string& pathToObj)
 {
     const auto timeStart = std::chrono::high_resolution_clock::now();
 
-    const auto fileContent = readFile();
+    const auto fileContent = readFile(pathToObj);
     const auto fileLines = splitByLines(fileContent);
 
     for (const auto& line : fileLines) {
@@ -115,11 +120,15 @@ ObjParseResult ObjParser::parse()
               << std::endl;
     std::cout << "Parse time: " << parseTime << " ms" << std::endl;
 
-    return { std::move(vertices),
-             std::move(nVertices),
-             std::move(tVertices),
-             std::move(polygons),
-             std::move(linesId) };
+    ObjParseResult result { std::move(vertices),
+                            std::move(nVertices),
+                            std::move(tVertices),
+                            std::move(polygons),
+                            std::move(linesId) };
+
+    reset();
+
+    return result;
 }
 
 void ObjParser::parseEntry(const std::string& line)

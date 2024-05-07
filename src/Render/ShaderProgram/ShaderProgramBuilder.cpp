@@ -50,16 +50,16 @@ void ShaderProgramBuilder::init(
 }
 
 void ShaderProgramBuilder::addShader(
-    std::string sourcePath, const GLenum shaderType)
+    const std::string& sourcePath, const GLenum shaderType)
 {
     if (isLinked) {
         throw std::logic_error(
             "Can't add shader to programm builder. It's already linked");
     }
 
-    BaseTextParser parser { std::move(sourcePath) };
+    BaseTextParser parser {};
 
-    const std::string sourceStr = parser.readFile();
+    const std::string sourceStr = parser.readFile(sourcePath);
     const char* source = sourceStr.c_str();
 
     GLuint shader = glCreateShader(shaderType);

@@ -31,6 +31,9 @@ private:
     std::vector<std::string> polygonStrings;
     std::vector<std::string> lineStrings;
 
+    // TODO: Add reset() = 0 to BaseTextParser
+    void reset();
+
     void parseEntry(const std::string& line);
 
     template <int L, NumericType V>
@@ -45,9 +48,16 @@ private:
     std::vector<Triangle> parsePolygon(const std::string& line);
 
 public:
-    explicit ObjParser(const std::string& _pathToObj);
+    ObjParser();
 
-    ObjParseResult parse();
+    ObjParser(const ObjParser&) = delete;
+    ObjParser(ObjParser&&) noexcept = default;
+    ObjParser& operator=(const ObjParser&) = delete;
+    ObjParser& operator=(ObjParser&&) noexcept = default;
+
+    ~ObjParser() = default;
+
+    ObjParseResult parse(const std::string& pathToObj);
 
     static std::optional<ObjEntryType> getEntryType(const std::string& line);
 };

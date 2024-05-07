@@ -76,8 +76,10 @@ public:
 
     virtual ~ObjectBuilder() = default;
 
-    void
-    init(GLenum drawMode, std::unique_ptr<std::vector<glm::vec4>> _vertices);
+    void init(
+        std::string_view name,
+        GLenum drawMode,
+        std::unique_ptr<std::vector<glm::vec4>> _vertices);
 
     void addTriangles(std::unique_ptr<std::vector<Triangle>> _triangles);
 
@@ -87,12 +89,10 @@ public:
 
     void addNVertices(std::unique_ptr<std::vector<glm::vec3>> _nVertices);
 
-    void addShaderProgram(std::unique_ptr<ShaderProgram> shaderProgram);
+    void addShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram);
 
     void addTexture(std::unique_ptr<Texture> texture);
-
-    void selectShaderProgram(std::string_view name);
-
+    
     void transform();
 
     void setupVAO();

@@ -7,8 +7,6 @@
 
 class BaseTextParser {
 public:
-    BaseTextParser(std::string _pathToFile);
-
     static std::vector<std::string> splitByLines(const std::string& string);
 
     static std::optional<std::string> getNextPart(
@@ -17,12 +15,8 @@ public:
         char divider,
         bool allowEmpty = false);
 
-    std::string readFile();
-
-protected:
-    std::string getPathToFile() const;
+    std::string readFile(const std::string& pathToFile);
 
 private:
-    std::string pathToFile;
     std::ifstream readStream;
 };

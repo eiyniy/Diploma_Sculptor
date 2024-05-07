@@ -1,11 +1,14 @@
 #pragma once
 
+#include <Enums.hpp>
 #include <Sculptor.hpp>
 
+#include <functional>
 #include <matrix_float4x4.hpp>
 
 #include <GL/glew.h>
 
+#include <map>
 #include <memory>
 #include <queue>
 #include <string>
@@ -38,11 +41,25 @@ private:
     GLfloat deltaTime;
     GLfloat lastFrameTime;
 
+    std::map<
+        EventType,
+        std::function<void(Engine*, std::unique_ptr<IEvent> event)>>
+        processEventMap;
+
     void updateEvents();
 
     void updateState();
 
     void draw();
+
+    void processCameraMoveEvent(std::unique_ptr<IEvent> event);
+    void processCameraRotateEvent(std::unique_ptr<IEvent> event);
+    void processBrushMoveEvent(std::unique_ptr<IEvent> event);
+    void processSculptorEditEvent(std::unique_ptr<IEvent> event);
+    void processCloseEvent(std::unique_ptr<IEvent> event);
+    void processCaptureMouseEvent(std::unique_ptr<IEvent> event);
+    void processReleaseMouseEvent(std::unique_ptr<IEvent> event);
+    void processObjectsLoadedEvent(std::unique_ptr<IEvent> event);
 
 public:
     Engine(

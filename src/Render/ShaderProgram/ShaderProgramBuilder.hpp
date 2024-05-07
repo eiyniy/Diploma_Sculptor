@@ -31,16 +31,16 @@ public:
 
     ShaderProgramBuilder(const ShaderProgramBuilder& shaderProgramBuilder)
         = delete;
-    ShaderProgramBuilder(ShaderProgramBuilder&& shaderProgramBuilder) = delete;
+    ShaderProgramBuilder(ShaderProgramBuilder&& shaderProgramBuilder) = default;
     ShaderProgramBuilder& operator=(const ShaderProgramBuilder&) = delete;
-    ShaderProgramBuilder& operator=(ShaderProgramBuilder&&) = delete;
+    ShaderProgramBuilder& operator=(ShaderProgramBuilder&&) = default;
 
     virtual ~ShaderProgramBuilder() = default;
 
     void
     init(std::string_view name, std::unique_ptr<IUniformLoader> uniformLoader);
 
-    void addShader(std::string sourcePath, GLenum shaderType);
+    void addShader(const std::string& sourcePath, GLenum shaderType);
 
     void addAttribute(std::unique_ptr<ShaderAttribute> attribute);
 

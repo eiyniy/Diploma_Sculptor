@@ -44,5 +44,5 @@ enum class EventType {
     Close,
     CaptureMouse,
     ReleaseMouse,
-    EngineLoad
+    ObjectsLoaded
 };

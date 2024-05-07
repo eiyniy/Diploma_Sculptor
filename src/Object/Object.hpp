@@ -23,6 +23,8 @@ class Object {
     friend class ObjectBuilder;
 
 private:
+    std::string name;
+
     GLenum drawMode;
 
     GLuint VAO;
@@ -32,13 +34,9 @@ private:
     GLuint tVerticesVBO;
     GLuint nVerticesVBO;
 
-    // TODO: Remove map, just single SP
-    std::map<const std::string_view, std::unique_ptr<ShaderProgram>>
-        shaderPrograms;
+    std::shared_ptr<ShaderProgram> shaderProgram;
 
-    std::string currentShaderProgramName;
-
-    bool _isAnyShaderEnabled;
+    bool _isShaderEnabled;
 
     std::map<std::size_t, std::vector<std::size_t>> connectedIndicesIds;
 
@@ -51,8 +49,6 @@ private:
     std::map<const std::string_view, std::unique_ptr<Texture>> textures;
 
     void throwIfShaderNotEnabled(const std::string& message) const;
-
-    void throwIfShaderNotSelected(const std::string& message) const;
 
     template <class T>
         requires IsUniformType<T>
@@ -68,7 +64,7 @@ public:
 
     ~Object();
 
-    [[nodiscard]] bool isAnyShaderEnabled() const;
+    [[nodiscard]] bool isShaderEnabled() const;
 
     void bindTextures();
 
@@ -81,8 +77,6 @@ public:
     void bindEBO();
 
     void unbindVBO();
-
-    void selectShaderProgram(std::string_view name);
 
     void enableShader();
 
@@ -103,6 +97,8 @@ public:
 
     [[nodiscard]] glm::vec3
     getFaceNormalAverage(std::array<std::size_t, 3> verticesId) const;
+
+    [[nodiscard]] std::string_view getName() const;
 };
 
 template <class T>
@@ -111,5 +107,5 @@ void Object::loadUniform(const std::string_view name, const T& value) const
 {
     throwIfShaderNotEnabled("loadUniform");
 
-    shaderPrograms.at(currentShaderProgramName)->loadUniform(name, value);
+    shaderProgram->loadUniform(name, value);
 }
