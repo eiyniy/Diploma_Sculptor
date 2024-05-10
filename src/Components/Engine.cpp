@@ -70,6 +70,10 @@ Engine::Engine(
         = &Engine::processReleaseMouseEvent;
     processEventMap[EventType::ObjectsLoaded]
         = &Engine::processObjectsLoadedEvent;
+
+    // TODO: Move path to private static const
+    shaderProgramManager = std::make_shared<ShaderProgramManager>(
+        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders)");
 }
 
 Engine::~Engine() { glfwTerminate(); }
@@ -84,13 +88,11 @@ void Engine::start()
         Settings::get()->getZNear(),
         Settings::get()->getZFar());
 
-    auto shaderProgramManager = std::make_shared<ShaderProgramManager>(
-        R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\resources\shaders)");
-
     shaderProgramManager->loadModelShaderProgram(
         modelMat, viewMat, projectionMat, camera);
     shaderProgramManager->loadLinesShaderProgram(
         modelMat, viewMat, projectionMat);
+    shaderProgramManager->loadLoadingShaderProgram(mainWindow);
 
     state = std::make_unique<LoadingState>(
         eventBus, mainWindow, shaderProgramManager);
@@ -131,13 +133,19 @@ void Engine::updateState()
 
     switch (*res) {
     case StateType::View:
-        state = std::make_unique<ViewState>(eventBus, mainWindow, camera);
+        state = std::make_unique<ViewState>(
+            eventBus, mainWindow, camera, scene->getAllObjects());
         break;
     case StateType::Edit:
-        state = std::make_unique<EditState>(eventBus, mainWindow, camera);
+        state = std::make_unique<EditState>(
+            eventBus, mainWindow, camera, scene->getAllObjects());
         break;
     case StateType::Close:
-        state = std::make_unique<CloseState>(eventBus, mainWindow, camera);
+        state = std::make_unique<CloseState>(
+            eventBus,
+            mainWindow,
+            shaderProgramManager->getShaderProgram(
+                ShaderProgramManager::loadingSPName));
         break;
     case StateType::Loading:
         // TODO: throw
@@ -147,12 +155,7 @@ void Engine::updateState()
     state->setWindowUserPointer(mainWindow);
 }
 
-void Engine::draw()
-{
-    auto& objects = scene->getAllObjects();
-
-    state->draw(objects);
-}
+void Engine::draw() { state->draw(); }
 
 void Engine::addObject(const std::string& name, std::unique_ptr<Object> object)
 {

@@ -8,9 +8,7 @@
 
 class Scene {
 private:
-    // std::string selectedObjectName;
-
-    std::map<std::string, std::shared_ptr<Object>> objects;
+    std::shared_ptr<std::map<std::string, std::shared_ptr<Object>>> objects;
 
 public:
     Scene();
@@ -19,5 +17,6 @@ public:
 
     std::shared_ptr<Object> getObject(const std::string& key);
 
-    std::map<std::string, std::shared_ptr<Object>>& getAllObjects();
+    std::shared_ptr<std::map<std::string, std::shared_ptr<Object>>>
+    getAllObjects();
 };

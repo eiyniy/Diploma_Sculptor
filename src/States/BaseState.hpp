@@ -36,6 +36,6 @@ public:
     setWindowUserPointer(const std::shared_ptr<MainWindow>& mainWindow) const;
 
     std::optional<StateType> update(float dt);
-    void draw(const std::map<std::string, std::shared_ptr<Object>>& objects);
-    // TODO: Remove objects from params
+
+    void draw();
 };

@@ -2,12 +2,19 @@
 
 #include <EntryIds.hpp>
 
+#include <stdexcept>
 #include <vector>
 
 Triangle::Triangle(const std::vector<EntryIds>& indexes)
-    : vertexIndexesCount((int)indexes.size())
-    , values { indexes[0], indexes[1], indexes[2] }
+    : values { indexes[0], indexes[1], indexes[2] }
 {
 }
 
-int Triangle::cGetVertexIdsCount() const { return vertexIndexesCount; }
+const EntryIds& Triangle::cGetVertexIds(const std::size_t i) const
+{
+    if (i > 2) {
+        throw std::invalid_argument("Could not get EntryIds");
+    }
+
+    return values.at(i);
+}

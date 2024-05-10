@@ -15,7 +15,7 @@ public:
     LoadingState(
         std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,
         std::shared_ptr<MainWindow> _mainWindow,
-        std::shared_ptr<ShaderProgramManager> _shaderProgramManager);
+        const std::shared_ptr<ShaderProgramManager>& _shaderProgramManager);
 
     [[nodiscard]] StateType getType() const override;
 };

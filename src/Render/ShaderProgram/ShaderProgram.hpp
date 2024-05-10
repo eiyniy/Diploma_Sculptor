@@ -19,6 +19,8 @@ template <class T> class ConstructorPasskey;
 
 const std::size_t infoLogSize = 512;
 
+using namespace std::string_view_literals;
+
 class ShaderProgram {
 
     friend class ShaderProgramBuilder;
@@ -47,23 +49,25 @@ private:
     bool _isUsed;
 
 public:
-    static constexpr std::string_view modelUName = "uModel";
-    static constexpr std::string_view viewUName = "uView";
-    static constexpr std::string_view projectionUName = "uProjection";
+    static constexpr auto modelUName = "uModel"sv;
+    static constexpr auto viewUName = "uView"sv;
+    static constexpr auto projectionUName = "uProjection"sv;
 
-    static constexpr std::string_view colorUName = "uColor";
+    static constexpr auto colorUName = "uColor"sv;
 
-    static constexpr std::string_view cameraPosUName = "uCameraPos";
+    static constexpr auto cameraPosUName = "uCameraPos"sv;
 
-    static constexpr std::string_view lightColorUName = "uLightColor";
+    static constexpr auto lightColorUName = "uLightColor"sv;
 
-    static constexpr std::string_view dimmingFactorUName = "uDimmingFactor";
-    static constexpr std::string_view isDistanceDimmingUName
-        = "uIsDistanceDimming";
+    static constexpr auto dimmingFactorUName = "uDimmingFactor"sv;
+    static constexpr auto isDistanceDimmingUName = "uIsDistanceDimming"sv;
 
-    static constexpr std::string_view positionAName = "position";
-    static constexpr std::string_view texCoordAName = "texCoord";
-    static constexpr std::string_view normalAName = "normal";
+    static constexpr auto timeUName = "uTime"sv;
+    static constexpr auto resolutionUName = "uResolution"sv;
+
+    static constexpr auto positionAName = "position"sv;
+    static constexpr auto texCoordAName = "texCoord"sv;
+    static constexpr auto normalAName = "normal"sv;
 
     ShaderProgram(ConstructorPasskey<ShaderProgram>&& passkey);
 

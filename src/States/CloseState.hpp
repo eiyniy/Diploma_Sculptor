@@ -6,7 +6,7 @@
 #include <memory>
 #include <queue>
 
-class Camera;
+class ShaderProgram;
 class IEvent;
 class MainWindow;
 
@@ -15,7 +15,7 @@ public:
     CloseState(
         std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,
         std::shared_ptr<MainWindow> _mainWindow,
-        std::shared_ptr<Camera> _camera);
+        std::shared_ptr<ShaderProgram> loadingShaderProgram);
 
     [[nodiscard]] StateType getType() const override;
 };

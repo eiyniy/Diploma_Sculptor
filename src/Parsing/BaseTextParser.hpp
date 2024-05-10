@@ -7,8 +7,10 @@
 
 class BaseTextParser {
 public:
-    static std::vector<std::string> splitByLines(const std::string& string);
+    static std::vector<std::string_view>
+    splitByLines(const std::string& string);
 
+    // TODO: Remove
     static std::optional<std::string> getNextPart(
         std::string::const_iterator* iter,
         std::string::const_iterator iterEnd,

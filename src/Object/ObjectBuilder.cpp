@@ -1,6 +1,7 @@
 #include <ObjectBuilder.hpp>
 
 #include <EntryIds.hpp>
+#include <Globals.hpp>
 #include <Hasher.hpp>
 #include <IBuilder.hpp>
 #include <Object.hpp>
@@ -17,17 +18,33 @@
 #include <vector_float3.hpp>
 #include <vector_float4.hpp>
 
+#include <algorithm>
 #include <chrono>
 #include <cstddef>
+#include <execution>
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
+
+TransformEntryResult::TransformEntryResult(
+    const ObjectEntry& entry,
+    const std::size_t id,
+    const std::size_t hash,
+    const std::size_t vertexId)
+    : entry(entry)
+    , id(id)
+    , hash(hash)
+    , vertexId(vertexId)
+{
+}
 
 ObjectBuilder::ObjectBuilder()
     : isInited(false)
@@ -57,8 +74,10 @@ void ObjectBuilder::reset()
     lines.reset();
     indices.reset();
 
-    vericesIdToIndicesId.clear();
+    std::cout << "HERE THREE" << std::endl;
+
     indicesIdToVertexId.clear();
+    vericesIdToIndicesId.clear();
 
     isInited = false;
     isTransformed = false;
@@ -91,10 +110,11 @@ std::size_t ObjectBuilder::hashEntryIdsNaive(
     return hash;
 }
 
+// TODO: Move to ObjectEntry::getHash()
 std::size_t ObjectBuilder::hashEntryIdsRotl(
-    const int vertexId,
-    const std::optional<int> tVertexId,
-    const std::optional<int> nVertexId)
+    const std::size_t vertexId,
+    const std::optional<std::size_t> tVertexId,
+    const std::optional<std::size_t> nVertexId)
 {
     std::size_t hash {};
 
@@ -117,6 +137,7 @@ void ObjectBuilder::transform()
 {
     if (instance->drawMode == GL_TRIANGLES) {
         transformTriangles();
+        std::cout << "HERE FOUR" << std::endl;
     } else if (instance->drawMode == GL_LINES) {
         transformLines();
     }
@@ -128,90 +149,150 @@ void ObjectBuilder::transformTriangles()
 {
     throwIfNotInited("Can't transform triangles. ");
 
+    const auto transformHashesStart = std::chrono::high_resolution_clock::now();
+
+    std::vector<TransformEntryResult> indicesIdToTransformEntryResult;
+
+#pragma omp parallel if (!_IS_DEBUG)
+    {
+        std::vector<TransformEntryResult>
+            indicesIdToTransformEntryResultPrivate;
+
+#pragma omp for nowait
+        for (std::size_t triangleId = 0; triangleId < triangles->size();
+             ++triangleId) {
+            const auto& triangle = triangles->at(triangleId);
+
+            for (auto i = 0; i < Triangle::verticesCount; ++i) {
+                // TODO: Move to func
+                // TODO: Add separate funcs for parallel and not
+                const auto& entryIds = triangle.cGetVertexIds(i);
+
+                const auto vertexId = entryIds.cGetVertexId() - 1;
+                const auto& vertex = vertices->at(vertexId);
+
+                const auto& nVertexId = entryIds.cGetNormalVertexId();
+                std::optional<glm::vec3> nVertex {};
+                if (nVertexId.has_value() && nVertices != nullptr) {
+                    nVertex = nVertices->at(*nVertexId - 1);
+                }
+
+                const auto& tVertexId = entryIds.cGetTextureVertexId();
+                std::optional<glm::vec2> tVertex {};
+                if (tVertexId.has_value() && tVertices != nullptr) {
+                    tVertex = tVertices->at(*tVertexId - 1);
+                }
+
+                const auto idsHash
+                    = hashEntryIdsRotl(vertexId, tVertexId, nVertexId);
+
+                indicesIdToTransformEntryResultPrivate.emplace_back(
+                    ObjectEntry(vertex, nVertex, tVertex),
+                    triangleId * Triangle::verticesCount + i,
+                    idsHash,
+                    vertexId);
+            }
+        }
+
+#pragma omp critical(indicesIdToEntryWithHash)
+        // /*
+        std::copy(
+            indicesIdToTransformEntryResultPrivate.begin(),
+            indicesIdToTransformEntryResultPrivate.end(),
+            std::back_inserter(indicesIdToTransformEntryResult));
+        // */
+    }
+
+    std::cout << "Entries count: " << indicesIdToTransformEntryResult.size()
+              << std::endl;
+
     const auto transformEntriesStart
         = std::chrono::high_resolution_clock::now();
 
-    std::map<std::size_t, std::size_t> entriesIdsHashWithPos;
-    std::vector<ObjectEntry> entries;
+    std::cout << "Transform hashes time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     transformEntriesStart - transformHashesStart)
+              << std::endl;
+
+    std::unordered_map<std::size_t, std::size_t> entriesIdsHashWithPos;
+    std::vector<ObjectEntry> uniqueEntries;
+
+    // FIXME: 17 seconds of de-alloc, shit
+    // std::unordered_map<std::size_t, std::vector<std::size_t>>
+    //     vericesIdToIndicesId;
+    // std::unordered_map<std::size_t, std::size_t> indicesIdToVertexId;
 
     instance->indices.resize(triangles->size() * 3);
 
-    std::size_t indicesId = 0;
-    std::size_t entriesId = 0;
+    std::size_t uniqueEntriesId = 0;
 
-    std::cout << "Triangles count x3: " << triangles->size() * 3 << std::endl;
+    // /*
+    for (auto&& trEntry : indicesIdToTransformEntryResult) {
+        auto& index = instance->indices.at(trEntry.id);
+        const auto vertexId = trEntry.vertexId;
 
-    for (const auto& triangle : *triangles) {
-        const auto vertexIdsCount = triangle.cGetVertexIdsCount();
+        const auto insertRes = entriesIdsHashWithPos.insert(
+            std::make_pair(trEntry.hash, uniqueEntriesId));
 
-        for (auto i = 0; i < vertexIdsCount; ++i) {
-            const auto entryIds = triangle.cGetVertexIds(i);
+        if (insertRes.second) {
+            uniqueEntries.push_back(trEntry.entry);
 
-            const auto vertexId = entryIds.cGetVertexId() - 1;
-            const auto vertex = vertices->at(vertexId);
+            indicesIdToVertexId[uniqueEntriesId] = vertexId;
+            vericesIdToIndicesId[vertexId].push_back(uniqueEntriesId);
 
-            auto nVertexId = entryIds.cGetNormalVertexId();
-            std::optional<glm::vec3> nVertex {};
-            if (nVertexId.has_value() && nVertices != nullptr) {
-                nVertex = nVertices->at(--*nVertexId);
-            }
-
-            auto tVertexId = entryIds.cGetTextureVertexId();
-            std::optional<glm::vec2> tVertex {};
-            if (tVertexId.has_value() && tVertices != nullptr) {
-                tVertex = tVertices->at(--*tVertexId);
-            }
-
-            const ObjectEntry entry { vertex, nVertex, tVertex };
-            const auto idsHash
-                = hashEntryIdsRotl(vertexId, tVertexId, nVertexId);
-
-            if (!entriesIdsHashWithPos.contains(idsHash)) {
-                entriesIdsHashWithPos[idsHash] = entriesId;
-                entries.push_back(entry);
-
-                indicesIdToVertexId[entriesId] = vertexId;
-                vericesIdToIndicesId[vertexId].push_back(entriesId);
-
-                instance->indices[indicesId++] = entriesId++;
-            } else {
-                instance->indices[indicesId++]
-                    = entriesIdsHashWithPos.at(idsHash);
-            }
+            index = uniqueEntriesId++;
+        } else {
+            index = insertRes.first->second;
         }
     }
+    // */
 
-    std::cout << "Entries id: " << entriesId << std::endl;
-    std::cout << "Entries count: " << entries.size() << std::endl;
+    std::cout << "Unique entries count: " << uniqueEntries.size() << std::endl;
 
-    for (auto&& indexId : indicesIdToVertexId) {
-        instance->connectedIndicesIds[indexId.first]
-            = vericesIdToIndicesId[indexId.second];
+    const auto transformConnectedStart
+        = std::chrono::high_resolution_clock::now();
+
+    std::cout << "Transform entries time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     transformConnectedStart - transformEntriesStart)
+              << std::endl;
+
+    // /*
+#pragma parallel for if (!_IS_DEBUG)
+    for (auto iter = indicesIdToVertexId.begin();
+         std::distance(iter, indicesIdToVertexId.end()) > 0;
+         ++iter) {
+        instance->connectedIndicesIds[iter->first]
+            = vericesIdToIndicesId[iter->second];
     }
+    // */
 
     const auto transformSeparationStart
         = std::chrono::high_resolution_clock::now();
 
-    instance->trVertices.resize(entries.size() * glm::vec4::length());
-    instance->trTVertices.resize(entries.size() * glm::vec2::length());
-    instance->trNVertices.resize(entries.size() * glm::vec3::length());
+    std::cout << "Transform connected time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     transformSeparationStart - transformConnectedStart)
+              << std::endl;
 
-    for (std::size_t entryid = 0,
-                     verticesPos = 0,
-                     tVerticesPos = 0,
-                     nVerticesPos = 0;
-         entryid < entries.size();
-         ++entryid, verticesPos += 4, tVerticesPos += 2, nVerticesPos += 3) {
-        auto&& entry = entries.at(entryid);
+    instance->trVertices.resize(uniqueEntries.size() * glm::vec4::length());
+    instance->trTVertices.resize(uniqueEntries.size() * glm::vec2::length());
+    instance->trNVertices.resize(uniqueEntries.size() * glm::vec3::length());
 
-        const auto vertex = entry.getVertex();
+#pragma omp parallel for
+    for (auto iter = uniqueEntries.begin(); iter < uniqueEntries.end();
+         ++iter) {
+        const auto id = iter - uniqueEntries.begin();
+        const auto vertex = iter->getVertex();
+        const auto verticesPos = id * 4;
 
         instance->trVertices[verticesPos] = vertex.x;
         instance->trVertices[verticesPos + 1] = vertex.y;
         instance->trVertices[verticesPos + 2] = vertex.z;
         instance->trVertices[verticesPos + 3] = vertex.w;
 
-        const auto nVertex = entry.getNVertex();
+        const auto nVertex = iter->getNVertex();
+        const auto nVerticesPos = id * 3;
 
         if (nVertex.has_value()) {
             instance->trNVertices[nVerticesPos] = nVertex->x;
@@ -219,7 +300,8 @@ void ObjectBuilder::transformTriangles()
             instance->trNVertices[nVerticesPos + 2] = nVertex->z;
         }
 
-        const auto tVertex = entry.getTVertex();
+        const auto tVertex = iter->getTVertex();
+        const auto tVerticesPos = id * 2;
 
         if (tVertex.has_value()) {
             instance->trTVertices[tVerticesPos] = tVertex->x;
@@ -227,10 +309,6 @@ void ObjectBuilder::transformTriangles()
         }
     }
 
-    std::cout << "Transform entries time: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     transformSeparationStart - transformEntriesStart)
-              << std::endl;
     std::cout << "Transform separation time: "
               << std::chrono::duration_cast<std::chrono::milliseconds>(
                      std::chrono::high_resolution_clock::now()
@@ -259,6 +337,11 @@ void ObjectBuilder::transformLines()
     const auto transformSeparationStart
         = std::chrono::high_resolution_clock::now();
 
+    std::cout << "Transform lines entries time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     transformSeparationStart - transformLinesStart)
+              << std::endl;
+
     instance->trVertices.resize(vertices->size() * glm::vec4::length());
 
     for (std::size_t verticesPos = 0, trVerticesPos = 0;
@@ -272,11 +355,7 @@ void ObjectBuilder::transformLines()
         instance->trVertices[trVerticesPos + 3] = vertex.w;
     }
 
-    std::cout << "Transform entries time: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     transformSeparationStart - transformLinesStart)
-              << std::endl;
-    std::cout << "Transform separation time: "
+    std::cout << "Transform lines separation time: "
               << std::chrono::duration_cast<std::chrono::milliseconds>(
                      std::chrono::high_resolution_clock::now()
                      - transformSeparationStart)

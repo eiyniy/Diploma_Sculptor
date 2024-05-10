@@ -7,14 +7,12 @@
 
 class Triangle {
 private:
-    int vertexIndexesCount;
-
     std::array<EntryIds, 3> values;
 
 public:
+    static constexpr int verticesCount = 3;
+
     Triangle(const std::vector<EntryIds>& indexes);
 
-    [[nodiscard]] int cGetVertexIdsCount() const;
-
-    [[nodiscard]] const EntryIds& cGetVertexIds(int i) const;
+    [[nodiscard]] const EntryIds& cGetVertexIds(std::size_t i) const;
 };

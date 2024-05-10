@@ -2,10 +2,6 @@
 
 #include <Object.hpp>
 
-#include <map>
-#include <memory>
-#include <string>
-
 class BaseRenderEngine {
 public:
     BaseRenderEngine() = default;
@@ -17,7 +13,5 @@ public:
 
     virtual ~BaseRenderEngine() = default;
 
-    virtual void
-    draw(const std::map<std::string, std::shared_ptr<Object>>& objects)
-        = 0;
+    virtual void draw() = 0;
 };

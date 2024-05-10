@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Sculptor.hpp>
+#include <ShaderProgramManager.hpp>
 
 #include <matrix_float4x4.hpp>
 
@@ -38,6 +39,8 @@ private:
     std::shared_ptr<glm::mat4> projectionMat;
 
     Sculptor sculptor;
+
+    std::shared_ptr<ShaderProgramManager> shaderProgramManager;
 
     GLfloat deltaTime;
     GLfloat lastFrameTime;

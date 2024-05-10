@@ -30,8 +30,4 @@ std::optional<StateType> BaseState::update(const float dt)
     return input->update(dt);
 }
 
-void BaseState::draw(
-    const std::map<std::string, std::shared_ptr<Object>>& objects)
-{
-    render->draw(objects);
-}
+void BaseState::draw() { render->draw(); }

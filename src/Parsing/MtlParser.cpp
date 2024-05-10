@@ -33,7 +33,7 @@ MtlParser::parse(const std::string& pathToMtl)
     const auto lines = splitByLines(fileContent);
 
     for (const auto& line : lines) {
-        parseEntry(line);
+        parseEntry(std::string(line));
     }
 
     if (!name.empty()) {

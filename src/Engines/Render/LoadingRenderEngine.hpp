@@ -2,20 +2,33 @@
 
 #include <BaseRenderEngine.hpp>
 
-#include <map>
-#include <memory>
-#include <string>
+#include <GL/glew.h> // IWYU pragma: keep
 
+#include <memory>
+#include <vector>
+
+class ShaderProgram;
 class MainWindow;
 class Object;
 
 class LoadingRenderEngine : public BaseRenderEngine {
 private:
     std::shared_ptr<MainWindow> mainWindow;
+    std::shared_ptr<ShaderProgram> shaderProgram;
+
+    GLuint dummyVBO;
+    GLuint dummyVAO;
+    GLuint dummyEBO;
+
+    std::vector<GLfloat> dummyVertices;
+    std::vector<GLuint> dummyIndices;
 
 public:
-    LoadingRenderEngine(std::shared_ptr<MainWindow> _mainWindow);
+    LoadingRenderEngine(
+        std::shared_ptr<MainWindow> _mainWindow,
+        std::shared_ptr<ShaderProgram> _shaderProgram);
 
-    void draw(
-        const std::map<std::string, std::shared_ptr<Object>>& objects) override;
+    ~LoadingRenderEngine();
+
+    void draw() override;
 };

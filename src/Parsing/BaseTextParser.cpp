@@ -3,22 +3,28 @@
 #include <cctype>
 #include <filesystem>
 #include <optional>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <system_error>
 #include <vector>
 
-std::vector<std::string> BaseTextParser::splitByLines(const std::string& string)
+std::vector<std::string_view>
+BaseTextParser::splitByLines(const std::string& string)
 {
-    auto result = std::vector<std::string> {};
-    auto ss = std::stringstream { string };
+    std::vector<std::string_view> lines;
+    std::size_t start = 0;
+    std::size_t end = 0;
 
-    for (std::string line; std::getline(ss, line, '\n');) {
-        result.emplace_back(line);
+    while (end != std::string_view::npos) {
+        end = string.find_first_of('\n', start);
+        std::size_t len = (end == std::string_view::npos)
+            ? string.length() - start
+            : end - start;
+        lines.emplace_back(string.data() + start, len);
+        start = end + 1;
     }
 
-    return result;
+    return lines;
 }
 
 std::optional<std::string> BaseTextParser::getNextPart(

@@ -5,49 +5,61 @@
 #include <Triangle.hpp>
 
 #include <array>
-#include <stdexcept>
+#include <charconv>
+
+EntryIds::EntryIds()
+    : vertexId(0)
+{
+}
 
 EntryIds::EntryIds(
-    const int _vertexId,
-    const std::optional<int>& _tVertexId,
-    const std::optional<int>& _nVertexId)
+    const std::size_t _vertexId,
+    const std::optional<std::size_t>& _tVertexId,
+    const std::optional<std::size_t>& _nVertexId)
     : vertexId(_vertexId)
     , tVertexId(_tVertexId)
     , nVertexId(_nVertexId)
 {
 }
 
-EntryIds EntryIds::parse(const std::string& str)
+EntryIds EntryIds::parse(const std::string_view str)
 {
-    auto accumulator = std::array<std::optional<int>, 3>();
+    std::array<std::optional<std::size_t>, 3> entryIds;
 
-    auto iter = str.cbegin();
-    auto iterEnd = str.cend();
+    size_t startPos = 0;
+    size_t endPos = str.find('/');
 
-    int i = 0;
-    while (auto strPart = ObjParser::getNextPart(&iter, iterEnd, '/', true)) {
-        accumulator.at(i) = Math::optStoi(*strPart);
-        ++i;
+    for (auto& entryId : entryIds) {
+        std::string_view entryIdStr = str.substr(startPos, endPos - startPos);
+
+        if (!entryIdStr.empty()) {
+            std::from_chars(
+                entryIdStr.data(),
+                entryIdStr.data() + entryIdStr.length(),
+                entryId.emplace());
+        } else {
+            entryId = std::nullopt;
+        }
+
+        if (endPos == std::string_view::npos) {
+            break;
+        }
+
+        startPos = endPos + 1;
+        endPos = str.find('/', startPos);
     }
 
-    if (!accumulator[0].has_value()) {
-        throw std::logic_error("Invalid argument");
-    }
-
-    return EntryIds { *accumulator[0], accumulator[1], accumulator[2] };
+    return EntryIds { *entryIds[0], entryIds[1], entryIds[2] };
 }
 
-const EntryIds& Triangle::cGetVertexIds(const int i) const
-{
-    if (i > 2) {
-        throw std::invalid_argument("Could not get EntryIds");
-    }
+std::size_t EntryIds::cGetVertexId() const { return vertexId; }
 
-    return values.at(i);
+const std::optional<std::size_t>& EntryIds::cGetNormalVertexId() const
+{
+    return nVertexId;
 }
 
-int EntryIds::cGetVertexId() const { return vertexId; }
-
-std::optional<int> EntryIds::cGetNormalVertexId() const { return nVertexId; }
-
-std::optional<int> EntryIds::cGetTextureVertexId() const { return tVertexId; }
+const std::optional<std::size_t>& EntryIds::cGetTextureVertexId() const
+{
+    return tVertexId;
+}

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MainWindow.hpp"
 #include <ShaderProgram.hpp>
 #include <ShaderProgramBuilder.hpp>
 
@@ -24,6 +25,7 @@ private:
 public:
     static constexpr auto modelSPName = "MODEL"sv;
     static constexpr auto linesSPName = "LINES"sv;
+    static constexpr auto loadingSPName = "LOADING"sv;
 
     ShaderProgramManager(std::string_view _shaderFolderPath);
 
@@ -47,4 +49,7 @@ public:
         const std::shared_ptr<glm::mat4>& modelMat,
         const std::shared_ptr<glm::mat4>& viewMat,
         const std::shared_ptr<glm::mat4>& projectionMat);
+
+    void
+    loadLoadingShaderProgram(const std::shared_ptr<MainWindow>& mainWindow);
 };

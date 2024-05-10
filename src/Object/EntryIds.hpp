@@ -1,27 +1,28 @@
 #pragma once
 
+#include <cstddef>
 #include <optional>
-#include <string>
+#include <string_view>
 
 class EntryIds {
+private:
+    std::size_t vertexId;
+    std::optional<std::size_t> tVertexId;
+    std::optional<std::size_t> nVertexId;
+
 public:
     EntryIds();
 
     explicit EntryIds(
-        int _vertexId,
-        const std::optional<int>& _tVertexId = std::nullopt,
-        const std::optional<int>& _nVertexId = std::nullopt);
+        std::size_t _vertexId,
+        const std::optional<std::size_t>& _tVertexId = std::nullopt,
+        const std::optional<std::size_t>& _nVertexId = std::nullopt);
 
-    static EntryIds parse(const std::string& str);
+    static EntryIds parse(std::string_view str);
 
-    [[nodiscard]] int cGetVertexId() const;
+    [[nodiscard]] std::size_t cGetVertexId() const;
 
-    [[nodiscard]] std::optional<int> cGetNormalVertexId() const;
+    [[nodiscard]] const std::optional<std::size_t>& cGetNormalVertexId() const;
 
-    [[nodiscard]] std::optional<int> cGetTextureVertexId() const;
-
-private:
-    int vertexId;
-    std::optional<int> tVertexId;
-    std::optional<int> nVertexId;
+    [[nodiscard]] const std::optional<std::size_t>& cGetTextureVertexId() const;
 };

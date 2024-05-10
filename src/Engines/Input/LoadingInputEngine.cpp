@@ -8,6 +8,7 @@
 #include <Object.hpp>
 #include <ObjectBuilder.hpp>
 #include <ObjectsLoadedEvent.hpp>
+#include <Settings.hpp>
 #include <ShaderProgramManager.hpp>
 #include <Triangle.hpp>
 
@@ -32,6 +33,14 @@ LoadingInputEngine::LoadingInputEngine(
     , isModelParseStarted(false)
     , isSelectorLoadingStarted(false)
 {
+    loadingStart = std::chrono::high_resolution_clock::now();
+
+    glfwSwapInterval(1);
+}
+
+LoadingInputEngine::~LoadingInputEngine()
+{
+    glfwSwapInterval(static_cast<int>(Settings::get()->isVSyncEnabled()));
 }
 
 std::optional<StateType> LoadingInputEngine::update(const float dt)
@@ -41,12 +50,13 @@ std::optional<StateType> LoadingInputEngine::update(const float dt)
             const std::string projectPath
                 = R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\)";
 
-            std::string path
-                // = projectPath + R"(resources\baseModels\cube\cube.obj)";
-                // = projectPath + R"(resources\baseModels\sphere\sphere.obj)";
-                // = projectPath + R"(resources\models\woman1.obj)";
-                = projectPath + R"(resources\models\car\car.obj)";
-            // = projectPath + R"(resources\models\angel\angel.obj)";
+            // TODO: Move paths to Settings
+            std::string path = projectPath +
+                // R"(resources\baseModels\cube\cube.obj)";
+                R"(resources\baseModels\sphere\sphere.obj)";
+            // R"(resources\models\car\car.obj)";
+            // R"(resources\models\AstonMartin\AstonMartin2.obj)";
+            // R"(resources\models\angel\angel.obj)";
 
             return std::move(parser.parse(path));
         });
@@ -80,6 +90,7 @@ std::optional<StateType> LoadingInputEngine::update(const float dt)
                     ShaderProgramManager::modelSPName));
 
                 builder.transform();
+                std::cout << "modelLoadingStatus ended INNER" << std::endl;
             },
             std::move(modelParseResult));
 
@@ -93,19 +104,24 @@ std::optional<StateType> LoadingInputEngine::update(const float dt)
             return std::nullopt;
         }
 
-        std::cout << "modelLoadingStatus ended" << std::endl;
+        std::cout << "modelLoadingStatus ended BEFORE" << std::endl;
         modelLoadingTask.get();
+        std::cout << "modelLoadingStatus ended AFTER" << std::endl;
 
         objectBuilder.setupVAO();
 
-        result.push_back(std::move(objectBuilder.build()));
+        std::cout << "HERE" << std::endl;
+
+        result.emplace_back(std::move(objectBuilder.build()));
+
+        std::cout << "HERE TWO" << std::endl;
 
         selectorParseTask = std::async([&parser = objParser] {
             const std::string projectPath
                 = R"(C:\Users\Natallia\Documents\Labs\Diploma\Diploma_Sculptor\)";
 
             std::string path = projectPath
-                + R"(resources\models\armillarySphere\ArmillarySphere.obj)";
+                + R"(resources\baseModels\armillarySphere\ArmillarySphere.obj)";
 
             return parser.parse(path);
         });
@@ -155,6 +171,11 @@ std::optional<StateType> LoadingInputEngine::update(const float dt)
     objectBuilder.setupVAO();
 
     result.push_back(std::move(objectBuilder.build()));
+
+    std::cout << "Total loading time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::high_resolution_clock::now() - loadingStart)
+              << std::endl;
 
     pushEvent(std::make_unique<ObjectsLoadedEvent>(std::move(result)));
     return StateType::View;

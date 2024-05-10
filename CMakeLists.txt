@@ -14,8 +14,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOIL_H_PATH "${PROJECT_SOURCE_DIR}/Libraries/SOIL/includes/SOIL")
 
-# set(IWYU_ENABLED FALSE)
-set(IWYU_ENABLED TRUE)
+set(IWYU_ENABLED FALSE)
+# set(IWYU_ENABLED TRUE)
 
 
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp")
@@ -110,6 +110,9 @@ target_include_directories(${LOCAL_PROJECT_NAME} PRIVATE glm)
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
 add_compile_options(-Werror)
+
+add_compile_options(-fexperimental-library)
+add_compile_options(-ltbb)
 
 file(CREATE_LINK
   "${CMAKE_BINARY_DIR}/compile_commands.json"

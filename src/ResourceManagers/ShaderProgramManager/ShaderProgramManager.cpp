@@ -2,6 +2,7 @@
 
 #include <IUniformLoader.hpp>
 #include <LinesUniformLoader.hpp>
+#include <LoadingUniformLoader.hpp>
 #include <ModelUniformLoader.hpp>
 #include <ShaderAttribute.hpp>
 #include <ShaderProgram.hpp>
@@ -11,6 +12,7 @@
 
 #include <GL/glew.h>
 
+#include <memory>
 #include <utility>
 
 class Camera;
@@ -63,8 +65,6 @@ void ShaderProgramManager::loadModelShaderProgram(
     shaderProgramBuilder.addAttribute(std::make_unique<ShaderAttribute>(
         ShaderProgram::normalAName, 1, 3, GL_FLOAT, sizeof(GLfloat), GL_FALSE));
 
-    // TODO: Add loading state before parsing
-
     shaderProgramBuilder.addNewUniform(ShaderProgram::modelUName);
     shaderProgramBuilder.addNewUniform(ShaderProgram::viewUName);
     shaderProgramBuilder.addNewUniform(ShaderProgram::projectionUName);
@@ -113,4 +113,35 @@ void ShaderProgramManager::loadLinesShaderProgram(
     shaderProgramBuilder.addNewUniform(ShaderProgram::colorUName);
 
     shaderPrograms[linesSPName] = shaderProgramBuilder.build();
+}
+
+void ShaderProgramManager::loadLoadingShaderProgram(
+    const std::shared_ptr<MainWindow>& mainWindow)
+{
+    shaderProgramBuilder.create();
+
+    auto loadingUniformLoader
+        = std::make_unique<LoadingUniformLoader>(mainWindow);
+
+    shaderProgramBuilder.init(loadingSPName, std::move(loadingUniformLoader));
+
+    shaderProgramBuilder.addShader(
+        shaderFolderPath + R"(\loading\loading.vert)", GL_VERTEX_SHADER);
+    shaderProgramBuilder.addShader(
+        shaderFolderPath + R"(\loading\loading.frag)", GL_FRAGMENT_SHADER);
+
+    shaderProgramBuilder.link();
+
+    shaderProgramBuilder.addAttribute(std::make_unique<ShaderAttribute>(
+        ShaderProgram::positionAName,
+        0,
+        2,
+        GL_FLOAT,
+        sizeof(GLfloat),
+        GL_FALSE));
+
+    shaderProgramBuilder.addNewUniform(ShaderProgram::resolutionUName);
+    shaderProgramBuilder.addNewUniform(ShaderProgram::timeUName);
+
+    shaderPrograms[loadingSPName] = shaderProgramBuilder.build();
 }

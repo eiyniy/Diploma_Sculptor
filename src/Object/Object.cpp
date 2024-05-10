@@ -135,8 +135,6 @@ void Object::draw() const
 
     glBindVertexArray(VAO);
 
-    // std::cout << "Draw indices count: " << indices.size() << std::endl;
-
     glDrawElements(
         drawMode,
         static_cast<GLsizei>(indices.size()),

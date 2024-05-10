@@ -8,6 +8,7 @@
 
 #include <Object.hpp>
 
+#include <chrono>
 #include <future>
 #include <memory>
 #include <optional>
@@ -19,6 +20,8 @@ class IEvent;
 
 class LoadingInputEngine : public BaseInputEngine {
 private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> loadingStart;
+
     bool isLoadingFinished;
 
     ObjParser objParser;
@@ -46,6 +49,13 @@ public:
     LoadingInputEngine(
         std::shared_ptr<std::queue<std::unique_ptr<IEvent>>> _eventBus,
         std::shared_ptr<ShaderProgramManager> _shaderProgramManager);
+
+    LoadingInputEngine(const LoadingInputEngine&) = delete;
+    LoadingInputEngine(LoadingInputEngine&&) = delete;
+    LoadingInputEngine& operator=(const LoadingInputEngine&) = delete;
+    LoadingInputEngine& operator=(LoadingInputEngine&&) = delete;
+
+    ~LoadingInputEngine();
 
     std::optional<StateType> update(float dt) override;
 };
